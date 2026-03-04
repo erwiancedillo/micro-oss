@@ -1,0 +1,11 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^7.0",
+        "google/apiclient": "^2.19"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
