@@ -1,5 +1,6 @@
 <?php
 // Modern Mobile Sidebar (Offcanvas)
+$current_route = $_GET['route'] ?? 'dashboard';
 ?>
 <div class="offcanvas offcanvas-start mobile-sidebar" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
     <div class="offcanvas-header border-bottom">
@@ -35,56 +36,62 @@
         </div>
 
         <div class="list-group list-group-flush sidebar-nav-list">
-            <a href="/micro-oss/index.php?route=dashboard" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=dashboard" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'dashboard' ? 'active' : '' ?>">
                 <i class="fas fa-house me-3 text-primary"></i>Home
             </a>
-            <a href="/micro-oss/index.php?route=community-map" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=community-map" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'community-map' ? 'active' : '' ?>">
                 <i class="fas fa-map-location-dot me-3 text-success"></i>Community Map
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">EARLY WARNING SYSTEM</div>
-            <a href="/micro-oss/index.php?route=alerts" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=alerts" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'alerts' ? 'active' : '' ?>">
                 <i class="fas fa-triangle-exclamation me-3 text-warning"></i>Alert Signal
             </a>
-            <a href="/micro-oss/index.php?route=hazard" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=hazard" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'hazard' ? 'active' : '' ?>">
                 <i class="fas fa-map-area me-3 text-danger"></i>Hazard Map
             </a>
-            <a href="/micro-oss/index.php?route=flood-monitoring" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=flood-monitoring" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'flood-monitoring' ? 'active' : '' ?>">
                 <i class="fas fa-water me-3 text-info"></i>Flood Monitoring
             </a>
-            <a href="/micro-oss/index.php?route=evacuation" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=evacuation" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'evacuation' ? 'active' : '' ?>">
                 <i class="fas fa-route me-3 text-primary"></i>Evacuation Map
             </a>
 
-            <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">DEMOGRAPHICS</div>
-            <a href="/micro-oss/index.php?route=population" class="list-group-item list-group-item-action py-3 border-0">
-                <i class="fas fa-users me-3 text-indigo"></i>Population Analysis
+            <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">REPORTS</div>
+            <a href="/micro-oss/index.php?route=socio" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'socio' ? 'active' : '' ?>">
+                <i class="fas fa-users me-3 text-indigo"></i>Socio-Demographics
             </a>
-            <a href="/micro-oss/index.php?route=vulnerability" class="list-group-item list-group-item-action py-3 border-0">
-                <i class="fas fa-shield-halved me-3 text-warning"></i>Vulnerability
+            <a href="/micro-oss/index.php?route=vulnerability" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'vulnerability' ? 'active' : '' ?>">
+                <i class="fas fa-shield-halved me-3 text-danger"></i> Hazard Vulnerability
             </a>
-            <a href="/micro-oss/index.php?route=purok-demographics" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=purok-demographics" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'purok-demographics' ? 'active' : '' ?>">
                 <i class="fas fa-building-user me-3 text-success"></i>Purok Demographics
+            </a>
+            <a href="/micro-oss/index.php?route=purok-evacuation" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'purok-evacuation' ? 'active' : '' ?>">
+                <i class="fas fa-users me-3 text-indigo"></i>Evacuation Population Analysis
+            </a>
+            <a href="/micro-oss/index.php?route=household-materials" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'household-materials' ? 'active' : '' ?>">
+                <i class="fas fa-house me-3 text-info"></i>Household Materials Analysis
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">RESOURCES</div>
-            <a href="/micro-oss/index.php?route=gallery" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=gallery" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'gallery' ? 'active' : '' ?>">
                 <i class="fas fa-images me-3 text-pink"></i>Gallery
             </a>
-            <a href="/micro-oss/index.php?route=iks" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=iks" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'iks' ? 'active' : '' ?>">
                 <i class="fas fa-brain me-3 text-primary"></i>IKS
             </a>
-            <a href="/micro-oss/index.php?route=publications" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=publications" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'publications' ? 'active' : '' ?>">
                 <i class="fas fa-book me-3 text-secondary"></i>Publications
             </a>
-            <a href="/micro-oss/index.php?route=download" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=download" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'download' ? 'active' : '' ?>">
                 <i class="fas fa-file-arrow-down me-3 text-success"></i>Downloadables
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">ACCOUNT</div>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                    <a href="/micro-oss/index.php?route=admin-dashboard" class="list-group-item list-group-item-action py-3 border-0">
+                    <a href="/micro-oss/index.php?route=admin-dashboard" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'admin-dashboard' ? 'active' : '' ?>">
                         <i class="fas fa-user-shield me-3 text-danger"></i>Admin Panel
                     </a>
                 <?php endif; ?>

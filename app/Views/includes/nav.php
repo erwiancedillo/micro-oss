@@ -45,7 +45,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
                         <li><a class="dropdown-item <?= $current_route === 'vulnerability' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=vulnerability"><i class="fas fa-shield-alt me-2 text-danger"></i>Hazard Vulnerability</a></li>
                         <li><a class="dropdown-item <?= $current_route === 'purok-demographics' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=purok-demographics"><i class="fas fa-map-marked-alt me-2 text-success"></i>Purok Demographics</a></li>
                         <li><a class="dropdown-item <?= $current_route === 'household-materials' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=household-materials"><i class="fas fa-home me-2 text-warning"></i>Household Materials Analysis</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'purok-evacuation' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=purok-evacuation"><i class="fas fa-route me-2 text-info"></i>Purok Evacuation</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'purok-evacuation' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=purok-evacuation"><i class="fas fa-route me-2 text-info"></i>Purok Evacuation Population</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

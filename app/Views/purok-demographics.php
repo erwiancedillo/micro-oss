@@ -18,44 +18,41 @@
     .main-container {
         max-width: 100%;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 0.75rem;
     }
 
     .page-header {
-        background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--accent-purple) 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
-        text-align: center;
+        display: none;
     }
 
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+    .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.25rem 1.25rem;
+    }
+
+    .mobile-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-main);
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.75rem;
+        margin: 0;
     }
 
-    .page-title i {
-        font-size: 2.8rem;
-    }
-
-    .page-subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        font-weight: 500;
+    .mobile-title i {
+        color: var(--primary-purple);
+        font-size: 1.3rem;
     }
 
     .table-container {
         background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
+        padding: 1rem;
+        border-radius: 12px;
         box-shadow: var(--card-shadow);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         border: 1px solid #f1f5f9;
         overflow-x: auto;
     }
@@ -63,8 +60,8 @@
     .table-container h5 {
         color: var(--text-main);
         font-weight: 600;
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
     }
 
     .demographic-table {
@@ -74,7 +71,6 @@
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         overflow: hidden;
-        min-width: 1200px;
     }
 
     .demographic-table thead th {
@@ -221,6 +217,14 @@
         color: var(--primary-purple) !important;
     }
 
+    /* Responsive Table Adjustments */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
     @media (max-width: 768px) {
         .page-title {
             font-size: 1.8rem;
@@ -237,24 +241,17 @@
         .demographic-table {
             font-size: 0.75rem;
         }
-    }
 
-    /* Hide action column for non-admin users */
-    <?php if (!$is_admin): ?>.demographic-table th.action-column,
-    .demographic-table td.action-column {
-        display: none;
-    }
-
-    <?php endif; ?>@media (max-width: 480px) {
-        .demographic-table {
-            min-width: 800px;
+        .demographic-table th, .demographic-table td { 
+            padding: 0.6rem 0.5rem; 
         }
 
-        .page-title {
-            font-size: 1.2rem;
+        .btn-view, .btn-edit {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.75rem !important;
         }
     }
-
+    
     /* Custom CSS for navigation */
     .dropdown-item.active {
         background-color: #8b5cf6 !important;
@@ -285,23 +282,14 @@
     .navbar-nav .dropdown {
         position: relative;
     }
-
-    /* Hide action column for non-admin users */
-    <?php if (!$is_admin): ?>.demographic-table th.action-column,
-    .demographic-table td.action-column {
-        display: none;
-    }
-
-    <?php endif; ?>
 </style>
 
 <?php if ($is_logged_in): ?>
     <div class="main-container main-content-protected">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-users me-3"></i>Purok Demographics
+        <div class="mobile-header">
+            <h1 class="mobile-title">
+                <i class="fas fa-users"></i>Purok Demographics
             </h1>
-            <p class="page-subtitle">Detailed Population Statistics by Purok - Barangay Lizada</p>
         </div>
 
         <?php if (isset($_SESSION['success_message'])): ?>
@@ -333,29 +321,12 @@
                         </button>
                     </div>
 
-                    <table class="demographic-table shadow-sm" id="demographicTable">
+                    <div class="table-responsive">
+                        <table class="demographic-table shadow-sm" id="demographicTable">
                         <thead>
                             <tr>
-                                <th>PUROK</th>
-                                <th>FAMILIES</th>
-                                <th>MALE</th>
-                                <th>FEMALE</th>
-                                <th>INF M</th>
-                                <th>INF F</th>
-                                <th>CHILD M</th>
-                                <th>CHILD F</th>
-                                <th>ADULT M</th>
-                                <th>ADULT F</th>
-                                <th>ELDER M</th>
-                                <th>ELDER F</th>
-                                <th>PWD M</th>
-                                <th>PWD F</th>
-                                <th>SICK M</th>
-                                <th>SICK F</th>
-                                <th>PREGNANT</th>
-                                <?php if ($is_admin): ?>
-                                    <th class="action-column">ACTION</th>
-                                <?php endif; ?>
+                                <th class="text-start ps-4">PUROK</th>
+                                <th class="action-column">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -364,59 +335,25 @@
                                 foreach ($demographic_data as $row) {
                                     echo "<tr>";
                                     echo "<td class='purok-name'>" . htmlspecialchars($row['purok_name'] ?? '') . "</td>";
-                                    echo "<td>" . number_format($row['total_families'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['total_persons_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['total_persons_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['infant_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['infant_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['children_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['children_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['adult_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['adult_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['elderly_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['elderly_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['pwd_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['pwd_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['sickness_male'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['sickness_female'] ?? 0) . "</td>";
-                                    echo "<td>" . number_format($row['pregnant_women'] ?? 0) . "</td>";
+                                    echo "<td class='action-column'>";
+                                    echo "<button class='btn-view' style='background: #10b981; border: none; color: white; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.8rem; margin-right: 5px; margin-bottom: 5px;' onclick='viewData(" . htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8') . ")'><i class='fas fa-eye me-1'></i>View Details</button>";
                                     if ($is_admin) {
-                                        echo "<td class='action-column'>";
-                                        echo "<button class='btn-edit' onclick='editData(\"" . htmlspecialchars($row['purok_name'] ?? '') . "\")'>";
+                                        echo "<button class='btn-edit' style='margin-bottom: 5px;' onclick='editData(\"" . htmlspecialchars($row['purok_name'] ?? '') . "\")'>";
                                         echo "<i class='fas fa-edit me-1'></i>Edit";
                                         echo "</button>";
-                                        echo "</td>";
                                     }
+                                    echo "</td>";
                                     echo "</tr>";
                                 }
 
                                 // Add total row
                                 echo "<tr class='total-row'>";
-                                echo "<td class='purok-name'>TOTAL</td>";
-                                echo "<td>" . number_format($totals['total_families'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['total_persons_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['total_persons_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['infant_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['infant_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['children_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['children_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['adult_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['adult_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['elderly_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['elderly_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['pwd_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['pwd_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['sickness_male'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['sickness_female'] ?? 0) . "</td>";
-                                echo "<td>" . number_format($totals['pregnant_women'] ?? 0) . "</td>";
-                                if ($is_admin) {
-                                    echo "<td class='action-column'>-</td>";
-                                }
+                                echo "<td class='purok-name'>TOTAL (Across all Puroks)</td>";
+                                echo "<td class='action-column text-muted small'>Summary Below</td>";
                                 echo "</tr>";
                             } else {
                                 // Show error message if no data
-                                $colspan = $is_admin ? 18 : 17; // Number of columns
-                                echo "<tr><td colspan='$colspan' class='text-center p-5'>";
+                                echo "<tr><td colspan='18' class='text-center p-5'>";
                                 echo "<div class='alert alert-warning' role='alert'>";
                                 echo "<i class='fas fa-exclamation-triangle me-2'></i>";
                                 echo isset($error_message) ? htmlspecialchars($error_message) : "No demographic data available.";
@@ -425,7 +362,8 @@
                             }
                             ?>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
 
                     <?php if (!empty($demographic_data) && $total_pages > 1): ?>
                         <nav aria-label="Page navigation" class="mt-4">
@@ -546,6 +484,7 @@
     </div>
 
     <?php include __DIR__ . '/modals/edit_purok_demographics.php'; ?>
+    <?php include __DIR__ . '/modals/view_purok_demographics.php'; ?>
 
     <script>
         function editData(purokName) {
@@ -585,6 +524,30 @@
                     console.error('Error fetching purok data:', error);
                     alert('An error occurred while fetching data.');
                 });
+        }
+
+        function viewData(rowData) {
+            // Populate the view modal
+            document.getElementById('view_purok_name_display').textContent = rowData.purok_name || '';
+            document.getElementById('view_total_families').textContent = Number(rowData.total_families || 0).toLocaleString();
+            document.getElementById('view_total_persons_male').textContent = Number(rowData.total_persons_male || 0).toLocaleString();
+            document.getElementById('view_total_persons_female').textContent = Number(rowData.total_persons_female || 0).toLocaleString();
+            document.getElementById('view_infant_male').textContent = Number(rowData.infant_male || 0).toLocaleString();
+            document.getElementById('view_infant_female').textContent = Number(rowData.infant_female || 0).toLocaleString();
+            document.getElementById('view_children_male').textContent = Number(rowData.children_male || 0).toLocaleString();
+            document.getElementById('view_children_female').textContent = Number(rowData.children_female || 0).toLocaleString();
+            document.getElementById('view_adult_male').textContent = Number(rowData.adult_male || 0).toLocaleString();
+            document.getElementById('view_adult_female').textContent = Number(rowData.adult_female || 0).toLocaleString();
+            document.getElementById('view_elderly_male').textContent = Number(rowData.elderly_male || 0).toLocaleString();
+            document.getElementById('view_elderly_female').textContent = Number(rowData.elderly_female || 0).toLocaleString();
+            document.getElementById('view_pwd_male').textContent = Number(rowData.pwd_male || 0).toLocaleString();
+            document.getElementById('view_pwd_female').textContent = Number(rowData.pwd_female || 0).toLocaleString();
+            document.getElementById('view_sickness_male').textContent = Number(rowData.sickness_male || 0).toLocaleString();
+            document.getElementById('view_sickness_female').textContent = Number(rowData.sickness_female || 0).toLocaleString();
+            document.getElementById('view_pregnant_women').textContent = Number(rowData.pregnant_women || 0).toLocaleString();
+
+            const modal = new bootstrap.Modal(document.getElementById('viewPurokModal'));
+            modal.show();
         }
 
         function exportTable() {

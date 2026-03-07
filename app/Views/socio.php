@@ -16,48 +16,45 @@
     }
 
     .page-header {
-        background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--accent-purple) 100%);
-        padding: 2.5rem;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
-        text-align: center;
+        display: none;
     }
 
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+    .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.25rem 1.25rem;
+    }
+
+    .mobile-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-main);
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.75rem;
+        margin: 0;
     }
 
-    .page-title i {
-        font-size: 2.8rem;
-    }
-
-    .page-subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        font-weight: 500;
+    .mobile-title i {
+        color: var(--primary-purple);
+        font-size: 1.3rem;
     }
 
     .table-container {
         background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
+        padding: 1rem;
+        border-radius: 12px;
         box-shadow: var(--card-shadow);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         border: 1px solid #f1f5f9;
     }
 
     .table-container h4 {
         color: var(--text-main);
         font-weight: 600;
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
     }
 
     .demographic-table {
@@ -225,12 +222,11 @@ if (session_status() === PHP_SESSION_NONE) {
 ?>
 
 <?php if ($is_logged_in): ?>
-    <div class="py-4">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-users me-3"></i>Population Demographics
+    <div class="py-4 px-3">
+        <div class="mobile-header">
+            <h1 class="mobile-title">
+                <i class="fas fa-users"></i>Population Demographics
             </h1>
-            <p class="page-subtitle">Age Distribution Analysis - Barangay Lizada</p>
         </div>
 
         <?php if (isset($_SESSION['success'])): ?>
