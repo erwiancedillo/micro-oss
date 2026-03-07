@@ -27,8 +27,8 @@ $data = $google->userinfo->get();
 
 $google_id  = $data->id;
 $email      = $data->email;
-$first_name = $data->givenName;
-$last_name  = $data->familyName;
+$first_name = $data->givenName ?? '';
+$last_name  = $data->familyName ?? '';
 
 // Check if user exists
 $stmt = mysqli_prepare($conn, "SELECT id, COALESCE(role,'user') AS role FROM users WHERE google_id=? OR email=?");

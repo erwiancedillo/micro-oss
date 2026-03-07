@@ -1,18 +1,31 @@
 <!-- Admin Hazard Maps View -->
 <style>
-    .admin-layout { display: flex; min-height: calc(100vh - 70px); background: #f8fafc; }
-    .admin-main { flex: 1; padding: 2rem; overflow-x: hidden; }
+    .admin-layout {
+        display: flex;
+        min-height: calc(100vh - 70px);
+        background: #f8fafc;
+    }
+
+    .admin-main {
+        flex: 1;
+        padding: 2rem;
+        overflow-x: hidden;
+        transition: var(--admin-transition);
+    }
 
     .map-card {
         background: white;
         border-radius: 1rem;
         border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         transition: transform 0.3s ease;
         height: 100%;
     }
-    .map-card:hover { transform: translateY(-5px); }
-    
+
+    .map-card:hover {
+        transform: translateY(-5px);
+    }
+
     .map-thumb {
         height: 180px;
         width: 100%;
@@ -30,7 +43,7 @@
         font-weight: 700;
         font-size: 0.7rem;
         text-transform: uppercase;
-        background: rgba(255,255,255,0.9);
+        background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(4px);
         color: #667eea;
     }
@@ -53,7 +66,8 @@
         <?php if (isset($_SESSION['flash_message'])): ?>
             <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center">
                 <i class="fas fa-check-circle me-3 fa-lg"></i>
-                <div><?= $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?></div>
+                <div><?= $_SESSION['flash_message'];
+                        unset($_SESSION['flash_message']); ?></div>
             </div>
         <?php endif; ?>
 

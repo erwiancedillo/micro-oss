@@ -7,15 +7,25 @@
         --alert-red: #ef4444;
     }
 
-    .admin-layout { display: flex; min-height: calc(100vh - 70px); background: #f8fafc; }
-    .admin-main { flex: 1; padding: 2rem; overflow-x: hidden; }
+    .admin-layout {
+        display: flex;
+        min-height: calc(100vh - 70px);
+        background: #f8fafc;
+    }
+
+    .admin-main {
+        flex: 1;
+        padding: 2rem;
+        overflow-x: hidden;
+        transition: var(--admin-transition);
+    }
 
     .alert-card {
         background: white;
         border-radius: 1rem;
         padding: 1.5rem;
         border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         margin-bottom: 2rem;
     }
 
@@ -27,25 +37,66 @@
         text-transform: uppercase;
     }
 
-    .level-0 { background: rgba(34, 197, 94, 0.1); color: var(--alert-green); }
-    .level-1 { background: rgba(234, 179, 8, 0.1); color: var(--alert-yellow); }
-    .level-2 { background: rgba(249, 115, 22, 0.1); color: var(--alert-orange); }
-    .level-3 { background: rgba(239, 68, 68, 0.1); color: var(--alert-red); }
+    .level-0 {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--alert-green);
+    }
 
-    .table th { background: #f1f5f9; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border: none; }
-    
+    .level-1 {
+        background: rgba(234, 179, 8, 0.1);
+        color: var(--alert-yellow);
+    }
+
+    .level-2 {
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--alert-orange);
+    }
+
+    .level-3 {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--alert-red);
+    }
+
+    .table th {
+        background: #f1f5f9;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border: none;
+    }
+
     .panel-overlay {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-        z-index: 1060; display: none; align-items: center; justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1060;
+        display: none;
+        align-items: center;
+        justify-content: center;
     }
-    
+
     .panel-content {
-        background: white; width: 500px; max-height: 90vh; overflow-y: auto;
-        border-radius: 1.5rem; padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        background: white;
+        width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
-    
-    #map { height: 250px; width: 100%; border-radius: 1rem; margin-bottom: 1.5rem; display: none; }
+
+    #map {
+        height: 250px;
+        width: 100%;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
 </style>
 
 <div class="admin-layout d-flex">
@@ -87,7 +138,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div id="message" class="mt-3 text-danger small"></div>
     </main>
 </div>
@@ -156,25 +207,25 @@
 </div>
 
 <script>
-async function fetchAlerts() {
-    const res = await fetch('/micro-oss/api/get-alerts.php');
-    const data = await res.json();
-    allBarangays = data.barangays || [];
-    buildTable(allBarangays);
-    if ((data.barangays && data.barangays.length>0) || (data.sitios && data.sitios.length>0)) {
-        document.getElementById('initSchemaBtn').style.display='none';
-    } else {
-        document.getElementById('initSchemaBtn').style.display='block';
+    async function fetchAlerts() {
+        const res = await fetch('/micro-oss/api/get-alerts.php');
+        const data = await res.json();
+        allBarangays = data.barangays || [];
+        buildTable(allBarangays);
+        if ((data.barangays && data.barangays.length > 0) || (data.sitios && data.sitios.length > 0)) {
+            document.getElementById('initSchemaBtn').style.display = 'none';
+        } else {
+            document.getElementById('initSchemaBtn').style.display = 'block';
+        }
     }
-}
 
-function buildTable(list) {
-    const tbody = document.querySelector('#alertsTable tbody');
-    tbody.innerHTML = '';
-    list.forEach(item => {
-        const tr = document.createElement('tr');
-        const levelText = getLevelText(item.alert_level);
-        tr.innerHTML = `
+    function buildTable(list) {
+        const tbody = document.querySelector('#alertsTable tbody');
+        tbody.innerHTML = '';
+        list.forEach(item => {
+            const tr = document.createElement('tr');
+            const levelText = getLevelText(item.alert_level);
+            tr.innerHTML = `
             <td class="ps-4">
                 <div class="fw-bold text-dark">${item.name}</div>
                 <div class="small text-muted">${item.full_address || 'Toril District'}</div>
@@ -194,166 +245,209 @@ function buildTable(list) {
                 </div>
             </td>
         `;
-        tbody.appendChild(tr);
-    });
-}
+            tbody.appendChild(tr);
+        });
+    }
 
-function getLevelText(n) {
-    switch(+n){ case 0: return 'Normal'; case 1: return 'Warning'; case 2: return 'Alert'; case 3: return 'Critical'; }
-    return 'N/A';
-}
+    function getLevelText(n) {
+        switch (+n) {
+            case 0:
+                return 'Normal';
+            case 1:
+                return 'Warning';
+            case 2:
+                return 'Alert';
+            case 3:
+                return 'Critical';
+        }
+        return 'N/A';
+    }
 
-let map, marker, geocoder, locationSelectionMode = false, allBarangays = [];
+    let map, marker, geocoder, locationSelectionMode = false,
+        allBarangays = [];
 
-function initMap() {
-    geocoder = new google.maps.Geocoder();
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: { lat: 7.028, lng: 125.448 },
-        styles: [
-            { "featureType": "poi", "stylers": [{ "visibility": "off" }] }
-        ]
-    });
-    marker = new google.maps.Marker({ map: map, draggable: false });
-    map.addListener('click', (e) => {
-        setAutoCoords(e.latLng.lat(), e.latLng.lng());
-    });
-}
+    function initMap() {
+        geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 13,
+            center: {
+                lat: 7.028,
+                lng: 125.448
+            },
+            styles: [{
+                "featureType": "poi",
+                "stylers": [{
+                    "visibility": "off"
+                }]
+            }]
+        });
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: false
+        });
+        map.addListener('click', (e) => {
+            setAutoCoords(e.latLng.lat(), e.latLng.lng());
+        });
+    }
 
-function setAutoCoords(lat, lng) {
-    document.getElementById('fldLat').value = lat.toFixed(6);
-    document.getElementById('fldLng').value = lng.toFixed(6);
-    const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-    marker.setPosition(pos);
-    marker.setVisible(true);
-    
-    geocoder.geocode({ location: pos }, (results, status) => {
-        if (status === "OK" && results[0]) {
-            const addr = results[0];
-            document.getElementById('fldAddress').value = addr.formatted_address;
-            let brgy = "";
-            for (let comp of addr.address_components) {
-                if (comp.types.includes("neighborhood") || comp.types.includes("sublocality_level_1")) {
-                    brgy = comp.long_name;
-                    break;
-                }
-            }
-            if (!brgy) {
+    function setAutoCoords(lat, lng) {
+        document.getElementById('fldLat').value = lat.toFixed(6);
+        document.getElementById('fldLng').value = lng.toFixed(6);
+        const pos = {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng)
+        };
+        marker.setPosition(pos);
+        marker.setVisible(true);
+
+        geocoder.geocode({
+            location: pos
+        }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const addr = results[0];
+                document.getElementById('fldAddress').value = addr.formatted_address;
+                let brgy = "";
                 for (let comp of addr.address_components) {
-                    if (comp.types.includes("administrative_area_level_3")) {
+                    if (comp.types.includes("neighborhood") || comp.types.includes("sublocality_level_1")) {
                         brgy = comp.long_name;
                         break;
                     }
                 }
+                if (!brgy) {
+                    for (let comp of addr.address_components) {
+                        if (comp.types.includes("administrative_area_level_3")) {
+                            brgy = comp.long_name;
+                            break;
+                        }
+                    }
+                }
+                if (!document.getElementById('fldName').readOnly && brgy) {
+                    document.getElementById('fldName').value = brgy;
+                }
             }
-            if (!document.getElementById('fldName').readOnly && brgy) {
-                document.getElementById('fldName').value = brgy;
-            }
-        }
-    });
-}
-
-function useCurrentLocation() {
-    if (navigator.geolocation) {
-        document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Detecting...';
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                setAutoCoords(pos.coords.latitude, pos.coords.longitude);
-                map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-crosshairs me-2 text-primary"></i>Detect My Location';
-            },
-            () => {
-                alert("Could not detect location.");
-                document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-crosshairs me-2 text-primary"></i>Detect My Location';
-            }
-        );
+        });
     }
-}
 
-document.getElementById('detectLocBtn').onclick = useCurrentLocation;
-document.getElementById('detectInfoBtn').onclick = () => {
-    const lat = parseFloat(document.getElementById('fldLat').value);
-    const lng = parseFloat(document.getElementById('fldLng').value);
-    if (lat && lng) setAutoCoords(lat, lng);
-};
-
-function openEditFromData(data) {
-    document.getElementById('panelTitle').innerText = 'Modify Alert';
-    document.getElementById('fldName').value = data.name;
-    document.getElementById('fldName').readOnly = true;
-    document.getElementById('fldLevel').value = data.alert_level;
-    document.getElementById('fldAdvisory').value = data.flood_advisory;
-    document.getElementById('fldAddress').value = data.full_address || '';
-    const lat = data.latitude;
-    const lng = data.longitude;
-    document.getElementById('fldLat').value = lat || '';
-    document.getElementById('fldLng').value = lng || '';
-    
-    document.getElementById('editOverlay').style.display = 'flex';
-    document.getElementById('map').style.display = 'block';
-    
-    setTimeout(() => {
-        google.maps.event.trigger(map, 'resize');
-        if (lat && lng) {
-            const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-            map.setCenter(pos);
-            marker.setPosition(pos);
-            marker.setVisible(true);
-        } else {
-            marker.setVisible(false);
+    function useCurrentLocation() {
+        if (navigator.geolocation) {
+            document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Detecting...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    setAutoCoords(pos.coords.latitude, pos.coords.longitude);
+                    map.setCenter({
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    });
+                    document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-crosshairs me-2 text-primary"></i>Detect My Location';
+                },
+                () => {
+                    alert("Could not detect location.");
+                    document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-crosshairs me-2 text-primary"></i>Detect My Location';
+                }
+            );
         }
-    }, 100);
-}
+    }
 
-document.getElementById('addAlertBtn').onclick = () => {
-    document.getElementById('panelTitle').innerText = 'Add New Alert';
-    document.getElementById('fldName').value = '';
-    document.getElementById('fldName').readOnly = false;
-    document.getElementById('fldLevel').value = '0';
-    document.getElementById('fldAdvisory').value = '';
-    document.getElementById('fldLat').value = '';
-    document.getElementById('fldLng').value = '';
-    document.getElementById('fldAddress').value = '';
-    
-    document.getElementById('editOverlay').style.display = 'flex';
-    document.getElementById('map').style.display = 'block';
-    document.getElementById('locationModeBanner').style.display = 'block';
-    marker.setVisible(false);
-    
-    useCurrentLocation();
-    
-    setTimeout(() => {
-        google.maps.event.trigger(map, 'resize');
-        map.setCenter({ lat: 7.028, lng: 125.448 });
-    }, 100);
-};
+    document.getElementById('detectLocBtn').onclick = useCurrentLocation;
+    document.getElementById('detectInfoBtn').onclick = () => {
+        const lat = parseFloat(document.getElementById('fldLat').value);
+        const lng = parseFloat(document.getElementById('fldLng').value);
+        if (lat && lng) setAutoCoords(lat, lng);
+    };
 
-document.getElementById('cancelBtn').onclick = () => {
-    document.getElementById('editOverlay').style.display = 'none';
-};
+    function openEditFromData(data) {
+        document.getElementById('panelTitle').innerText = 'Modify Alert';
+        document.getElementById('fldName').value = data.name;
+        document.getElementById('fldName').readOnly = true;
+        document.getElementById('fldLevel').value = data.alert_level;
+        document.getElementById('fldAdvisory').value = data.flood_advisory;
+        document.getElementById('fldAddress').value = data.full_address || '';
+        const lat = data.latitude;
+        const lng = data.longitude;
+        document.getElementById('fldLat').value = lat || '';
+        document.getElementById('fldLng').value = lng || '';
 
-document.getElementById('saveBtn').onclick = async () => {
-    const name = document.getElementById('fldName').value;
-    const level = document.getElementById('fldLevel').value;
-    const advisory = document.getElementById('fldAdvisory').value;
-    const address = document.getElementById('fldAddress').value;
-    const lat = document.getElementById('fldLat').value;
-    const lng = document.getElementById('fldLng').value;
-    
-    const res = await fetch('/micro-oss/api/save-alert.php', {
-        method:'POST', 
-        headers:{'Content-Type':'application/json'}, 
-        body: JSON.stringify({ type:'barangay', name, level, advisory, address, latitude: lat, longitude: lng })
-    });
-    const result = await res.json();
-    if (result.success) {
+        document.getElementById('editOverlay').style.display = 'flex';
+        document.getElementById('map').style.display = 'block';
+
+        setTimeout(() => {
+            google.maps.event.trigger(map, 'resize');
+            if (lat && lng) {
+                const pos = {
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng)
+                };
+                map.setCenter(pos);
+                marker.setPosition(pos);
+                marker.setVisible(true);
+            } else {
+                marker.setVisible(false);
+            }
+        }, 100);
+    }
+
+    document.getElementById('addAlertBtn').onclick = () => {
+        document.getElementById('panelTitle').innerText = 'Add New Alert';
+        document.getElementById('fldName').value = '';
+        document.getElementById('fldName').readOnly = false;
+        document.getElementById('fldLevel').value = '0';
+        document.getElementById('fldAdvisory').value = '';
+        document.getElementById('fldLat').value = '';
+        document.getElementById('fldLng').value = '';
+        document.getElementById('fldAddress').value = '';
+
+        document.getElementById('editOverlay').style.display = 'flex';
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('locationModeBanner').style.display = 'block';
+        marker.setVisible(false);
+
+        useCurrentLocation();
+
+        setTimeout(() => {
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter({
+                lat: 7.028,
+                lng: 125.448
+            });
+        }, 100);
+    };
+
+    document.getElementById('cancelBtn').onclick = () => {
         document.getElementById('editOverlay').style.display = 'none';
-        fetchAlerts();
-    } else {
-        alert('Save failed: '+result.message);
-    }
-};
+    };
 
-fetchAlerts();
+    document.getElementById('saveBtn').onclick = async () => {
+        const name = document.getElementById('fldName').value;
+        const level = document.getElementById('fldLevel').value;
+        const advisory = document.getElementById('fldAdvisory').value;
+        const address = document.getElementById('fldAddress').value;
+        const lat = document.getElementById('fldLat').value;
+        const lng = document.getElementById('fldLng').value;
+
+        const res = await fetch('/micro-oss/api/save-alert.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: 'barangay',
+                name,
+                level,
+                advisory,
+                address,
+                latitude: lat,
+                longitude: lng
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            document.getElementById('editOverlay').style.display = 'none';
+            fetchAlerts();
+        } else {
+            alert('Save failed: ' + result.message);
+        }
+    };
+
+    fetchAlerts();
 </script>
 <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&callback=initMap"></script>

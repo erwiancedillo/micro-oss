@@ -11,6 +11,12 @@ use App\Controllers\AlertController;
 use App\Controllers\FloodController;
 use App\Controllers\KnowledgeController;
 use App\Controllers\GalleryController;
+use App\Controllers\SocioController;
+use App\Controllers\VulnerabilityController;
+use App\Controllers\PurokDemographicsController;
+use App\Controllers\HouseholdMaterialsController;
+use App\Controllers\PurokEvacuationController;
+
 
 // simple autoloader
 spl_autoload_register(function ($class) {
@@ -30,6 +36,11 @@ $alert = new AlertController();
 $flood = new FloodController();
 $knowledge = new KnowledgeController();
 $gallery = new GalleryController();
+$socio = new SocioController();
+$vulnerability = new VulnerabilityController();
+$purokDemographics = new PurokDemographicsController();
+$householdMaterials = new HouseholdMaterialsController();
+$purokEvacuation = new PurokEvacuationController();
 
 switch ($route) {
     case 'login':
@@ -110,7 +121,46 @@ switch ($route) {
         $flood->index();
         break;
     case 'socio':
-        include __DIR__ . '/../socio.php';
+        $socio->index();
+        break;
+    case 'api-add-age-bracket':
+        $socio->addAgeBracket();
+        break;
+    case 'api-update-socio-data':
+        $socio->updateSocioData();
+        break;
+    case 'population':
+        include __DIR__ . '/../app/Views/population.php';
+        break;
+    case 'vulnerability':
+        $vulnerability->index();
+        break;
+    case 'api-hazard-data':
+        $vulnerability->apiGetHazardData();
+        break;
+    case 'api-update-hazard':
+        $vulnerability->update();
+        break;
+    case 'purok-demographics':
+        $purokDemographics->index();
+        break;
+    case 'api-get-purok-data':
+        $purokDemographics->apiGetPurokData();
+        break;
+    case 'api-update-purok-data':
+        $purokDemographics->update();
+        break;
+    case 'household-materials':
+        $householdMaterials->index();
+        break;
+    case 'api-update-material':
+        $householdMaterials->updateMaterial();
+        break;
+    case 'api-update-ownership':
+        $householdMaterials->updateOwnership();
+        break;
+    case 'purok-evacuation':
+        $purokEvacuation->index();
         break;
     case 'gallery':
         $gallery->index();
@@ -131,10 +181,10 @@ switch ($route) {
         $knowledge->iks();
         break;
     case 'publications':
-        include __DIR__ . '/../Publications.php';
+        include __DIR__ . '/../app/Views/publications.php';
         break;
     case 'download':
-        include __DIR__ . '/../download.php';
+        include __DIR__ . '/../app/Views/download.php';
         break;
     default:
         http_response_code(404);
