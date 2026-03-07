@@ -114,7 +114,12 @@
     .edit-panel.active { transform: translateX(0); }
     .btn-action { border-radius: 0.6rem; padding: 0.5rem 1rem; }
 </style>
-
+<?php
+if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    echo '<div class="alert alert-warning m-3">Access denied. Admins only.</div>';
+    exit;
+}
+?>
 <div class="admin-layout d-flex">
     <?php include __DIR__ . '/../includes/admin_sidebar.php'; ?>
 

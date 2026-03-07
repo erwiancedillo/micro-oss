@@ -40,10 +40,10 @@
 <div class="admin-layout d-flex">
     <?php include __DIR__ . '/../includes/admin_sidebar.php'; ?>
 
-    <main class="admin-main p-4">
+    <main class="admin-main p-">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold mb-1">Indigenous Knowledge Management</h2>
+                <h6 class="fw-bold mb-1">Indigenous Knowledge Management</h6>
                 <p class="text-muted">Manage traditional wisdom entries for the IKS System</p>
             </div>
             <button class="btn btn-primary rounded-3 px-4 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;" onclick="openAdd()">
