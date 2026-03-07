@@ -17,6 +17,9 @@
   .desktop-nav {
     display: none !important;
   }
+  .main-content {
+    padding-top: 60px !important;
+  }
 }
 
 /* Premium Floating Bottom Nav */

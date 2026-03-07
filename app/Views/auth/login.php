@@ -8,7 +8,7 @@
         <div class="card border-0 shadow-2xl rounded-5 overflow-hidden my-5 glass-card">
             <div class="card-header border-0 text-center p-4 p-md-5 dashboard-gradient text-white">
                 <div class="icon-container bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                    <i class="fas fa-shield-alt fa-2x"></i>
+                    <img src="assets/uploads/Lizadalogo.jpg" alt="Logo" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                 </div>
                 <h2 class="fw-bold mb-0 h3">Welcome Back</h2>
                 <p class="opacity-75 mb-0 mt-2 small">Securely sign in to your account</p>

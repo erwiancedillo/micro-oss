@@ -45,4 +45,18 @@ class AgePopulation
             $data['total']
         ]);
     }
+
+    public function update(string $original_age_bracket, array $data)
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE age_population SET age_bracket = ?, female = ?, male = ?, total = ? WHERE age_bracket = ?'
+        );
+        return $stmt->execute([
+            $data['age_bracket'],
+            $data['female'],
+            $data['male'],
+            $data['total'],
+            $original_age_bracket
+        ]);
+    }
 }

@@ -57,7 +57,37 @@ class SocioController
             ];
 
             $this->agePopulationModel->create($data);
-            $_SESSION['flash_message'] = 'Age bracket added successfully.';
+            $_SESSION['success'] = 'Age bracket added successfully.';
+            header('Location: /micro-oss/index.php?route=socio');
+            exit();
+        }
+    }
+
+    public function updateSocioData()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_SESSION['role'] ?? '') === 'admin') {
+            $original_age_bracket = $_POST['original_age_bracket'];
+            $female = (int)$_POST['female'];
+            $male = (int)$_POST['male'];
+
+            $data = [
+                'age_bracket' => $_POST['age_bracket'],
+                'female' => $female,
+                'male' => $male,
+                'total' => $female + $male
+            ];
+
+            try {
+                $this->agePopulationModel->update($original_age_bracket, $data);
+                $_SESSION['success'] = 'Age bracket updated successfully.';
+            } catch (\Exception $e) {
+                $_SESSION['error'] = 'Failed to update age bracket.';
+            }
+
             header('Location: /micro-oss/index.php?route=socio');
             exit();
         }

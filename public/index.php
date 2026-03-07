@@ -126,6 +126,9 @@ switch ($route) {
     case 'api-add-age-bracket':
         $socio->addAgeBracket();
         break;
+    case 'api-update-socio-data':
+        $socio->updateSocioData();
+        break;
     case 'population':
         include __DIR__ . '/../app/Views/population.php';
         break;

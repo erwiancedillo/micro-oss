@@ -162,7 +162,8 @@
         font-weight: 800;
     }
 
-    .export-btn, .action-btn {
+    .export-btn,
+    .action-btn {
         background: white;
         color: var(--primary-purple);
         border: 1px solid var(--primary-purple);
@@ -175,7 +176,8 @@
         align-items: center;
     }
 
-    .export-btn:hover, .action-btn:hover {
+    .export-btn:hover,
+    .action-btn:hover {
         background: var(--primary-purple);
         color: white;
     }
@@ -194,19 +196,33 @@
     }
 
     @media (max-width: 768px) {
-        .page-title { font-size: 1.8rem; }
-        .table-container { padding: 1rem; }
-        .demographic-table { font-size: 0.9rem; }
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .table-container {
+            padding: 1rem;
+        }
+
+        .demographic-table {
+            font-size: 0.9rem;
+        }
     }
 
     /* Hide action column for non-admin users */
-    <?php if (!$is_admin): ?>
-    .demographic-table th.action-column,
+    <?php if (!$is_admin): ?>.demographic-table th.action-column,
     .demographic-table td.action-column {
         display: none;
     }
+
     <?php endif; ?>
 </style>
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 
 <?php if ($is_logged_in): ?>
     <div class="py-4">
@@ -216,6 +232,30 @@
             </h1>
             <p class="page-subtitle">Age Distribution Analysis - Barangay Lizada</p>
         </div>
+
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($_SESSION['success']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($_SESSION['error']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['flash_message'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($_SESSION['flash_message']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['flash_message']); ?>
+        <?php endif; ?>
 
         <div class="row">
             <div class="col-lg-9">
@@ -374,12 +414,6 @@
             modal.show();
         }
 
-        function editPopulationData(ageBracket, female, male) {
-            // Redirect to add_population_data.php with pre-filled data
-            const url = `add_population_data.php?edit=1&age_bracket=${encodeURIComponent(ageBracket)}&female=${female}&male=${male}`;
-            window.location.href = url;
-        }
-
         function exportTable() {
             const table = document.getElementById('demographicTable');
             let csv = [];
@@ -434,7 +468,7 @@
                 parentTable.querySelectorAll('tbody tr').forEach(r => {
                     r.style.backgroundColor = '';
                 });
-                
+
                 // Don't highlight TOTAL row
                 if (!this.classList.contains('total-row')) {
                     this.style.backgroundColor = '#fbbf24';
@@ -443,5 +477,5 @@
         });
     </script>
 <?php endif; ?>
-
 <?php include __DIR__ . '/modals/add_age_bracket.php'; ?>
+<?php include __DIR__ . '/modals/edit_socio.php'; ?>

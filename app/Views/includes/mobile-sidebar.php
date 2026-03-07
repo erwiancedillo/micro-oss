@@ -10,7 +10,7 @@
     </div>
     <div class="offcanvas-body p-0">
         <div class="sidebar-user-info p-3 mb-2 bg-light">
-            <?php if (isset($_SESSION['id'])): ?>
+            <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="d-flex align-items-center">
                     <?php
                     $profile_src = (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture']))
@@ -35,56 +35,56 @@
         </div>
 
         <div class="list-group list-group-flush sidebar-nav-list">
-            <a href="index.php?route=dashboard" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=dashboard" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-house me-3 text-primary"></i>Home
             </a>
-            <a href="index.php?route=community-map" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=community-map" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-map-location-dot me-3 text-success"></i>Community Map
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">EARLY WARNING SYSTEM</div>
-            <a href="index.php?route=alerts" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=alerts" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-triangle-exclamation me-3 text-warning"></i>Alert Signal
             </a>
-            <a href="index.php?route=hazard" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=hazard" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-map-area me-3 text-danger"></i>Hazard Map
             </a>
-            <a href="index.php?route=flood-monitoring" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=flood-monitoring" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-water me-3 text-info"></i>Flood Monitoring
             </a>
-            <a href="index.php?route=evacuation" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=evacuation" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-route me-3 text-primary"></i>Evacuation Map
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">DEMOGRAPHICS</div>
-            <a href="index.php?route=population" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=population" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-users me-3 text-indigo"></i>Population Analysis
             </a>
-            <a href="index.php?route=vulnerability" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=vulnerability" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-shield-halved me-3 text-warning"></i>Vulnerability
             </a>
-            <a href="index.php?route=purok-demographics" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=purok-demographics" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-building-user me-3 text-success"></i>Purok Demographics
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">RESOURCES</div>
-            <a href="index.php?route=gallery" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=gallery" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-images me-3 text-pink"></i>Gallery
             </a>
-            <a href="index.php?route=iks" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=iks" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-brain me-3 text-primary"></i>IKS
             </a>
-            <a href="index.php?route=publications" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=publications" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-book me-3 text-secondary"></i>Publications
             </a>
-            <a href="index.php?route=download" class="list-group-item list-group-item-action py-3 border-0">
+            <a href="/micro-oss/index.php?route=download" class="list-group-item list-group-item-action py-3 border-0">
                 <i class="fas fa-file-arrow-down me-3 text-success"></i>Downloadables
             </a>
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">ACCOUNT</div>
-            <?php if (isset($_SESSION['id'])): ?>
+            <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                    <a href="admin.php" class="list-group-item list-group-item-action py-3 border-0">
+                    <a href="/micro-oss/index.php?route=admin-dashboard" class="list-group-item list-group-item-action py-3 border-0">
                         <i class="fas fa-user-shield me-3 text-danger"></i>Admin Panel
                     </a>
                 <?php endif; ?>

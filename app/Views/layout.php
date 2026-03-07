@@ -38,6 +38,17 @@ $isAuthPage = in_array($route, ['login', 'register']);
 
     <?php if (!$isAuthPage): ?>
         <?php include __DIR__ . '/includes/nav.php'; ?>
+
+        <!-- Mobile Sidebar Toggle Button -->
+        <button class="btn btn-primary d-lg-none shadow-sm position-fixed mobile-sidebar-toggle"
+            style="top: 15px; left: 15px; z-index: 1040; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mobileSidebar"
+            aria-controls="mobileSidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <?php include __DIR__ . '/includes/mobile-sidebar.php'; ?>
         <?php include __DIR__ . '/includes/mobile-bottom-nav.php'; ?>
     <?php endif; ?>
