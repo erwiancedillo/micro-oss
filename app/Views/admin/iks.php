@@ -1,13 +1,23 @@
 <!-- Admin IKS View -->
 <style>
-    .admin-layout { display: flex; min-height: calc(100vh - 70px); background: #f8fafc; }
-    .admin-main { flex: 1; padding: 2rem; overflow-x: hidden; }
+    .admin-layout {
+        display: flex;
+        min-height: calc(100vh - 70px);
+        background: #f8fafc;
+    }
+
+    .admin-main {
+        flex: 1;
+        padding: 2rem;
+        overflow-x: hidden;
+        transition: var(--admin-transition);
+    }
 
     .iks-card {
         background: white;
         border-radius: 1rem;
         border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         margin-bottom: 2rem;
     }
 
@@ -19,21 +29,52 @@
         text-transform: uppercase;
     }
 
-    .cat-prediction { background: rgba(102, 126, 234, 0.1); color: #667eea; }
-    .cat-weather { background: rgba(234, 179, 8, 0.1); color: #eab308; }
-    .cat-prevention { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-
-    .table th { background: #f1f5f9; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border: none; }
-    
-    .panel-overlay {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-        z-index: 1060; display: none; align-items: center; justify-content: center;
+    .cat-prediction {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
     }
-    
+
+    .cat-weather {
+        background: rgba(234, 179, 8, 0.1);
+        color: #eab308;
+    }
+
+    .cat-prevention {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+
+    .table th {
+        background: #f1f5f9;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border: none;
+    }
+
+    .panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1060;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
     .panel-content {
-        background: white; width: 600px; max-height: 90vh; overflow-y: auto;
-        border-radius: 1.5rem; padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        background: white;
+        width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 </style>
 
@@ -54,7 +95,8 @@
         <?php if (isset($_SESSION['flash_message'])): ?>
             <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center">
                 <i class="fas fa-check-circle me-3 fa-lg"></i>
-                <div><?= $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?></div>
+                <div><?= $_SESSION['flash_message'];
+                        unset($_SESSION['flash_message']); ?></div>
             </div>
         <?php endif; ?>
 
@@ -107,7 +149,7 @@
 
         <form id="itemForm" action="index.php?route=admin-iks-create" method="POST">
             <input type="hidden" name="id" id="itemId">
-            
+
             <div class="mb-3">
                 <label class="form-label small fw-bold text-muted">Category</label>
                 <select name="category" id="itemCategory" class="form-select bg-light border-0 py-2 rounded-3" required>
@@ -151,29 +193,29 @@
 </div>
 
 <script>
-function openAdd() {
-    document.getElementById('panelTitle').innerText = 'New Knowledge Item';
-    document.getElementById('itemForm').action = 'index.php?route=admin-iks-create';
-    document.getElementById('itemId').value = '';
-    document.getElementById('itemForm').reset();
-    document.getElementById('itemOverlay').style.display = 'flex';
-}
+    function openAdd() {
+        document.getElementById('panelTitle').innerText = 'New Knowledge Item';
+        document.getElementById('itemForm').action = 'index.php?route=admin-iks-create';
+        document.getElementById('itemId').value = '';
+        document.getElementById('itemForm').reset();
+        document.getElementById('itemOverlay').style.display = 'flex';
+    }
 
-function openEdit(item) {
-    document.getElementById('panelTitle').innerText = 'Modify Knowledge Item';
-    document.getElementById('itemForm').action = 'index.php?route=admin-iks-edit';
-    document.getElementById('itemId').value = item.id;
-    document.getElementById('itemCategory').value = item.category;
-    document.getElementById('itemTitle').value = item.title;
-    document.getElementById('itemDescription').value = item.description;
-    document.getElementById('itemSignificance').value = item.significance || '';
-    document.getElementById('itemIcon').value = item.icon_url || '';
-    document.getElementById('itemOrder').value = item.order_index || 0;
-    
-    document.getElementById('itemOverlay').style.display = 'flex';
-}
+    function openEdit(item) {
+        document.getElementById('panelTitle').innerText = 'Modify Knowledge Item';
+        document.getElementById('itemForm').action = 'index.php?route=admin-iks-edit';
+        document.getElementById('itemId').value = item.id;
+        document.getElementById('itemCategory').value = item.category;
+        document.getElementById('itemTitle').value = item.title;
+        document.getElementById('itemDescription').value = item.description;
+        document.getElementById('itemSignificance').value = item.significance || '';
+        document.getElementById('itemIcon').value = item.icon_url || '';
+        document.getElementById('itemOrder').value = item.order_index || 0;
 
-function closePanel() {
-    document.getElementById('itemOverlay').style.display = 'none';
-}
+        document.getElementById('itemOverlay').style.display = 'flex';
+    }
+
+    function closePanel() {
+        document.getElementById('itemOverlay').style.display = 'none';
+    }
 </script>
