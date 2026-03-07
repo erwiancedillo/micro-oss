@@ -12,53 +12,50 @@
         }
 
         .main-container {
-            padding: 2rem;
+            padding: 0.75rem;
             color: var(--text-main);
         }
 
         .page-header {
-            background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--accent-purple) 100%);
-            padding: 2.5rem;
-            border-radius: 20px;
-            color: white;
-            margin-bottom: 2rem;
-            box-shadow: var(--card-shadow);
-            text-align: center;
+            display: none;
         }
 
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.25rem 1.25rem;
+        }
+
+        .mobile-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.75rem;
+            margin: 0;
         }
 
-        .page-title i {
-            font-size: 2.8rem;
-        }
-
-        .page-subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 500;
+        .mobile-title i {
+            color: var(--primary-purple);
+            font-size: 1.3rem;
         }
 
         .table-container {
             background: white;
-            padding: 1.5rem;
-            border-radius: 16px;
+            padding: 1rem;
+            border-radius: 12px;
             box-shadow: var(--card-shadow);
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             border: 1px solid #f1f5f9;
         }
 
         .table-container h4 {
             color: var(--text-main);
             font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
         }
 
         .demographic-table {
@@ -180,17 +177,66 @@
             font-size: 0.85rem;
         }
 
+        .btn-view {
+            background: #10b981;
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
         .text-purple {
             color: var(--primary-purple) !important;
+        }
+
+        .mobile-hidden {
+            display: none;
+        }
+
+        /* Responsive Table Adjustments */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            .page-title i {
+                font-size: 2rem;
+            }
+            .main-container {
+                padding: 1rem;
+            }
+            .table-container, .stats-card {
+                padding: 1rem;
+            }
+            .demographic-table thead th,
+            .demographic-table tbody td {
+                padding: 0.6rem 0.5rem;
+                font-size: 0.85rem;
+            }
+            .material-type {
+                padding-left: 0.6rem !important;
+            }
+            .btn-view, .btn-edit {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
         }
     </style>
 
     <div class="main-container">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-home me-3"></i>Household Materials Analysis
+        <div class="mobile-header">
+            <h1 class="mobile-title">
+                <i class="fas fa-home"></i>Household Materials
             </h1>
-            <p class="page-subtitle">Construction Materials & Ownership Types - Barangay Lizada</p>
         </div>
 
         <?php if (isset($_SESSION['success_message'])): ?>
@@ -210,13 +256,13 @@
         <?php endif; ?>
 
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-12">
                 <!-- Construction Materials Table -->
                 <div class="table-container">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="mb-0">
                             <i class="fas fa-building me-2 text-purple"></i>
-                            Number of Households according to the type of Materials used in Construction
+                            Households Materials used in Construction
                         </h4>
                         <?php if ($is_admin): ?>
                             <button class="export-btn" onclick="exportTable('materialsTable')">
@@ -225,15 +271,14 @@
                         <?php endif; ?>
                     </div>
 
-                    <table class="demographic-table shadow-sm" id="materialsTable">
+                    <div class="table-responsive">
+                        <table class="demographic-table shadow-sm" id="materialsTable">
                         <thead>
                             <tr>
                                 <th style="width: 45%;">Type of Materials Used in Construction</th>
                                 <th style="width: 25%;">Number of Households</th>
-                                <th style="width: 20%;">Percentage</th>
-                                <?php if ($is_admin): ?>
-                                    <th style="width: 10%;">Action</th>
-                                <?php endif; ?>
+                                <th style="width: 20%;" class="d-none d-lg-table-cell">Percentage</th>
+                                <th style="width: 10%;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -246,31 +291,33 @@
                                     <tr>
                                         <td class='material-type'><?= htmlspecialchars($row["material_name"]) ?></td>
                                         <td><strong><?= number_format((float)$row["households"]) ?></strong></td>
-                                        <td><?= $percentage ?>%</td>
-                                        <?php if ($is_admin): ?>
-                                            <td>
-                                                <button class='btn-edit' onclick='editMaterialData("<?= htmlspecialchars($row["material_name"]) ?>", <?= $row["households"] ?>)'>
+                                        <td class="d-none d-lg-table-cell"><?= $percentage ?>%</td>
+                                        <td class="action-column">
+                                            <button class='btn-view' onclick='viewHouseholdData("<?= htmlspecialchars($row["material_name"], ENT_QUOTES) ?>", "Material", "<?= number_format((float)$row["households"]) ?>", "<?= $percentage ?>%")'>
+                                                <i class='fas fa-eye me-1'></i>View
+                                            </button>
+                                            <?php if ($is_admin): ?>
+                                                <button class='btn-edit' style='margin-bottom: 5px;' onclick='editMaterialData("<?= htmlspecialchars($row["material_name"]) ?>", <?= $row["households"] ?>)'>
                                                     <i class='fas fa-edit me-1'></i>Edit
                                                 </button>
-                                            </td>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
                                     <td class='material-type'>TOTAL</td>
                                     <td><?= number_format((float)$materials_total) ?></td>
-                                    <td>100%</td>
-                                    <?php if ($is_admin): ?>
-                                        <td>-</td>
-                                    <?php endif; ?>
+                                    <td class="d-none d-lg-table-cell">100%</td>
+                                    <td class="action-column">-</td>
                                 </tr>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="<?= $is_admin ? 4 : 3 ?>" class='text-center'>No data available</td>
+                                    <td colspan="4" class='text-center'>No data available</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Ownership Types Table -->
@@ -287,15 +334,14 @@
                         <?php endif; ?>
                     </div>
 
-                    <table class="demographic-table shadow-sm" id="ownershipTable">
+                    <div class="table-responsive">
+                        <table class="demographic-table shadow-sm" id="ownershipTable">
                         <thead>
                             <tr>
                                 <th style="width: 45%;">Type of Ownership</th>
                                 <th style="width: 25%;">Number of Households</th>
-                                <th style="width: 20%;">Percentage</th>
-                                <?php if ($is_admin): ?>
-                                    <th style="width: 10%;">Action</th>
-                                <?php endif; ?>
+                                <th style="width: 20%;" class="d-none d-lg-table-cell">Percentage</th>
+                                <th style="width: 10%;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -308,31 +354,33 @@
                                     <tr>
                                         <td class='material-type'><?= htmlspecialchars($row["ownership_type"]) ?></td>
                                         <td><strong><?= number_format((float)$row["households"]) ?></strong></td>
-                                        <td><?= $percentage ?>%</td>
-                                        <?php if ($is_admin): ?>
-                                            <td>
-                                                <button class='btn-edit' onclick='editOwnershipData("<?= htmlspecialchars($row["ownership_type"]) ?>", <?= $row["households"] ?>)'>
+                                        <td class="d-none d-lg-table-cell"><?= $percentage ?>%</td>
+                                        <td class="action-column">
+                                            <button class='btn-view' onclick='viewHouseholdData("<?= htmlspecialchars($row["ownership_type"], ENT_QUOTES) ?>", "Ownership", "<?= number_format((float)$row["households"]) ?>", "<?= $percentage ?>%")'>
+                                                <i class='fas fa-eye me-1'></i>View
+                                            </button>
+                                            <?php if ($is_admin): ?>
+                                                <button class='btn-edit' style='margin-bottom: 5px;' onclick='editOwnershipData("<?= htmlspecialchars($row["ownership_type"]) ?>", <?= $row["households"] ?>)'>
                                                     <i class='fas fa-edit me-1'></i>Edit
                                                 </button>
-                                            </td>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
                                     <td class='material-type'>TOTAL</td>
                                     <td><?= number_format((float)$ownership_total) ?></td>
-                                    <td>100%</td>
-                                    <?php if ($is_admin): ?>
-                                        <td>-</td>
-                                    <?php endif; ?>
+                                    <td class="d-none d-lg-table-cell">100%</td>
+                                    <td class="action-column">-</td>
                                 </tr>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="<?= $is_admin ? 4 : 3 ?>" class='text-center'>No data available</td>
+                                    <td colspan="4" class='text-center'>No data available</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -389,8 +437,17 @@
     </div>
 
     <?php include __DIR__ . '/modals/edit_household_materials.php'; ?>
+    <?php include __DIR__ . '/modals/view_household_data.php'; ?>
 
     <script>
+        function viewHouseholdData(title, category, households, percentage) {
+            document.getElementById('view_data_title').textContent = title;
+            document.getElementById('view_data_category').textContent = category;
+            document.getElementById('view_data_households').textContent = households;
+            document.getElementById('view_data_percentage').textContent = percentage;
+            new bootstrap.Modal(document.getElementById('viewHouseholdDataModal')).show();
+        }
+
         function editMaterialData(materialType, households) {
             document.getElementById('edit_material_name').value = materialType;
             document.getElementById('display_material_name').value = materialType;
