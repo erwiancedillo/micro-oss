@@ -15,7 +15,22 @@
     <link href="/micro-oss/assets/css/hazard.css" rel="stylesheet">
 </head>
 
+<body class="d-flex flex-column h-100">
+
     <?php include __DIR__ . '/includes/nav.php'; ?>
+
+    <!-- Mobile Sidebar Toggle Button -->
+    <button class="btn btn-primary d-lg-none shadow-sm position-fixed mobile-sidebar-toggle"
+        style="top: 15px; left: 15px; z-index: 1040; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mobileSidebar"
+        aria-controls="mobileSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <?php include __DIR__ . '/includes/mobile-sidebar.php'; ?>
+    <?php include __DIR__ . '/includes/mobile-bottom-nav.php'; ?>
 
     <div class="main-container">
         <div class="row">
@@ -26,7 +41,7 @@
                         <i class="fas fa-map me-2"></i>Hazard Map
                     </h4>
                     <div class="image-wrapper" id="map-container">
-                        <?php 
+                        <?php
                         $defaultMap = $formattedMaps[0] ?? ['image_url' => 'toril.png', 'name' => 'Toril District'];
                         ?>
                         <img id="hazard-map" src="<?= htmlspecialchars($defaultMap['image_url']) ?>" alt="<?= htmlspecialchars($defaultMap['name']) ?>" />
@@ -61,7 +76,7 @@
                             </select>
                         </div>
                     </form>
-                     <div class="mt-4 border-top pt-4">
+                    <div class="mt-4 border-top pt-4">
                         <h5 class="fw-bold mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Risk Level Legend</h5>
                         <div class="risk-legend">
                             <div class="legend-item level-safe">
@@ -134,13 +149,12 @@
                 img.src = mapData.image_url;
                 img.style.opacity = '1';
             }, 300);
-            
+
             // Reset zoom
             scale = 1;
             img.style.transform = `scale(${scale})`;
             img.style.transformOrigin = 'center center';
         }
-
     </script>
 
 
