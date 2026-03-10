@@ -16,7 +16,7 @@
         <i class="fas fa-bell"></i>
     </a>
     <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="#" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#logoutModal">
+        <a href="/micro-oss/index.php?route=logout" class="nav-item-mobile" onclick="return confirm('Are you sure you want to logout?')">
             <?php
             $profile_src = (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture']))
                 ? 'assets/uploads/' . $_SESSION['profile_picture']
@@ -25,7 +25,7 @@
             <img src="<?php echo htmlspecialchars($profile_src); ?>" alt="Profile" class="nav-profile-img">
         </a>
     <?php else: ?>
-        <a href="#" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#loginModal">
+        <a href="/micro-oss/index.php?route=login" class="nav-item-mobile">
             <i class="fas fa-user-circle"></i>
         </a>
     <?php endif; ?>
