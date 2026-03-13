@@ -4,7 +4,7 @@
 return [
     'host' => 'localhost',
     'username' => 'root',
-    'password' => '',
+    'password' => 'misadmin',
     'database' => 'micro_oss'
 ];
 

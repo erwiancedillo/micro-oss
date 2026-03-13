@@ -55,6 +55,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="moreDropdown">
                         <li><a class="dropdown-item <?= $current_route === 'flood-monitoring' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=flood-monitoring"><i class="fas fa-water me-2 text-primary"></i>Flood Monitoring</a></li>
                         <li><a class="dropdown-item" href="/micro-oss/index.php?route=evacuation"><i class="fas fa-running me-2 text-primary"></i>Evacuation</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'iks' ? 'active shadow-sm' : '' ?>" href="/micro-oss/index.php?route=iks"><i class="fas fa-feather-alt me-2 text-success"></i>Indigenous Knowledge</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

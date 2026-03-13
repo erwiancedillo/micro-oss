@@ -7,6 +7,7 @@ use App\Models\EvacuationCenter;
 use App\Models\FloodZone;
 use App\Models\HazardMap;
 use App\Models\IKSModel;
+use App\Models\BarangayPolygon;
 
 class AdminController
 {
@@ -15,6 +16,7 @@ class AdminController
     protected $hazardModel;
     protected $iksModel;
     protected $floodZoneModel;
+    protected $barangayModel;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class AdminController
         $this->hazardModel = new HazardMap();
         $this->iksModel = new IKSModel();
         $this->floodZoneModel = new FloodZone();
+        $this->barangayModel = new BarangayPolygon();
     }
 
     private function checkAdmin()
@@ -53,7 +56,23 @@ class AdminController
     {
         $this->checkAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->iksModel->createItem($_POST);
+            $data = $_POST;
+            $icon_url = '';
+            
+            if (isset($_FILES['icon_image']) && $_FILES['icon_image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../assets/uploads/iks/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . basename($_FILES['icon_image']['name']);
+                $targetFile = $uploadDir . $fileName;
+                if (move_uploaded_file($_FILES['icon_image']['tmp_name'], $targetFile)) {
+                    $icon_url = '/micro-oss/assets/uploads/iks/' . $fileName;
+                }
+            }
+            
+            $data['icon_url'] = $icon_url;
+            $this->iksModel->createItem($data);
             $_SESSION['flash_message'] = 'IKS item created successfully.';
             header('Location: /micro-oss/index.php?route=admin-iks');
             exit();
@@ -65,7 +84,23 @@ class AdminController
         $this->checkAdmin();
         $id = $_POST['id'] ?? null;
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $id) {
-            $this->iksModel->updateItem($id, $_POST);
+            $data = $_POST;
+            $icon_url = $_POST['existing_icon'] ?? '';
+            
+            if (isset($_FILES['icon_image']) && $_FILES['icon_image']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../assets/uploads/iks/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . basename($_FILES['icon_image']['name']);
+                $targetFile = $uploadDir . $fileName;
+                if (move_uploaded_file($_FILES['icon_image']['tmp_name'], $targetFile)) {
+                    $icon_url = '/micro-oss/assets/uploads/iks/' . $fileName;
+                }
+            }
+            
+            $data['icon_url'] = $icon_url;
+            $this->iksModel->updateItem($id, $data);
             $_SESSION['flash_message'] = 'IKS item updated successfully.';
             header('Location: /micro-oss/index.php?route=admin-iks');
             exit();
@@ -160,6 +195,8 @@ class AdminController
         $title = 'Admin Dashboard';
         $userName = $_SESSION['user_name'] ?? 'Admin';
         $stats = $this->centerModel->getStats();
+        $barangayPolygons = $this->barangayModel->getAllPolygons();
+        $floodZones = $this->floodZoneModel->getAllZones();
         
         ob_start();
         include __DIR__ . '/../Views/admin/dashboard.php';

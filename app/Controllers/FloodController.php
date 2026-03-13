@@ -4,16 +4,22 @@ namespace App\Controllers;
 
 use App\Models\FloodZone;
 use App\Models\BarangayAlert;
+use App\Models\EvacuationCenter;
+use App\Models\BarangayPolygon;
 
 class FloodController
 {
     private $floodModel;
     private $alertModel;
+    private $evacModel;
+    private $barangayModel;
 
     public function __construct()
     {
         $this->floodModel = new FloodZone();
         $this->alertModel = new BarangayAlert();
+        $this->evacModel = new EvacuationCenter();
+        $this->barangayModel = new BarangayPolygon();
     }
 
     public function index()
@@ -144,7 +150,7 @@ class FloodController
         $barangayAlerts = [];
         $alertSummary = ['Green' => 0, 'Yellow' => 0, 'Orange' => 0, 'Red' => 0];
         try {
-            $alertsRaw = $this->alertModel->getAllAlerts();
+            $alertsRaw = $this->alertModel->getAll();
             foreach ($alertsRaw as $a) {
                 $level = (int)($a['alert_level'] ?? 0);
                 $colorName = $alertColors[$level] ?? 'Green';
@@ -153,11 +159,23 @@ class FloodController
                     'level'    => $level,
                     'color'    => $colorName,
                     'advisory' => $a['flood_advisory'] ?? '',
-                    'lat'      => (float)$a['center_lat'],
-                    'lng'      => (float)$a['center_lng']
+                    'lat'      => (float)($a['latitude'] ?? 0),
+                    'lng'      => (float)($a['longitude'] ?? 0)
                 ];
                 $alertSummary[$colorName]++;
             }
+        } catch (\Exception $e) { }
+
+        // Fetch evacuation centers
+        $evacuationCenters = [];
+        try {
+            $evacuationCenters = $this->evacModel->getAll();
+        } catch (\Exception $e) { }
+
+        // Fetch all barangay polygons
+        $barangayPolygons = [];
+        try {
+            $barangayPolygons = $this->barangayModel->getAllPolygons();
         } catch (\Exception $e) { }
 
         $title = 'Flood Monitoring Dashboard';

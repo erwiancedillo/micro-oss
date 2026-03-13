@@ -63,6 +63,9 @@
                         <button class="btn btn-outline-secondary btn-action" onclick="resetMap()">
                             <i class="fas fa-redo-alt me-2"></i>Reset Map & Route
                         </button>
+                        <button id="downloadMapBtn" class="btn btn-dark btn-action shadow-sm" style="background: #2d3748; border: none;">
+                            <i class="fas fa-camera me-2"></i>Download Map Image
+                        </button>
                     </div>
                     
                     <hr class="my-4 opacity-10">
@@ -141,6 +144,90 @@
     window.addEventListener('load', () => {
         updateLocationDisplay();
         checkLayout();
+
+        // Indicate Barangay Areas on Evacuation Map
+        if (typeof google !== 'undefined' && map) {
+            const barangayPolygonsRaw = <?= json_encode($barangayPolygons) ?>;
+            
+            function parseWKT(wkt) {
+                if (!wkt) return null;
+                const match = wkt.match(/\(\((.*)\)\)/);
+                if (!match) return null;
+                const points = match[1].split(',');
+                return points.map(p => {
+                    const pair = p.trim().split(/\s+/);
+                    return { lat: parseFloat(pair[0]), lng: parseFloat(pair[1]) };
+                });
+            }
+
+            barangayPolygonsRaw.forEach(bp => {
+                const paths = parseWKT(bp.polygon);
+                if (!paths) return;
+
+                const polygon = new google.maps.Polygon({
+                    paths: paths,
+                    strokeColor: '#4a5568',
+                    strokeOpacity: 0.5,
+                    strokeWeight: 1,
+                    fillColor: '#667eea',
+                    fillOpacity: 0.1,
+                    map: map
+                });
+
+                // Add basic interaction: highlight on hover
+                google.maps.event.addListener(polygon, 'mouseover', function() {
+                    this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
+                });
+                google.maps.event.addListener(polygon, 'mouseout', function() {
+                    this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
+                });
+
+                // Clicking the area shows the barangay name
+                google.maps.event.addListener(polygon, 'click', function(event) {
+                    const content = `<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`;
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: content,
+                        position: event.latLng
+                    });
+                    infoWindow.open(map);
+                });
+            });
+        }
     });
+    // --- Map Download Feature ---
+    document.getElementById('downloadMapBtn')?.addEventListener('click', function() {
+        const btn = this;
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Capturing...';
+        btn.disabled = true;
+
+        const mapElement = document.getElementById('map');
+        
+        setTimeout(() => {
+            html2canvas(mapElement, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+                scale: 2
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `evacuation-navigation-map-${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded';
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Capture failed:', err);
+                alert('Could not capture the map. Please try again.');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
+        }, 500);
+    });
+
     window.addEventListener('resize', checkLayout);
 </script>

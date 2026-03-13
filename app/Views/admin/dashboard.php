@@ -194,6 +194,24 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         <div class="small text-muted"><i class="fas fa-info-circle me-1"></i> Live tracking active</div>
                     </div>
                     <div id="map"></div>
+                    <div class="mt-3 d-flex gap-3 flex-wrap small">
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 15px; height: 15px; background: rgba(255, 0, 0, 0.4); border: 1px solid red;"></div>
+                            <span>High Flood Risk</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 15px; height: 15px; background: rgba(255, 165, 0, 0.4); border: 1px solid orange;"></div>
+                            <span>Moderate Flood Risk</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 15px; height: 15px; background: rgba(0, 128, 0, 0.4); border: 1px solid green;"></div>
+                            <span>Low Flood Risk</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 15px; height: 15px; border: 1px solid #4a5568; background: rgba(102, 126, 234, 0.1);"></div>
+                            <span>Barangay Area</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -305,6 +323,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     let locationSelectionMode = false,
         locationSelectMarker = null,
         mapClickListener = null;
+    let barangayPolygons = []; // To store polygon objects
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
         if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
@@ -498,6 +517,10 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     panel: document.getElementById('directionsPanel')
                 });
                 getUserLocation();
+
+                // Render Polygons
+                renderBarangayPolygons();
+                renderFloodZones();
             }
 
             const bounds = new google.maps.LatLngBounds();
@@ -573,6 +596,93 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         } catch (err) {
             console.error("Dashboard load error:", err);
         }
+    }
+
+    function renderBarangayPolygons() {
+        const barangayPolygonsRaw = <?= json_encode($barangayPolygons) ?>;
+        
+        function parseWKT(wkt) {
+            if (!wkt) return null;
+            const match = wkt.match(/\(\((.*)\)\)/);
+            if (!match) return null;
+            const points = match[1].split(',');
+            return points.map(p => {
+                const pair = p.trim().split(/\s+/);
+                return { lat: parseFloat(pair[0]), lng: parseFloat(pair[1]) };
+            });
+        }
+
+        barangayPolygonsRaw.forEach(bp => {
+            const paths = parseWKT(bp.polygon);
+            if (!paths) return;
+
+            const polygon = new google.maps.Polygon({
+                paths: paths,
+                strokeColor: '#4a5568',
+                strokeOpacity: 0.5,
+                strokeWeight: 1,
+                fillColor: '#667eea',
+                fillOpacity: 0.1,
+                map: map,
+                zIndex: 1
+            });
+
+            // Highlight on hover
+            google.maps.event.addListener(polygon, 'mouseover', function() {
+                this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
+            });
+            google.maps.event.addListener(polygon, 'mouseout', function() {
+                this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
+            });
+
+            // Click to show barangay name
+            google.maps.event.addListener(polygon, 'click', function(event) {
+                const content = `<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`;
+                const infoWindow = new google.maps.InfoWindow({
+                    content: content,
+                    position: event.latLng
+                });
+                infoWindow.open(map);
+            });
+
+            barangayPolygons.push(polygon);
+        });
+    }
+
+    function renderFloodZones() {
+        const floodZones = <?= json_encode($floodZones) ?>;
+        
+        const getRiskColor = (level) => {
+            if (level === "high") return "red";
+            if (level === "moderate") return "orange";
+            if (level === "low") return "green";
+            return "#319795";
+        };
+
+        floodZones.forEach(zone => {
+            const polygon = new google.maps.Polygon({
+                paths: zone.polygon,
+                fillColor: getRiskColor(zone.risk_level),
+                fillOpacity: 0.3,
+                strokeColor: "#000",
+                strokeWeight: 1,
+                map: map,
+                zIndex: 2 // Above barangay areas, below markers
+            });
+
+            // Click to show zone details
+            google.maps.event.addListener(polygon, 'click', function(event) {
+                const content = `<div style="padding: 10px;">
+                    <div style="font-weight: 700; color: ${getRiskColor(zone.risk_level)}">${zone.zone_name}</div>
+                    <div class="small">Risk Level: ${zone.risk_level.toUpperCase()}</div>
+                </div>`;
+                const infoWindow = new google.maps.InfoWindow({
+                    content: content,
+                    position: event.latLng
+                });
+                infoWindow.open(map);
+            });
+        });
     }
 
     loadDashboard();

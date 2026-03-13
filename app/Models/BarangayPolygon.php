@@ -13,7 +13,7 @@ class BarangayPolygon
 
     public function getByName(string $name)
     {
-        $stmt = $this->db->prepare("SELECT ST_AsText(polygon) AS polygon, ST_X(center) AS center_lat, ST_Y(center) AS center_lng FROM barangay_polygons WHERE name=?");
+        $stmt = $this->db->prepare("SELECT ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM barangay_polygons WHERE name=?");
         $stmt->execute([$name]);
         return $stmt->fetch();
     }
@@ -31,6 +31,11 @@ class BarangayPolygon
         ";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$polygonWKT]);
+        return $stmt->fetchAll();
+    }
+    public function getAllPolygons()
+    {
+        $stmt = $this->db->query("SELECT name, ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM barangay_polygons");
         return $stmt->fetchAll();
     }
 }

@@ -30,7 +30,7 @@
     </style>
 </head>
 <?php
-$route = $_GET['route'] ?? 'dashboard';
+$route = $_GET['route'] ?? 'login';
 $isAuthPage = in_array($route, ['login', 'register']);
 ?>
 

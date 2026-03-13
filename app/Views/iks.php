@@ -76,6 +76,12 @@
                                     <p class="small mb-0 text-dark opacity-80"><?= htmlspecialchars($item['significance']) ?></p>
                                 </div>
                             <?php endif; ?>
+                            <?php if (!empty($item['source_url'])): ?>
+                                <a href="<?= htmlspecialchars($item['source_url']) ?>" target="_blank" rel="noopener noreferrer"
+                                   class="btn btn-outline-primary btn-sm rounded-pill mt-3 px-4">
+                                    <i class="fas fa-external-link-alt me-2"></i>Read More
+                                </a>
+                            <?php endif; ?>
                         </div>
                         <div class="col-lg-4">
                             <div class="knowledge-card text-center p-4">
@@ -103,6 +109,12 @@
                                 </div>
                                 <h5 class="fw-bold mb-3"><?= htmlspecialchars($item['title']) ?></h5>
                                 <p class="small text-secondary mb-0"><?= htmlspecialchars($item['description']) ?></p>
+                                <?php if (!empty($item['source_url'])): ?>
+                                    <a href="<?= htmlspecialchars($item['source_url']) ?>" target="_blank" rel="noopener noreferrer"
+                                       class="btn btn-outline-primary btn-sm rounded-pill mt-3 px-3">
+                                        <i class="fas fa-external-link-alt me-1"></i>Read More
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -132,6 +144,12 @@
                                 <div>
                                     <h5 class="fw-bold mb-2"><?= htmlspecialchars($item['title']) ?></h5>
                                     <p class="small text-muted mb-0"><?= htmlspecialchars($item['description']) ?></p>
+                                    <?php if (!empty($item['source_url'])): ?>
+                                        <a href="<?= htmlspecialchars($item['source_url']) ?>" target="_blank" rel="noopener noreferrer"
+                                           class="btn btn-outline-primary btn-sm rounded-pill mt-2 px-3">
+                                            <i class="fas fa-external-link-alt me-1"></i>Read More
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

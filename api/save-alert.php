@@ -14,10 +14,12 @@ try {
     $alertModel = new BarangayAlert();
     if ($data['type'] === 'barangay') {
         $success = $alertModel->save($data);
-        echo json_encode(['success' => $success, 'message' => $success ? 'Saved' : 'Save failed']);
+        echo json_encode(['success' => $success, 'message' => $success ? 'Barangay alert saved' : 'Save failed']);
+    } elseif ($data['type'] === 'sitio') {
+        $success = $alertModel->saveSitio($data);
+        echo json_encode(['success' => $success, 'message' => $success ? 'Sitio alert saved' : 'Save failed']);
     } else {
-        // Fallback for sitio or other types (legacy)
-        echo json_encode(['success' => false, 'message' => 'Type not fully supported in MVC model yet']);
+        echo json_encode(['success' => false, 'message' => 'Invalid alert type']);
     }
 } catch (Throwable $e) {
     http_response_code(500);

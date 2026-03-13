@@ -26,6 +26,8 @@ class AlertController
         $barangayAlert = 0;
         $barangayAdvisory = "";
         $sitios = [];
+        $polygonCoordsJS = '[]';
+        $mapCenter = ['lat' => 7.028, 'lng' => 125.448]; // Default Toril
         $alertColors = [0 => 'Green', 1 => 'Yellow', 2 => 'Orange', 3 => 'Red'];
         $educationMsg = [
             0 => "SAFE: No flood threat. Continue monitoring official advisories.",
@@ -35,11 +37,30 @@ class AlertController
         ];
         $timestamp = date("F d, Y h:i A");
 
+        $allAlerts = $this->alertModel->getAll();
+        
         if ($barangay) {
             $data = $this->alertModel->getByName($barangay);
             if ($data) {
                 $barangayAlert = (int)($data['alert_level'] ?? 0);
                 $barangayAdvisory = $data['flood_advisory'] ?? "";
+                
+                if (!empty($data['latitude']) && !empty($data['longitude'])) {
+                    $mapCenter = ['lat' => floatval($data['latitude']), 'lng' => floatval($data['longitude'])];
+                }
+
+                $polygonWKT = $data['polygon'] ?? '';
+                if (preg_match('/\(\((.*)\)\)/', $polygonWKT, $matches)) {
+                    $coords = explode(',', $matches[1]);
+                    $polygonCoords = [];
+                    foreach ($coords as $coord) {
+                        $pair = preg_split('/\s+/', trim($coord));
+                        if (count($pair) >= 2) {
+                            $polygonCoords[] = ['lat' => floatval($pair[0]), 'lng' => floatval($pair[1])];
+                        }
+                    }
+                    $polygonCoordsJS = json_encode($polygonCoords);
+                }
             }
             $sitios = $this->alertModel->getSitioAlerts($barangay);
         }

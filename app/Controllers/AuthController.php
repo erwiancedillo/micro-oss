@@ -57,8 +57,14 @@ class AuthController
 
     public function register()
     {
+        $fullName = trim($_POST['name']);
+        $nameParts = explode(' ', $fullName, 2);
+        $firstName = $nameParts[0];
+        $lastName = $nameParts[1] ?? '';
+
         $data = [
-            'name' => trim($_POST['name']),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => trim($_POST['email']),
             'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
             'token' => bin2hex(random_bytes(32)),

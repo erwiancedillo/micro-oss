@@ -21,10 +21,11 @@ class User
     public function create(array $data)
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO users (name, email, password, token, status, created_at) VALUES (?,?,?,?,?, NOW())'
+            'INSERT INTO users (first_name, last_name, email, password, token, status, created_at) VALUES (?,?,?,?,?,?, NOW())'
         );
         return $stmt->execute([
-            $data['name'],
+            $data['first_name'],
+            $data['last_name'],
             $data['email'],
             $data['password'],
             $data['token'],

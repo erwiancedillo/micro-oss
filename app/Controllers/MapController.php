@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\BarangayPolygon;
+use App\Models\EvacuationCenter;
+use App\Models\FloodZone;
 
 class MapController
 {
@@ -21,7 +23,7 @@ class MapController
             exit();
         }
 
-        $barangay = $_GET['barangay'] ?? 'Daliao';
+        $barangay = $_GET['barangay'] ?? 'Lizada';
         $result = $this->polygonModel->getByName($barangay);
 
         $markers = [];
@@ -30,7 +32,7 @@ class MapController
         $notFound = false;
 
         if ($result) {
-            $mapCenter = ['lat' => floatval($result['center_lat']), 'lng' => floatval($result['center_lng'])];
+            $mapCenter = ['lat' => floatval($result['latitude'] ?? 0), 'lng' => floatval($result['longitude'] ?? 0)];
             $polygonWKT = $result['polygon'];
 
             if (preg_match('/\(\((.*)\)\)/', $polygonWKT, $matches)) {
@@ -49,6 +51,12 @@ class MapController
         } else {
             $notFound = true;
         }
+
+        $evacModel = new EvacuationCenter();
+        $evacuationCenters = $evacModel->getAll();
+
+        $floodModel = new FloodZone();
+        $floodZones = $floodModel->getAllZones();
 
         $title = 'Community Map';
         ob_start();

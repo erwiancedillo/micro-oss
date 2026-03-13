@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\BarangayPolygon;
+
 class EvacuationController
 {
     public function index()
@@ -13,6 +15,13 @@ class EvacuationController
         }
         $userName = $_SESSION['user_name'] ?? 'Guest';
         $title = 'Evacuation Map';
+
+        $barangayModel = new BarangayPolygon();
+        $barangayPolygons = [];
+        try {
+            $barangayPolygons = $barangayModel->getAllPolygons();
+        } catch (\Exception $e) { }
+
         ob_start();
         include __DIR__ . '/../Views/evacuation/index.php';
         $content = ob_get_clean();

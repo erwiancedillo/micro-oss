@@ -12,155 +12,105 @@
     <div class="flood-dashboard">
         <div class="map-card">
             <div id="map"></div>
+        </div>
 
-            <!-- Floating Side Panel -->
-            <div class="side-panel">
-                <!-- Weather Widget -->
-                <div class="glass-panel">
-                    <div class="panel-title d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-cloud-sun"></i> Weather Overview</span>
-                        <span class="badge bg-success rounded-pill" style="font-size: 0.6rem; letter-spacing: 0.5px;">LIVE</span>
+        <!-- Floating Side Panel -->
+        <div class="side-panel">
+            <!-- Weather Widget -->
+            <div class="glass-panel">
+                <div class="panel-title d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-cloud-sun"></i> Weather Overview</span>
+                    <span class="badge bg-success rounded-pill" style="font-size: 0.6rem; letter-spacing: 0.5px;">LIVE</span>
+                </div>
+                <div class="weather-widget">
+                    <div class="weather-info">
+                        <p class="mb-1"><?= $weather['condition'] ?></p>
+                        <h2><?= $weather['temp'] ?></h2>
+                        <p><i class="fas fa-tint me-1"></i> Rain: <?= $weather['rainfall'] ?></p>
                     </div>
-                    <div class="weather-widget">
-                        <div class="weather-info">
-                            <p class="mb-1"><?= $weather['condition'] ?></p>
-                            <h2><?= $weather['temp'] ?></h2>
-                            <p><i class="fas fa-tint me-1"></i> Rain: <?= $weather['rainfall'] ?></p>
-                        </div>
-                        <div class="weather-icon">
-                            <i class="<?= $weather['icon'] ?>"></i>
-                        </div>
+                    <div class="weather-icon">
+                        <i class="<?= $weather['icon'] ?>"></i>
                     </div>
                 </div>
+            </div>
 
-                <!-- Sensor Stream -->
-                <div class="glass-panel">
-                    <div class="panel-title">
-                        <i class="fas fa-broadcast-tower"></i> Live River Sensors
-                    </div>
-                    <div class="sensor-list">
-                        <?php foreach($sensors as $sensor): ?>
-                            <div class="sensor-item">
-                                <div class="sensor-header">
-                                    <span class="sensor-name"><?= $sensor['name'] ?></span>
-                                    <span class="sensor-value"><?= $sensor['level'] ?></span>
-                                </div>
-                                <div class="sensor-meta">
-                                    <span class="badge-status status-<?= strtolower($sensor['status']) ?>">
-                                        <?= $sensor['status'] ?>
-                                    </span>
-                                    <span class="text-muted">
-                                        <i class="fas <?= $sensor['trend'] === 'Rising' ? 'fa-arrow-up text-danger' : ($sensor['trend'] === 'Falling' ? 'fa-arrow-down text-success' : 'fa-minus') ?> me-1"></i>
-                                        <?= $sensor['trend'] ?>
-                                    </span>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+            <!-- Sensor Stream -->
+            <div class="glass-panel mt-3">
+                <div class="panel-title">
+                    <i class="fas fa-broadcast-tower"></i> Live River Sensors
                 </div>
-
-                <!-- 7-Day Forecast -->
-                <div class="glass-panel mt-3">
-                    <div class="panel-title">
-                        <i class="fas fa-calendar-alt"></i> 7-Day Forecast
-                    </div>
-                    <div class="forecast-container d-flex gap-2 overflow-auto pb-2" style="scrollbar-width: none;">
-                        <?php foreach($forecast as $day): ?>
-                            <div class="forecast-day text-center p-2 rounded-3 bg-white bg-opacity-10" style="min-width: 75px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);">
-                                <div class="small fw-bold mb-1"><?= $day['day'] ?></div>
-                                <div class="fs-5 mb-1"><i class="<?= $day['icon'] ?>"></i></div>
-                                <div class="small fw-bold"><?= $day['temp_max'] ?></div>
-                                <div class="text-muted" style="font-size: 0.7rem;"><?= $day['temp_min'] ?></div>
-                                <div class="mt-1" style="font-size: 0.65rem; color: #90cdf4;">
-                                    <i class="fas fa-tint me-1"></i><?= $day['rain'] ?>
-                                </div>
+                <div class="sensor-list">
+                    <?php foreach($sensors as $sensor): ?>
+                        <div class="sensor-item">
+                            <div class="sensor-header">
+                                <span class="sensor-name"><?= $sensor['name'] ?></span>
+                                <span class="sensor-value"><?= $sensor['level'] ?></span>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="mt-2 text-center">
-                        <small class="text-muted" style="font-size: 0.7rem;">Weather data provided by OpenWeather</small>
-                    </div>
-                </div>
-
-                <!-- Active Alerts Panel -->
-                <div class="glass-panel mt-3">
-                    <div class="panel-title d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-exclamation-triangle"></i> Active Alerts</span>
-                        <a href="/micro-oss/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
-                            View All <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    <!-- Alert Summary Badges -->
-                    <div class="d-flex gap-2 mb-2 flex-wrap">
-                        <?php foreach(['Red' => 'danger', 'Orange' => 'warning', 'Yellow' => 'info', 'Green' => 'success'] as $color => $bs): ?>
-                            <div class="alert-summary-badge bg-<?= $bs ?> bg-opacity-10 border border-<?= $bs ?> rounded-pill px-2 py-1 d-flex align-items-center gap-1" style="font-size: 0.7rem;">
-                                <span class="fw-bold text-<?= $bs ?>"><?= $alertSummary[$color] ?></span>
-                                <span class="text-<?= $bs ?>" style="opacity: 0.8;"><?= $color ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <!-- Non-green alert list -->
-                    <div class="alert-scroll-list" style="max-height: 120px; overflow-y: auto; scrollbar-width: thin;">
-                        <?php 
-                        $activeAlerts = array_filter($barangayAlerts, fn($a) => $a['level'] > 0);
-                        if (count($activeAlerts) > 0): 
-                            foreach ($activeAlerts as $a): 
-                                $badgeClass = match($a['color']) {
-                                    'Red' => 'bg-danger',
-                                    'Orange' => 'bg-warning text-dark',
-                                    'Yellow' => 'bg-info text-dark',
-                                    default => 'bg-success'
-                                };
-                        ?>
-                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color: rgba(0,0,0,0.05) !important; font-size: 0.8rem;">
-                                <a href="/micro-oss/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
-                                    <?= htmlspecialchars($a['name']) ?>
-                                </a>
-                                <span class="badge <?= $badgeClass ?> rounded-pill" style="font-size: 0.6rem;">
-                                    <?= strtoupper($a['color']) ?>
+                            <div class="sensor-meta">
+                                <span class="badge-status status-<?= strtolower($sensor['status']) ?>">
+                                    <?= $sensor['status'] ?>
+                                </span>
+                                <span class="text-muted">
+                                    <i class="fas <?= $sensor['trend'] === 'Rising' ? 'fa-arrow-up text-danger' : ($sensor['trend'] === 'Falling' ? 'fa-arrow-down text-success' : 'fa-minus') ?> me-1"></i>
+                                    <?= $sensor['trend'] ?>
                                 </span>
                             </div>
-                        <?php endforeach; else: ?>
-                            <div class="text-center py-2">
-                                <small class="text-success"><i class="fas fa-check-circle me-1"></i>All barangays are clear</small>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
+        </div>
 
-            <!-- Legend Panel -->
-            <div class="bottom-panel glass-panel py-2 px-3">
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <div class="color-box" style="background: rgba(255, 0, 0, 0.4); border: 2px solid red;"></div>
-                        High Risk Zone
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background: rgba(255, 165, 0, 0.4); border: 2px solid orange;"></div>
-                        Moderate Risk Zone
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background: rgba(0, 128, 0, 0.4); border: 2px solid green;"></div>
-                        Low Risk Zone
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background: #319795;"></div>
-                        Safe Zone
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background: #ef4444; border-radius: 50%;"></div>
-                        Red Alert (Brgy)
-                    </div>
-                    <div class="legend-item">
-                        <div class="color-box" style="background: #eab308; border-radius: 50%;"></div>
-                        Yellow Alert (Brgy)
-                    </div>
+        <!-- Legend Panel -->
+        <div class="bottom-panel glass-panel py-2 px-3">
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="color-box" style="background: rgba(255, 0, 0, 0.4); border: 2px solid red;"></div>
+                    High Risk Zone
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: rgba(255, 165, 0, 0.4); border: 2px solid orange;"></div>
+                    Moderate Risk Zone
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: rgba(0, 128, 0, 0.4); border: 2px solid green;"></div>
+                    Low Risk Zone
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #319795;"></div>
+                    Safe Zone
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #ef4444; border-radius: 50%;"></div>
+                    Red Alert (Brgy)
+                </div>
+                <div class="legend-item">
+                    <div class="color-box" style="background: #eab308; border-radius: 50%;"></div>
+                    Yellow Alert (Brgy)
                 </div>
             </div>
+        </div>
 
-            <!-- OpenWeatherMap Layer Control -->
-            <div class="owm-layer-control glass-panel">
+
+        <!-- OpenWeatherMap Layer Control -->
+        <div class="map-controls-group glass-panel">
+            <div class="control-section border-bottom pb-2 mb-2">
+                <div class="owm-control-header">
+                    <i class="fas fa-map"></i>
+                    <span>Basemap</span>
+                </div>
+                <div class="map-type-buttons">
+                    <button class="map-type-btn active" data-type="roadmap" title="Road Map">
+                        <i class="fas fa-road"></i>
+                        <span>Map</span>
+                    </button>
+                    <button class="map-type-btn" data-type="satellite" title="Satellite View">
+                        <i class="fas fa-satellite"></i>
+                        <span>Satellite</span>
+                    </button>
+                </div>
+            </div>
+            <div class="control-section">
                 <div class="owm-control-header">
                     <i class="fas fa-layer-group"></i>
                     <span>Weather Layers</span>
@@ -186,6 +136,54 @@
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Pressure</span>
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Alerts Overlay (Left Side) -->
+        <div class="alerts-overlay">
+            <div class="glass-panel">
+                <div class="panel-title d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-exclamation-triangle"></i> Active Alerts</span>
+                    <a href="/micro-oss/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <!-- Alert Summary Badges -->
+                <div class="d-flex gap-2 mb-2 flex-wrap">
+                    <?php foreach(['Red' => 'danger', 'Orange' => 'warning', 'Yellow' => 'info', 'Green' => 'success'] as $color => $bs): ?>
+                        <div class="alert-summary-badge bg-<?= $bs ?> bg-opacity-10 border border-<?= $bs ?> rounded-pill px-2 py-1 d-flex align-items-center gap-1" style="font-size: 0.7rem;">
+                            <span class="fw-bold text-<?= $bs ?>"><?= $alertSummary[$color] ?></span>
+                            <span class="text-<?= $bs ?>" style="opacity: 0.8;"><?= $color ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <!-- Non-green alert list -->
+                <div class="alert-scroll-list" style="max-height: 120px; overflow-y: auto; scrollbar-width: thin;">
+                    <?php 
+                    $activeAlerts = array_filter($barangayAlerts, fn($a) => $a['level'] > 0);
+                    if (count($activeAlerts) > 0): 
+                        foreach ($activeAlerts as $a): 
+                            $badgeClass = match($a['color']) {
+                                'Red' => 'bg-danger',
+                                'Orange' => 'bg-warning text-dark',
+                                'Yellow' => 'bg-info text-dark',
+                                default => 'bg-success'
+                            };
+                    ?>
+                        <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color: rgba(0,0,0,0.05) !important; font-size: 0.8rem;">
+                            <a href="/micro-oss/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
+                                <?= htmlspecialchars($a['name']) ?>
+                            </a>
+                            <span class="badge <?= $badgeClass ?> rounded-pill" style="font-size: 0.6rem;">
+                                <?= strtoupper($a['color']) ?>
+                            </span>
+                        </div>
+                    <?php endforeach; else: ?>
+                        <div class="text-center py-2">
+                            <small class="text-success"><i class="fas fa-check-circle me-1"></i>All barangays are clear</small>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -324,6 +322,17 @@
 
         // Toggle OWM weather layer
         function toggleOWMLayer(layerName, btn) {
+            // If clicking the same layer, just turn it off
+            if (activeLayerName === layerName) {
+                if (activeOWMOverlay) {
+                    map.overlayMapTypes.clear();
+                    activeOWMOverlay = null;
+                }
+                activeLayerName = null;
+                btn.classList.remove('active');
+                return;
+            }
+
             // Remove existing overlay
             if (activeOWMOverlay) {
                 map.overlayMapTypes.clear();
@@ -333,12 +342,6 @@
             // Deactivate all buttons
             document.querySelectorAll('.owm-layer-btn').forEach(b => b.classList.remove('active'));
 
-            // If clicking the same layer, just turn it off
-            if (activeLayerName === layerName) {
-                activeLayerName = null;
-                return;
-            }
-
             // Add new overlay
             activeOWMOverlay = createOWMLayer(layerName);
             map.overlayMapTypes.push(activeOWMOverlay);
@@ -346,10 +349,23 @@
             btn.classList.add('active');
         }
 
-        // Bind click events to layer buttons
+        // Initialize OWM Layer Control
         document.querySelectorAll('.owm-layer-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 toggleOWMLayer(this.dataset.layer, this);
+            });
+        });
+
+        // --- Map Type Switching ---
+        function setMapType(type, btn) {
+            map.setMapTypeId(type);
+            document.querySelectorAll('.map-type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        document.querySelectorAll('.map-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                setMapType(this.dataset.type, this);
             });
         });
 
@@ -402,13 +418,109 @@
             });
         });
 
-        // Show user location if available
+        // --- Barangay Polygons (Areas) ---
+        const barangayPolygonsRaw = <?= json_encode($barangayPolygons) ?>;
+        
+        function parseWKT(wkt) {
+            if (!wkt) return null;
+            const match = wkt.match(/\(\((.*)\)\)/);
+            if (!match) return null;
+            const points = match[1].split(',');
+            return points.map(p => {
+                const pair = p.trim().split(/\s+/);
+                return { lat: parseFloat(pair[0]), lng: parseFloat(pair[1]) };
+            });
+        }
+
+        barangayPolygonsRaw.forEach(bp => {
+            const paths = parseWKT(bp.polygon);
+            if (!paths) return;
+
+            const polygon = new google.maps.Polygon({
+                paths: paths,
+                strokeColor: '#4a5568',
+                strokeOpacity: 0.5,
+                strokeWeight: 1,
+                fillColor: '#667eea',
+                fillOpacity: 0.1,
+                map: map
+            });
+
+            // Add basic interaction: highlight on hover
+            google.maps.event.addListener(polygon, 'mouseover', function() {
+                this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
+            });
+            google.maps.event.addListener(polygon, 'mouseout', function() {
+                this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
+            });
+
+            // Clicking the area shows the barangay name
+            google.maps.event.addListener(polygon, 'click', function(event) {
+                const content = `<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`;
+                const infoWindow = new google.maps.InfoWindow({
+                    content: content,
+                    position: event.latLng
+                });
+                infoWindow.open(map);
+            });
+        });
+        
+        // --- Evacuation Centers ---
+        const evacuationCenters = <?= json_encode($evacuationCenters) ?>;
+        const evacInfoWindow = new google.maps.InfoWindow();
+        const evacMarkers = [];
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        evacuationCenters.forEach(evac => {
+            const marker = new google.maps.Marker({
+                position: { lat: parseFloat(evac.latitude), lng: parseFloat(evac.longitude) },
+                map: map,
+                title: evac.name,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                    scaledSize: new google.maps.Size(32, 32)
+                }
+            });
+
+            marker.addListener('click', () => {
+                evacInfoWindow.setContent(`
+                    <div style="max-width: 250px; font-family: 'Inter', sans-serif;">
+                        <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: #2d3748;">${evac.name}</div>
+                        <div style="background: ${evac.status === 'Full' ? '#f56565' : '#48bb78'}; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin-bottom: 8px;">
+                            ${evac.status.toUpperCase()}
+                        </div>
+                        <div style="font-size: 0.85rem; color: #4a5568; margin-bottom: 12px;">
+                            Capacity: ${evac.occupied}/${evac.capacity} persons
+                        </div>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${evac.latitude},${evac.longitude}" target="_blank" class="btn btn-primary btn-sm w-100 py-2 rounded-3 fw-bold" style="background: #3182ce; border: none; font-size: 0.8rem; color: white; display: block; text-align: center; text-decoration: none;">
+                            <i class="fas fa-directions me-2"></i>Navigate to Center
+                        </a>
+                    </div>
+                `);
+                evacInfoWindow.open(map, marker);
+            });
+
+            evacMarkers.push({ marker, data: evac });
+        });
+
+        // Show user location if available and find nearest evac center
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
                 const userLocation = { 
                     lat: position.coords.latitude, 
                     lng: position.coords.longitude 
                 };
+
                 new google.maps.Marker({
                     position: userLocation,
                     map: map,
@@ -418,9 +530,71 @@
                         scaledSize: new google.maps.Size(32, 32)
                     }
                 });
+
+                // Find nearest evacuation center if any exist
+                if (evacMarkers.length > 0) {
+                    let nearest = null;
+                    let minDistance = Infinity;
+
+                    evacMarkers.forEach(item => {
+                        const dist = calculateDistance(
+                            userLocation.lat, userLocation.lng,
+                            item.data.latitude, item.data.longitude
+                        );
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            nearest = item;
+                        }
+                    });
+
+                    if (nearest) {
+                        google.maps.event.trigger(nearest.marker, 'click');
+                        map.panTo(nearest.marker.getPosition());
+                        
+                        // Optional: Add a subtle animation or bigger marker icon for better emphasis
+                        nearest.marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(() => nearest.marker.setAnimation(null), 3000);
+                    }
+                }
             });
         }
     }
+
+    // --- Map Download Feature ---
+    document.getElementById('downloadMapBtn')?.addEventListener('click', function() {
+        const btn = this;
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Capturing...';
+        btn.disabled = true;
+
+        const mapElement = document.getElementById('map');
+        
+        // Wait a bit for map to stabilize if layers were just turned on
+        setTimeout(() => {
+            html2canvas(mapElement, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+                scale: 2 // Higher quality
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `flood-monitoring-map-${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Capture failed:', err);
+                alert('Could not capture the map. Please try again.');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
+        }, 500);
+    });
 
     // Initialize map on window load or directly if script is already loaded
     if (typeof google !== 'undefined') {

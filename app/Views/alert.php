@@ -23,6 +23,41 @@
     .animate-pulse {
         animation: pulse 2s infinite ease-in-out;
     }
+
+    #map-alerts { height: 400px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; }
+    
+    .map-legend-overlay {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        max-width: 180px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #475569;
+    }
+    
+    .legend-item:last-child { margin-bottom: 0; }
+    
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
 </style>
 
 <div class="row justify-content-center">
@@ -79,6 +114,29 @@
                 </div>
 
                 <?php if ($barangay !== null): ?>
+                    <!-- Flood Alert Map -->
+                    <div class="position-relative mb-4">
+                        <div id="map-alerts"></div>
+                        <div class="map-legend-overlay shadow-sm">
+                            <div class="legend-item">
+                                <div class="legend-dot bg-Red"></div>
+                                <span>Critical / Red</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot bg-Orange"></div>
+                                <span>High Risk / Orange</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot bg-Yellow"></div>
+                                <span>Warning / Yellow</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot bg-Green"></div>
+                                <span>Safe / Green</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Current Alert Level -->
                     <div class="alert-box-<?= $alertColors[$barangayAlert] ?> p-4 rounded-4 mb-4 shadow-sm">
                         <div class="d-flex align-items-center mb-3">
@@ -132,16 +190,148 @@
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
+                    <!-- Global Active Alerts Summary -->
+                    <div class="row g-3 mb-5">
+                        <div class="col-12">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-exclamation-circle me-2 text-primary"></i>Active Alerts Summary</h5>
+                        </div>
+                        <?php 
+                        $activeCount = 0;
+                        foreach ($allAlerts as $item): 
+                            if ($item['alert_level'] > 0): 
+                                $activeCount++;
+                        ?>
+                            <div class="col-md-6">
+                                <a href="?route=alerts&barangay=<?= urlencode($item['name']) ?>" class="text-decoration-none">
+                                    <div class="card alert-card border-0 shadow-sm alert-box-<?= $alertColors[$item['alert_level']] ?>">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <h6 class="fw-bold mb-0 text-dark"><?= htmlspecialchars($item['name']) ?></h6>
+                                                <span class="badge bg-<?= $alertColors[$item['alert_level']] ?> rounded-pill small">
+                                                    <?= strtoupper($alertColors[$item['alert_level']]) ?>
+                                                </span>
+                                            </div>
+                                            <div class="text-muted small text-truncate"><?= $item['flood_advisory'] ?: 'Active alert in effect.' ?></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php 
+                            endif;
+                        endforeach; 
+                        
+                        if ($activeCount === 0):
+                        ?>
+                            <div class="col-12">
+                                <div class="alert alert-light border text-center py-4">
+                                    <i class="fas fa-check-circle text-success fs-2 mb-2"></i>
+                                    <div class="fw-bold">All Areas Normal</div>
+                                    <div class="small text-muted">No active flood alerts at this time.</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                     <!-- Welcome / Instruction State -->
-                    <div class="text-center py-5">
+                    <div class="text-center py-5 border-top">
                         <div class="mb-4 text-muted">
                             <i class="fas fa-map-marked-alt fa-4x opacity-25"></i>
                         </div>
-                        <h4 class="text-muted">Please select a barangay</h4>
-                        <p class="text-muted">View real-time flood alert levels and evacuation protocols for your area.</p>
+                        <h4 class="text-muted">Explore Regional Data</h4>
+                        <p class="text-muted">Select a barangay to view detailed boundaries, evacuation paths, and local sitio markers.</p>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8"></script>
+<script>
+function initMap() {
+    var centerMap = <?= json_encode($mapCenter) ?>;
+    var map = new google.maps.Map(document.getElementById('map-alerts'), {
+        center: centerMap,
+        zoom: 14,
+        styles: [
+            { "featureType": "all", "elementType": "geometry.fill", "stylers": [{ "weight": "2.00" }] },
+            { "featureType": "poi", "stylers": [{ "visibility": "off" }] }
+        ]
+    });
+
+    var polygonCoords = <?= $polygonCoordsJS ?>;
+    if (polygonCoords.length > 0) {
+        new google.maps.Polygon({
+            paths: polygonCoords,
+            strokeColor: "#4338ca",
+            strokeOpacity: 0.8,
+            strokeWeight: 2.5,
+            fillColor: "#6366f1",
+            fillOpacity: 0.15,
+            map: map
+        });
+    }
+
+    var sitios = <?= json_encode($sitios) ?>;
+    var infoWindow = new google.maps.InfoWindow();
+    var alertColorsMap = {0: 'green', 1: 'yellow', 2: 'orange', 3: 'red'};
+
+    // Add selected Barangay marker if coordinates exist
+    <?php if ($barangay !== null): ?>
+    (function(){
+        var brgyData = <?= json_encode(['name' => $barangay, 'level' => $barangayAlert, 'lat' => $mapCenter['lat'], 'lng' => $mapCenter['lng'], 'advisory' => $barangayAdvisory]) ?>;
+        // Only show marker if it's NOT the default center OR if there's no polygon
+        if (polygonCoords.length === 0 || (brgyData.lat !== 7.028 || brgyData.lng !== 125.448)) {
+            var colorName = alertColorsMap[brgyData.level] || 'green';
+            var marker = new google.maps.Marker({
+                position: {lat: brgyData.lat, lng: brgyData.lng},
+                map: map,
+                title: brgyData.name,
+                icon: 'https://maps.google.com/mapfiles/ms/icons/' + colorName + '.png', // Square marker for barangay
+                zIndex: 1000
+            });
+            marker.addListener('click', function() {
+                var content = `
+                    <div style="padding: 10px; max-width: 250px; font-family: 'Inter', sans-serif;">
+                        <h6 class="fw-bold mb-1">${brgyData.name} (Barangay)</h6>
+                        <div class="badge bg-${colorName.charAt(0).toUpperCase() + colorName.slice(1)} mb-2">${colorName.toUpperCase()}</div>
+                        <div class="small">${brgyData.advisory || 'Normal conditions.'}</div>
+                    </div>
+                `;
+                infoWindow.setContent(content);
+                infoWindow.open(map, marker);
+            });
+        }
+    })();
+    <?php endif; ?>
+
+    sitios.forEach(function(sitio) {
+        if (sitio.latitude && sitio.longitude) {
+            var level = parseInt(sitio.flood_level || 0);
+            var colorName = alertColorsMap[level] || 'green';
+            
+            var marker = new google.maps.Marker({
+                position: {lat: parseFloat(sitio.latitude), lng: parseFloat(sitio.longitude)},
+                map: map,
+                title: sitio.sitio_name,
+                icon: 'https://maps.google.com/mapfiles/ms/icons/' + colorName + '-dot.png'
+            });
+
+            marker.addListener('click', function() {
+                var content = `
+                    <div style="padding: 10px; max-width: 250px; font-family: 'Inter', sans-serif;">
+                        <h6 class="fw-bold mb-1">${sitio.sitio_name}</h6>
+                        <div class="badge bg-${colorName.charAt(0).toUpperCase() + colorName.slice(1)} mb-2">${colorName.toUpperCase()}</div>
+                        <div class="small text-muted">${sitio.flood_advisory || 'Normal conditions.'}</div>
+                    </div>
+                `;
+                infoWindow.setContent(content);
+                infoWindow.open(map, marker);
+            });
+        }
+    });
+}
+if (document.getElementById('map-alerts')) {
+    initMap();
+}
+</script>

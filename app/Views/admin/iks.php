@@ -106,6 +106,7 @@
                     <thead>
                         <tr>
                             <th class="ps-4">Title & Category</th>
+                            <th>Icon</th>
                             <th>Description Snippet</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
@@ -121,6 +122,15 @@
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark"><?= htmlspecialchars($item['title']) ?></div>
                                         <span class="category-badge cat-<?= htmlspecialchars($item['category']) ?> small"><?= htmlspecialchars($item['category']) ?></span>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($item['icon_url'])): ?>
+                                            <img src="<?= htmlspecialchars($item['icon_url']) ?>" alt="icon"
+                                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;"
+                                                 onerror="this.src=''; this.alt='Missing';">
+                                        <?php else: ?>
+                                            <span class="text-muted small">No icon</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="text-truncate small text-muted" style="max-width: 400px;"><?= htmlspecialchars($item['description']) ?></div>
@@ -147,8 +157,9 @@
             <button class="btn btn-light rounded-circle" onclick="closePanel()"><i class="fas fa-times"></i></button>
         </div>
 
-        <form id="itemForm" action="index.php?route=admin-iks-create" method="POST">
+        <form id="itemForm" action="index.php?route=admin-iks-create" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" id="itemId">
+            <input type="hidden" name="existing_icon" id="itemExistingIcon">
 
             <div class="mb-3">
                 <label class="form-label small fw-bold text-muted">Category</label>
@@ -176,13 +187,20 @@
 
             <div class="row g-3 mb-4">
                 <div class="col-6">
-                    <label class="form-label small fw-bold text-muted">Icon URL</label>
-                    <input type="text" name="icon_url" id="itemIcon" class="form-control bg-light border-0 py-2 rounded-3" placeholder="/assets/icons/...">
+                    <label class="form-label small fw-bold text-muted">Icon Image</label>
+                    <input type="file" name="icon_image" id="itemIconFile" class="form-control bg-light border-0 py-2 rounded-3" accept="image/*">
+                    <div id="currentIconPreview" class="mt-1 small text-muted"></div>
                 </div>
                 <div class="col-6">
                     <label class="form-label small fw-bold text-muted">Order Index</label>
                     <input type="number" name="order_index" id="itemOrder" class="form-control bg-light border-0 py-2 rounded-3" value="0">
                 </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-muted">"Read More" Source Link (Optional)</label>
+                <input type="url" name="source_url" id="itemSourceUrl" class="form-control bg-light border-0 py-2 rounded-3" placeholder="https://...">
+                <div class="form-text">A link that users can follow to learn more about this topic.</div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 fw-bold py-3 rounded-3 mt-2 shadow-sm border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -197,6 +215,8 @@
         document.getElementById('panelTitle').innerText = 'New Knowledge Item';
         document.getElementById('itemForm').action = 'index.php?route=admin-iks-create';
         document.getElementById('itemId').value = '';
+        document.getElementById('itemExistingIcon').value = '';
+        document.getElementById('currentIconPreview').innerText = '';
         document.getElementById('itemForm').reset();
         document.getElementById('itemOverlay').style.display = 'flex';
     }
@@ -209,8 +229,10 @@
         document.getElementById('itemTitle').value = item.title;
         document.getElementById('itemDescription').value = item.description;
         document.getElementById('itemSignificance').value = item.significance || '';
-        document.getElementById('itemIcon').value = item.icon_url || '';
+        document.getElementById('itemExistingIcon').value = item.icon_url || '';
+        document.getElementById('currentIconPreview').innerText = item.icon_url ? 'Current: ' + item.icon_url.split('/').pop() : 'No icon set';
         document.getElementById('itemOrder').value = item.order_index || 0;
+        document.getElementById('itemSourceUrl').value = item.source_url || '';
 
         document.getElementById('itemOverlay').style.display = 'flex';
     }
