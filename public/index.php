@@ -63,6 +63,13 @@ switch ($route) {
     case 'dashboard':
         $auth->dashboard();
         break;
+    case 'user-profile':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $auth->userProfile();
+        } else {
+            $auth->userProfile();
+        }
+        break;
     case 'evacuation':
         $evac->index();
         break;
@@ -107,6 +114,18 @@ switch ($route) {
         break;
     case 'admin-flood-zones-delete':
         $admin->deleteFloodZone();
+        break;
+    case 'admin-users':
+        $admin->users();
+        break;
+    case 'admin-create-user':
+        $admin->createUser();
+        break;
+    case 'admin-edit-user':
+        $admin->editUser();
+        break;
+    case 'admin-delete-user':
+        $admin->deleteUser();
         break;
     case 'community-map':
         $map->communityMap();

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\FloodZone;
+use App\Services\WeatherService;
 use App\Models\BarangayAlert;
 use App\Models\EvacuationCenter;
 use App\Models\BarangayPolygon;

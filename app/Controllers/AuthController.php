@@ -102,4 +102,89 @@ class AuthController
         // but for consistency we use layout.php
         include __DIR__ . '/../Views/layout.php';
     }
+
+    public function userProfile()
+    {
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /micro-oss/index.php?route=login');
+            exit();
+        }
+        
+        $userId = $_SESSION['user_id'];
+        $user = $this->userModel->getUserById($userId);
+        $error = '';
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $firstName = trim($_POST['first_name']);
+            $lastName = trim($_POST['last_name']);
+            $email = trim($_POST['email']);
+            $currentPassword = $_POST['current_password'] ?? '';
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            
+            // Validation
+            if (empty($firstName) || empty($lastName) || empty($email)) {
+                $error = 'First name, last name, and email are required.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
+            } elseif ($this->userModel->emailExists($email, $userId)) {
+                $error = 'Email address already exists.';
+            } elseif (!empty($newPassword)) {
+                if (empty($currentPassword)) {
+                    $error = 'Current password is required to change password.';
+                } elseif (!$this->verifyCurrentPassword($userId, $currentPassword)) {
+                    $error = 'Current password is incorrect.';
+                } elseif ($newPassword !== $confirmPassword) {
+                    $error = 'New passwords do not match.';
+                } elseif (strlen($newPassword) < 6) {
+                    $error = 'New password must be at least 6 characters long.';
+                }
+            } else {
+                // Update user
+                $userData = [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $email,
+                    'role' => $user['role'],
+                    'status' => $user['status']
+                ];
+                
+                if ($this->userModel->updateUser($userId, $userData)) {
+                    // Update password if provided
+                    if (!empty($newPassword)) {
+                        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                        $this->userModel->updateUserPassword($userId, $hashedPassword);
+                    }
+                    
+                    $_SESSION['flash_message'] = 'Profile updated successfully.';
+                    header('Location: /micro-oss/index.php?route=user-profile');
+                    exit();
+                } else {
+                    $error = 'Failed to update profile. Please try again.';
+                }
+            }
+        }
+        
+        $title = 'My Profile';
+        ob_start();
+        include __DIR__ . '/../Views/auth/user_profile.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../Views/layout.php';
+    }
+
+    private function verifyCurrentPassword($userId, $currentPassword)
+    {
+        // Get user with password from database
+        $db = \App\Models\Database::getInstance()->getConnection();
+        $stmt = $db->prepare('SELECT password FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $userWithPassword = $stmt->fetch();
+        
+        if (!$userWithPassword) {
+            return false;
+        }
+        
+        return password_verify($currentPassword, $userWithPassword['password']);
+    }
 }

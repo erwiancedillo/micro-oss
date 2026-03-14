@@ -258,8 +258,36 @@
                     </div>
                     
                     <div class="mb-4 mt-3">
-                        <label for="photo" class="form-label fw-bold small text-muted">Photo Selection (Camera)</label>
-                        <input type="file" class="form-control border-0 shadow-sm p-3 bg-white" id="photo" name="photo" accept="image/*" capture="environment" onchange="previewPhoto(event)">
+                        <label class="form-label fw-bold small text-muted">Photo Selection</label>
+
+                        <!-- Inline webcam viewer -->
+                        <div id="cameraSection" class="d-none mb-3">
+                            <video id="webcamVideo" autoplay playsinline muted class="w-100 rounded-3 border shadow-sm" style="max-height:260px; background:#000;"></video>
+                            <canvas id="webcamCanvas" class="d-none"></canvas>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-success flex-fill fw-bold rounded-3" onclick="captureSnapshot()">
+                                    <i class="fas fa-circle me-2"></i>Capture
+                                </button>
+                                <button type="button" class="btn btn-outline-danger flex-fill fw-bold rounded-3" onclick="stopCamera()">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hidden file input for Choose File fallback -->
+                        <input type="file" class="d-none" id="photoFileInput" name="photo" accept="image/*" onchange="onPhotoChosen(event)">
+
+                        <div class="d-flex gap-2" id="photoButtons">
+                            <button type="button" class="btn btn-gradient flex-fill fw-bold py-3 rounded-3" onclick="openCamera()">
+                                <i class="fas fa-camera me-2"></i>Take Photo
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill fw-bold py-3 rounded-3" onclick="document.getElementById('photoFileInput').click()">
+                                <i class="fas fa-folder-open me-2"></i>Choose File
+                            </button>
+                        </div>
+                        <div id="selectedFileInfo" class="mt-2 small text-success d-none">
+                            <i class="fas fa-check-circle me-1"></i><span id="selectedFileName"></span>
+                        </div>
                         <small class="text-info" id="editPhotoNote" style="display: none;">Leave blank to keep the current photo.</small>
                     </div>
 
@@ -405,11 +433,14 @@
                 document.getElementById('photoIdModal').value = '';
                 document.getElementById('modalActionTitle').innerText = 'Upload Evacuation/Flood Photo';
                 document.getElementById('btnSubmitPhoto').innerText = 'Post Photo';
-                document.getElementById('photo').required = true;
+                document.getElementById('photoCameraInput').required = true;
+                document.getElementById('photoFileInput').required = false;
                 document.getElementById('editPhotoNote').style.display = 'none';
                 document.getElementById('previewImage').style.display = 'none';
                 document.getElementById('previewImage').src = '#';
                 document.getElementById('previewPlaceholder').style.display = 'block';
+                document.getElementById('selectedFileInfo').classList.add('d-none');
+                document.getElementById('selectedFileName').innerText = '';
             });
         }
     });
@@ -419,7 +450,8 @@
         document.getElementById('photoIdModal').value = id;
         document.getElementById('modalActionTitle').innerText = 'Edit Photo Details';
         document.getElementById('btnSubmitPhoto').innerText = 'Save Changes';
-        document.getElementById('photo').required = false;
+        document.getElementById('photoCameraInput').required = false;
+        document.getElementById('photoFileInput').required = false;
         document.getElementById('editPhotoNote').style.display = 'block';
         
         // Populate fields
@@ -454,6 +486,97 @@
         // Show modal
         const myModal = new bootstrap.Modal(document.getElementById('uploadPhotoModal'));
         myModal.show();
+    }
+
+    // ── CAMERA (getUserMedia) ─────────────────────────────────────────────────
+    let cameraStream = null;
+    let capturedBlob  = null;
+
+    async function openCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Camera access is not supported by your browser. Use "Choose File" instead.');
+            return;
+        }
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+            const video = document.getElementById('webcamVideo');
+            video.srcObject = cameraStream;
+            video.play();
+            document.getElementById('cameraSection').classList.remove('d-none');
+            document.getElementById('photoButtons').classList.add('d-none');
+        } catch (err) {
+            alert('Could not access camera: ' + err.message);
+        }
+    }
+
+    function stopCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+        }
+        document.getElementById('webcamVideo').srcObject = null;
+        document.getElementById('cameraSection').classList.add('d-none');
+        document.getElementById('photoButtons').classList.remove('d-none');
+    }
+
+    function captureSnapshot() {
+        const video  = document.getElementById('webcamVideo');
+        const canvas = document.getElementById('webcamCanvas');
+        canvas.width  = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+
+        canvas.toBlob(blob => {
+            capturedBlob = blob;
+            const fileName = 'webcam_' + Date.now() + '.jpg';
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.getElementById('previewImage');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById('previewPlaceholder').style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+
+            // Show filename badge
+            document.getElementById('selectedFileName').innerText = fileName;
+            document.getElementById('selectedFileInfo').classList.remove('d-none');
+
+            stopCamera();
+        }, 'image/jpeg', 0.9);
+    }
+
+    // Override form submit to inject webcam blob when present
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('photoForm').addEventListener('submit', function(e) {
+            if (capturedBlob) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const fileName = 'webcam_' + Date.now() + '.jpg';
+                formData.set('photo', capturedBlob, fileName);
+
+                fetch(this.action, { method: 'POST', body: formData })
+                    .then(res => {
+                        if (res.redirected) { window.location.href = res.url; }
+                        else { window.location.reload(); }
+                    })
+                    .catch(() => window.location.reload());
+            }
+            // If no webcam blob, submit normally (file picker was used)
+        });
+    });
+
+    // Called when file picker (Choose File) is used
+    function onPhotoChosen(event) {
+        const file = event.target.files[0];
+        capturedBlob = null; // clear any webcam capture
+        if (file) {
+            document.getElementById('selectedFileName').innerText = file.name;
+            document.getElementById('selectedFileInfo').classList.remove('d-none');
+            previewPhoto(event);
+        }
     }
 
     // Preview uploaded photo

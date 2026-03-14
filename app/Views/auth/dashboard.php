@@ -57,12 +57,15 @@
     .bg-iks { background-color: #fff7ed; }
     .bg-policy { background-color: #f8fafc; }
     .bg-download { background-color: #f0fdfa; }
+    .bg-profile { background-color: #eef2ff; }
 
     .dashboard-card:hover .bg-community { background-color: #dbeafe; }
     .dashboard-card:hover .bg-alerts { background-color: #fef9c3; }
     .dashboard-card:hover .bg-hazard { background-color: #fee2e2; }
     .dashboard-card:hover .bg-flood { background-color: #e0e7ff; }
     .dashboard-card:hover .bg-evacuation { background-color: #dcfce7; }
+    .dashboard-card:hover .bg-download { background-color: #ccfbf1; }
+    .dashboard-card:hover .bg-profile { background-color: #e0e7ff; }
 </style>
 <main class="container mb-5">
     <div class="row g-4 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
@@ -146,6 +149,15 @@
                     <img src="/micro-oss/assets/icons/policy.png" alt="Policies & Publications">
                 </div>
                 <h3 class="card-title">Publications</h3>
+            </a>
+        </div>
+        <!-- User Profile -->
+        <div class="col">
+            <a href="/micro-oss/index.php?route=user-profile" class="dashboard-card">
+                <div class="icon-wrapper bg-profile">
+                    <i class="fas fa-user-circle text-primary fa-2x"></i>
+                </div>
+                <h3 class="card-title">My Profile</h3>
             </a>
         </div>
         <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>

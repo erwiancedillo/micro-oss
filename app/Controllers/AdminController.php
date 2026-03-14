@@ -8,6 +8,7 @@ use App\Models\FloodZone;
 use App\Models\HazardMap;
 use App\Models\IKSModel;
 use App\Models\BarangayPolygon;
+use App\Models\User;
 
 class AdminController
 {
@@ -17,6 +18,7 @@ class AdminController
     protected $iksModel;
     protected $floodZoneModel;
     protected $barangayModel;
+    protected $userModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class AdminController
         $this->iksModel = new IKSModel();
         $this->floodZoneModel = new FloodZone();
         $this->barangayModel = new BarangayPolygon();
+        $this->userModel = new User();
     }
 
     private function checkAdmin()
@@ -356,5 +359,184 @@ class AdminController
             default:
                 return 'Unknown upload error.';
         }
+    }
+
+    public function users()
+    {
+        $this->checkAdmin();
+        $title = 'Manage Users';
+        $userName = $_SESSION['user_name'] ?? 'Admin';
+        $users = $this->userModel->getAllUsers();
+        $userStats = $this->userModel->getUserStats();
+        
+        ob_start();
+        include __DIR__ . '/../Views/admin/users.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function createUser()
+    {
+        $this->checkAdmin();
+        $error = '';
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $firstName = trim($_POST['first_name']);
+            $lastName = trim($_POST['last_name']);
+            $email = trim($_POST['email']);
+            $role = $_POST['role'];
+            $status = $_POST['status'];
+            $password = $_POST['password'];
+            $confirmPassword = $_POST['confirm_password'];
+            
+            // Validation
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
+                $error = 'All fields are required.';
+            } elseif ($password !== $confirmPassword) {
+                $error = 'Passwords do not match.';
+            } elseif (strlen($password) < 6) {
+                $error = 'Password must be at least 6 characters long.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
+            } elseif ($this->userModel->emailExists($email)) {
+                $error = 'Email address already exists.';
+            } else {
+                // Create user
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $token = bin2hex(random_bytes(32));
+                
+                $userData = [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $email,
+                    'password' => $hashedPassword,
+                    'token' => $token,
+                    'status' => $status
+                ];
+                
+                if ($this->userModel->create($userData)) {
+                    $_SESSION['flash_message'] = 'User created successfully.';
+                    header('Location: /micro-oss/index.php?route=admin-users');
+                    exit();
+                } else {
+                    $error = 'Failed to create user. Please try again.';
+                }
+            }
+        }
+        
+        $title = 'Add User';
+        $userName = $_SESSION['user_name'] ?? 'Admin';
+        
+        ob_start();
+        include __DIR__ . '/../Views/admin/user_form.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function editUser()
+    {
+        $this->checkAdmin();
+        $id = $_GET['id'] ?? null;
+        $error = '';
+        
+        if (!$id) {
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+        
+        $user = $this->userModel->getUserById($id);
+        if (!$user) {
+            $_SESSION['flash_message'] = 'User not found.';
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $firstName = trim($_POST['first_name']);
+            $lastName = trim($_POST['last_name']);
+            $email = trim($_POST['email']);
+            $role = $_POST['role'];
+            $status = $_POST['status'];
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            
+            // Validation
+            if (empty($firstName) || empty($lastName) || empty($email)) {
+                $error = 'First name, last name, and email are required.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
+            } elseif ($this->userModel->emailExists($email, $id)) {
+                $error = 'Email address already exists.';
+            } elseif (!empty($password) && $password !== $confirmPassword) {
+                $error = 'Passwords do not match.';
+            } elseif (!empty($password) && strlen($password) < 6) {
+                $error = 'Password must be at least 6 characters long.';
+            } else {
+                // Update user
+                $userData = [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $email,
+                    'role' => $role,
+                    'status' => $status
+                ];
+                
+                if ($this->userModel->updateUser($id, $userData)) {
+                    // Update password if provided
+                    if (!empty($password)) {
+                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                        $this->userModel->updateUserPassword($id, $hashedPassword);
+                    }
+                    
+                    $_SESSION['flash_message'] = 'User updated successfully.';
+                    header('Location: /micro-oss/index.php?route=admin-users');
+                    exit();
+                } else {
+                    $error = 'Failed to update user. Please try again.';
+                }
+            }
+        }
+        
+        $title = 'Edit User';
+        $userName = $_SESSION['user_name'] ?? 'Admin';
+        
+        ob_start();
+        include __DIR__ . '/../Views/admin/user_form.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function deleteUser()
+    {
+        $this->checkAdmin();
+        $id = $_GET['id'] ?? null;
+        
+        if (!$id) {
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+        
+        // Prevent self-deletion
+        if ($id == $_SESSION['user_id']) {
+            $_SESSION['flash_message'] = 'You cannot delete your own account.';
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+        
+        $user = $this->userModel->getUserById($id);
+        if (!$user) {
+            $_SESSION['flash_message'] = 'User not found.';
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+        
+        if ($this->userModel->deleteUser($id)) {
+            $_SESSION['flash_message'] = 'User deleted successfully.';
+        } else {
+            $_SESSION['flash_message'] = 'Failed to delete user. Please try again.';
+        }
+        
+        header('Location: /micro-oss/index.php?route=admin-users');
+        exit();
     }
 }

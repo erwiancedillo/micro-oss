@@ -23,6 +23,9 @@
             <a href="index.php?route=admin-iks" class="admin-sidebar-link <?= (strpos($route, 'admin-iks') !== false) ? 'active' : '' ?>" title="Indigenous Knowledge">
                 <i class="fas fa-feather-alt"></i><span class="link-text">Indigenous Knowledge</span>
             </a>
+            <a href="index.php?route=admin-users" class="admin-sidebar-link <?= (strpos($route, 'admin-user') !== false) ? 'active' : '' ?>" title="User Management">
+                <i class="fas fa-users"></i><span class="link-text">User Management</span>
+            </a>
             <hr class="my-3 opacity-50">
             <a href="index.php?route=dashboard" class="admin-sidebar-link" title="User Dashboard">
                 <i class="fas fa-home"></i><span class="link-text">User Dashboard</span>
