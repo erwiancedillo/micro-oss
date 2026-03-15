@@ -5,15 +5,19 @@
     ?>
     <a href="/micro-oss/index.php?route=dashboard" class="nav-item-mobile <?php echo ($current_page == 'dashboard') ? 'active' : ''; ?>">
         <i class="fas fa-house"></i>
+        <span class="nav-label">Home</span>
     </a>
     <a href="/micro-oss/index.php?route=community-map" class="nav-item-mobile <?php echo ($current_page == 'community-map') ? 'active' : ''; ?>">
         <i class="fas fa-map"></i>
+        <span class="nav-label">Map</span>
     </a>
     <a href="/micro-oss/index.php?route=evacuation" class="nav-item-mobile <?php echo ($current_page == 'evacuation') ? 'active' : ''; ?>">
         <i class="fas fa-route"></i>
+        <span class="nav-label">Evacuation</span>
     </a>
     <a href="/micro-oss/index.php?route=alerts" class="nav-item-mobile <?php echo ($current_page == 'alerts') ? 'active' : ''; ?>">
         <i class="fas fa-bell"></i>
+        <span class="nav-label">Alerts</span>
     </a>
     <?php if (isset($_SESSION['user_id'])): ?>
         <a href="/micro-oss/index.php?route=logout" class="nav-item-mobile" onclick="return confirm('Are you sure you want to logout?')">
@@ -23,10 +27,12 @@
                 : 'assets/uploads/hazard_maps/default-profile.jpg';
             ?>
             <img src="<?php echo htmlspecialchars($profile_src); ?>" alt="Profile" class="nav-profile-img">
+            <span class="nav-label">Logout</span>
         </a>
     <?php else: ?>
-        <a href="/micro-oss/index.php?route=login" class="nav-item-mobile">
+        <a href="/micro-oss/index.php?route=user-profile" class="nav-item-mobile">
             <i class="fas fa-user-circle"></i>
+            <span class="nav-label">Profile</span>
         </a>
     <?php endif; ?>
 
