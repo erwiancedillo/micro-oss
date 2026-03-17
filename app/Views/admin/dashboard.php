@@ -244,6 +244,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                             <th>Capacity</th>
                             <th>Utilization</th>
                             <th>Status</th>
+                            <th>Add Evacuees</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -595,6 +596,9 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </td>
                 <td>
                     <span class="badge ${statusClass} ${statusText} rounded-pill px-3">${c.status}</span>
+                </td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="addEvacuees(${c.id})">Add Evacuees</button>
                 </td>
                 <td class="text-end">
                     <div class="dropdown">
