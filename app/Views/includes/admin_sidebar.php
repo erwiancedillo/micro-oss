@@ -45,7 +45,10 @@
         width: var(--admin-sidebar-width);
         min-height: calc(100vh - 70px);
         transition: var(--admin-transition);
-        position: relative;
+        position: sticky;
+        top: 0;
+        z-index: 1040;
+        height: 100vh;
         flex-direction: column;
         overflow-x: hidden;
     }

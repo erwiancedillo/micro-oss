@@ -187,7 +187,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
         <!-- Map Section -->
         <div class="row mb-5">
-            <div class="col-lg-8">
+            <div class="col-lg-6">
                 <div class="map-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0">Interactive Control Map</h5>
@@ -600,7 +600,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
     function renderBarangayPolygons() {
         const barangayPolygonsRaw = <?= json_encode($barangayPolygons) ?>;
-        
+
         function parseWKT(wkt) {
             if (!wkt) return null;
             const match = wkt.match(/\(\((.*)\)\)/);
@@ -608,7 +608,10 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             const points = match[1].split(',');
             return points.map(p => {
                 const pair = p.trim().split(/\s+/);
-                return { lat: parseFloat(pair[0]), lng: parseFloat(pair[1]) };
+                return {
+                    lat: parseFloat(pair[0]),
+                    lng: parseFloat(pair[1])
+                };
             });
         }
 
@@ -629,10 +632,16 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
             // Highlight on hover
             google.maps.event.addListener(polygon, 'mouseover', function() {
-                this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
+                this.setOptions({
+                    fillOpacity: 0.2,
+                    strokeWeight: 2
+                });
             });
             google.maps.event.addListener(polygon, 'mouseout', function() {
-                this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
+                this.setOptions({
+                    fillOpacity: 0.1,
+                    strokeWeight: 1
+                });
             });
 
             // Click to show barangay name
@@ -651,7 +660,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
     function renderFloodZones() {
         const floodZones = <?= json_encode($floodZones) ?>;
-        
+
         const getRiskColor = (level) => {
             if (level === "high") return "red";
             if (level === "moderate") return "orange";

@@ -4,15 +4,15 @@
 return [
     'host' => 'localhost',
     'username' => 'root',
-    'password' => 'misadmin',
+    'password' => '',
     'database' => 'micro_oss'
 ];
 
 // legacy usage (in case some scripts still rely on it)
-/*
+
 $host = "localhost";
 $username = "root";
-$password = "misadmin";
+$password = "";
 $database = "micro_oss";
 
 $conn = mysqli_connect($host, $username, $password, $database);
@@ -20,4 +20,3 @@ $conn = mysqli_connect($host, $username, $password, $database);
 if (!$conn) {
     die("Database connection failed: " . mysqli_connect_error());
 }
-*/
