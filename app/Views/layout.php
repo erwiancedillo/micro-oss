@@ -13,7 +13,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link href="/micro-oss/assets/css/style.css" rel="stylesheet">
+    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/micro-oss/assets/css/style.css" rel="stylesheet">
+    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/micro-oss/assets/css/flood_monitoring.css" rel="stylesheet">
+    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/micro-oss/assets/css/hazard.css" rel="stylesheet">
 
     <style>
         body {
