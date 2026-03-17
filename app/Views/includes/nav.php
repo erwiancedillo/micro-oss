@@ -6,7 +6,7 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 $current_route = $_GET['route'] ?? 'dashboard';
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none; z-index: 1060 !important;">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="/micro-oss/index.php?route=dashboard">
             <i class="fas fa-shield-alt me-2"></i>
