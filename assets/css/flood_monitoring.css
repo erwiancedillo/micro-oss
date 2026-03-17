@@ -314,20 +314,30 @@
 @media (max-width: 768px) {
     .flood-dashboard {
         height: auto;
-        display: block;
+        display: flex;
+        flex-direction: column;
         /* Stack everything on mobile */
     }
 
     .map-card {
-        height: 450px;
+        flex: 0 0 450px !important;
+        height: 450px !important;
+        width: 100% !important;
         /* Taller map for mobile */
         margin-bottom: 1.5rem;
+        order: 1;
+        flex: none; /* Prevent flex box from collapsing the map height */
+    }
+
+    .map-card #map {
+        height: 450px !important;
+        width: 100% !important;
     }
 
     .side-panel,
-    .map-controls-group,
     .alerts-overlay,
-    .bottom-panel {
+    .bottom-panel,
+    .map-controls-group {
         position: relative !important;
         top: auto !important;
         left: auto !important;
@@ -340,13 +350,20 @@
     }
 
     .map-controls-group {
-        position: relative;
-        bottom: 0;
-        right: 0;
-        margin-top: 1.5rem;
-        width: 100%;
-        max-width: none;
-        border-radius: 1.25rem;
+        order: 2;
+        margin-top: 0 !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .side-panel {
+        order: 3;
+    }
+
+    .bottom-panel {
+        order: 4;
+    }
+
+    .alerts-overlay {
+        order: 5;
     }
 }
