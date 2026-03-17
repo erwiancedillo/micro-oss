@@ -200,8 +200,9 @@
                     <span class="badge bg-light text-dark border rounded-pill px-3">Toril, Davao City</span>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover align-middle mb-0 forecast-table">
                             <thead class="bg-light">
                                 <tr>
                                     <th class="ps-4 py-3 border-0 small text-uppercase fw-bold text-muted">Day</th>
@@ -213,26 +214,26 @@
                             </thead>
                             <tbody>
                                 <?php foreach($forecast as $day): ?>
-                                    <tr>
-                                        <td class="ps-4">
+                                    <tr class="forecast-row">
+                                        <td class="ps-4" data-label="Day">
                                             <div class="fw-bold"><?= $day['day'] ?></div>
                                             <div class="small text-muted"><?= $day['date'] ?></div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" data-label="Condition">
                                             <div class="fs-4 mb-1"><i class="<?= $day['icon'] ?> text-primary"></i></div>
                                             <div class="small fw-medium"><?= $day['text'] ?></div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" data-label="Temp Max/Min">
                                             <span class="fw-bold fs-5 text-dark"><?= $day['temp_max'] ?></span>
                                             <span class="text-muted ms-1">/ <?= $day['temp_min'] ?></span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" data-label="Precipitation">
                                             <div class="d-flex align-items-center justify-content-center gap-2">
                                                 <i class="fas fa-tint text-info"></i>
                                                 <span class="fw-bold"><?= $day['rain'] ?></span>
                                             </div>
                                         </td>
-                                        <td class="pe-4 text-end">
+                                        <td class="pe-4 text-end" data-label="Atmospheric Risk">
                                             <?php 
                                                 $rainVal = (float)str_replace('mm', '', $day['rain']);
                                                 if ($rainVal > 50) echo '<span class="badge bg-danger rounded-pill px-3">High Flood Risk</span>';
@@ -244,6 +245,61 @@
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Auto-Play Swipeable Carousel View -->
+                    <div id="mobileForecastCarousel" class="carousel slide d-block d-md-none py-4 bg-light" data-bs-ride="carousel" data-bs-interval="3500">
+                        <div class="carousel-inner">
+                            <?php $isActive = true; foreach($forecast as $day): ?>
+                                <div class="carousel-item <?= $isActive ? 'active' : '' ?>">
+                                    <?php $isActive = false; ?>
+                                    <div class="card border-0 shadow-sm mx-auto" style="border-radius: 1.25rem; width: 85%; background: #ffffff;">
+                                        <div class="card-body p-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                                <div>
+                                                    <div class="fw-bold fs-4 text-dark"><?= $day['day'] ?></div>
+                                                    <div class="small text-muted fw-medium"><?= $day['date'] ?></div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="fs-1 mb-1"><i class="<?= $day['icon'] ?> text-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;"></i></div>
+                                                    <div class="small fw-bold text-muted text-uppercase tracking-wide" style="font-size: 0.7rem;"><?= $day['text'] ?></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row g-3 mt-1">
+                                                <div class="col-6">
+                                                    <span class="d-block small text-muted text-uppercase fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">Temp</span>
+                                                    <span class="fw-bold fs-4 text-dark"><?= $day['temp_max'] ?></span>
+                                                    <span class="text-muted fw-medium fs-6">/ <?= $day['temp_min'] ?></span>
+                                                </div>
+                                                <div class="col-6 text-end">
+                                                    <span class="d-block small text-muted text-uppercase fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 1px;">Precip</span>
+                                                    <div class="d-flex align-items-center justify-content-end gap-2">
+                                                        <i class="fas fa-tint text-info fs-5"></i>
+                                                        <span class="fw-bold fs-4 text-dark"><?= $day['rain'] ?></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 mt-3 text-center">
+                                                    <?php 
+                                                        $rainVal = (float)str_replace('mm', '', $day['rain']);
+                                                        if ($rainVal > 50) echo '<span class="badge bg-danger rounded-pill px-4 py-2 w-100 fw-bold shadow-sm" style="font-size: 0.85rem;"><i class="fas fa-exclamation-triangle me-2"></i>High Flood Risk</span>';
+                                                        elseif ($rainVal > 20) echo '<span class="badge bg-warning text-dark rounded-pill px-4 py-2 w-100 fw-bold shadow-sm" style="font-size: 0.85rem;"><i class="fas fa-exclamation-circle me-2"></i>Notice Needed</span>';
+                                                        else echo '<span class="badge bg-success rounded-pill px-4 py-2 w-100 fw-bold shadow-sm" style="font-size: 0.85rem;"><i class="fas fa-check-circle me-2"></i>Low Risk</span>';
+                                                    ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        
+                        <!-- Carousel Status Indicators -->
+                        <div class="carousel-indicators position-relative mt-4 mb-0 pb-2">
+                            <?php $idx = 0; foreach($forecast as $day): ?>
+                                <button type="button" data-bs-target="#mobileForecastCarousel" data-bs-slide-to="<?= $idx ?>" class="<?= $idx === 0 ? 'active' : '' ?> bg-primary rounded-circle shadow-sm" style="width: 8px; height: 8px;" aria-current="true"></button>
+                            <?php $idx++; endforeach; ?>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer bg-white border-0 py-3 text-center">
