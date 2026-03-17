@@ -63,4 +63,18 @@ class EvacuationCenter
             FROM evacuation_centers");
         return $stmt->fetch();
     }
+
+    public function incrementOccupied(int $id)
+    {
+        // First check if already at capacity
+        $stmt = $this->db->prepare("SELECT capacity, occupied FROM evacuation_centers WHERE id = ?");
+        $stmt->execute([$id]);
+        $center = $stmt->fetch();
+
+        if ($center && $center['occupied'] < $center['capacity']) {
+            $stmt = $this->db->prepare("UPDATE evacuation_centers SET occupied = occupied + 1 WHERE id = ?");
+            return $stmt->execute([$id]);
+        }
+        return false;
+    }
 }
