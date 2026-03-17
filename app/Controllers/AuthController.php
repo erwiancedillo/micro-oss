@@ -40,6 +40,7 @@ class AuthController
             session_start();
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'] ?? 'user';
+            $_SESSION['show_welcome_card'] = true; // Set flag for dashboard welcome message
             header('Location: /micro-oss/index.php?route=dashboard');
             exit();
         }
@@ -57,7 +58,26 @@ class AuthController
 
     public function register()
     {
-        $fullName = trim($_POST['name']);
+        $fullName = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        if (empty($fullName) || empty($email) || empty($password)) {
+            return $this->registerForm("All fields are required.");
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->registerForm("Invalid email format.");
+        }
+
+        if ($this->userModel->findByEmail($email)) {
+            return $this->registerForm("Email already registered.");
+        }
+
+        if (strlen($password) < 6) {
+            return $this->registerForm("Password must be at least 6 characters long.");
+        }
+
         $nameParts = explode(' ', $fullName, 2);
         $firstName = $nameParts[0];
         $lastName = $nameParts[1] ?? '';
@@ -65,16 +85,16 @@ class AuthController
         $data = [
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'email' => trim($_POST['email']),
-            'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
-            'token' => bin2hex(random_bytes(32)),
-            'status' => 'inactive'
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'token' => '',
+            'status' => 'active' // Set to active for immediate login
         ];
-        // TODO: send activation email etc.
+
         if ($this->userModel->create($data)) {
-             $this->registerForm(null, "Registration successful! You can now login.");
+            return $this->registerForm(null, "Registration successful! You can now login.");
         } else {
-             $this->registerForm("Registration failed.");
+            return $this->registerForm("Registration failed. Please try again.");
         }
     }
 
