@@ -366,4 +366,59 @@
     .alerts-overlay {
         order: 5;
     }
+
+    /* Stackable Forecast Table Cards for Mobile */
+    .forecast-table thead {
+        display: none;
+    }
+    
+    .forecast-table, 
+    .forecast-table tbody, 
+    .forecast-table tr.forecast-row, 
+    .forecast-table td {
+        display: block;
+        width: 100%;
+    }
+    
+    .forecast-table tr.forecast-row {
+        margin-bottom: 1rem;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 1rem;
+        padding: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    
+    .forecast-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right !important;
+        padding: 0.75rem 1rem !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .forecast-table td:last-child {
+        border-bottom: none;
+    }
+    
+    .forecast-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #718096;
+        text-align: left;
+        margin-right: 1rem;
+    }
+    
+    /* Realign centered content within mobile cards */
+    .forecast-table td.text-center {
+        text-align: right !important;
+    }
+    
+    /* Ensure flex elements inside table cells align correctly in card mode */
+    .forecast-table td .d-flex.justify-content-center {
+        justify-content: flex-end !important;
+    }
 }

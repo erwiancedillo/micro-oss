@@ -27,185 +27,90 @@ spl_autoload_register(function ($class) {
 
 $route = $_GET['route'] ?? 'login';
 
-$auth = new AuthController();
-$evac = new EvacuationController();
-$admin = new AdminController();
-$hazard = new HazardController();
-$map = new MapController();
-$alert = new AlertController();
-$flood = new FloodController();
-$knowledge = new KnowledgeController();
-$gallery = new GalleryController();
-$socio = new SocioController();
-$vulnerability = new VulnerabilityController();
-$purokDemographics = new PurokDemographicsController();
-$householdMaterials = new HouseholdMaterialsController();
-$purokEvacuation = new PurokEvacuationController();
+// Define routing map: 'route_name' => [ControllerClass::class, 'methodName']
+// Or a closure for simple includes
+$routes = [
+    'login' => ['App\\Controllers\\AuthController', $_SERVER['REQUEST_METHOD'] === 'POST' ? 'login' : 'loginForm'],
+    'register' => ['App\\Controllers\\AuthController', $_SERVER['REQUEST_METHOD'] === 'POST' ? 'register' : 'registerForm'],
+    'logout' => ['App\\Controllers\\AuthController', 'logout'],
+    'dashboard' => ['App\\Controllers\\AuthController', 'dashboard'],
+    'user-profile' => ['App\\Controllers\\AuthController', 'userProfile'],
 
-switch ($route) {
-    case 'login':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $auth->login();
+    'evacuation' => ['App\\Controllers\\EvacuationController', 'index'],
+    
+    'admin-dashboard' => ['App\\Controllers\\AdminController', 'dashboard'],
+    'admin-alerts' => ['App\\Controllers\\AdminController', 'alerts'],
+    'admin-hazard-maps' => ['App\\Controllers\\AdminController', 'hazardMaps'],
+    'admin-hazard-map-create' => ['App\\Controllers\\AdminController', 'createHazardMap'],
+    'admin-hazard-map-edit' => ['App\\Controllers\\AdminController', 'editHazardMap'],
+    'admin-hazard-map-delete' => ['App\\Controllers\\AdminController', 'deleteHazardMap'],
+    'admin-iks' => ['App\\Controllers\\AdminController', 'iks'],
+    'admin-iks-create' => ['App\\Controllers\\AdminController', 'createIks'],
+    'admin-iks-edit' => ['App\\Controllers\\AdminController', 'editIks'],
+    'admin-iks-delete' => ['App\\Controllers\\AdminController', 'deleteIks'],
+    'admin-flood-zones' => ['App\\Controllers\\AdminController', 'floodZones'],
+    'admin-flood-zones-create' => ['App\\Controllers\\AdminController', 'createFloodZone'],
+    'admin-flood-zones-edit' => ['App\\Controllers\\AdminController', 'editFloodZone'],
+    'admin-flood-zones-delete' => ['App\\Controllers\\AdminController', 'deleteFloodZone'],
+    'admin-users' => ['App\\Controllers\\AdminController', 'users'],
+    'admin-create-user' => ['App\\Controllers\\AdminController', 'createUser'],
+    'admin-edit-user' => ['App\\Controllers\\AdminController', 'editUser'],
+    'admin-delete-user' => ['App\\Controllers\\AdminController', 'deleteUser'],
+
+    'community-map' => ['App\\Controllers\\MapController', 'communityMap'],
+    'alerts' => ['App\\Controllers\\AlertController', 'index'],
+    'hazard' => ['App\\Controllers\\HazardController', 'index'],
+    'flood-monitoring' => ['App\\Controllers\\FloodController', 'index'],
+
+    'socio' => ['App\\Controllers\\SocioController', 'index'],
+    'api-add-age-bracket' => ['App\\Controllers\\SocioController', 'addAgeBracket'],
+    'api-update-socio-data' => ['App\\Controllers\\SocioController', 'updateSocioData'],
+
+    'vulnerability' => ['App\\Controllers\\VulnerabilityController', 'index'],
+    'api-hazard-data' => ['App\\Controllers\\VulnerabilityController', 'apiGetHazardData'],
+    'api-update-hazard' => ['App\\Controllers\\VulnerabilityController', 'update'],
+
+    'purok-demographics' => ['App\\Controllers\\PurokDemographicsController', 'index'],
+    'api-get-purok-data' => ['App\\Controllers\\PurokDemographicsController', 'apiGetPurokData'],
+    'api-update-purok-data' => ['App\\Controllers\\PurokDemographicsController', 'update'],
+
+    'household-materials' => ['App\\Controllers\\HouseholdMaterialsController', 'index'],
+    'api-update-material' => ['App\\Controllers\\HouseholdMaterialsController', 'updateMaterial'],
+    'api-update-ownership' => ['App\\Controllers\\HouseholdMaterialsController', 'updateOwnership'],
+
+    'purok-evacuation' => ['App\\Controllers\\PurokEvacuationController', 'index'],
+
+    'gallery' => ['App\\Controllers\\GalleryController', 'index'],
+    'gallery-upload' => ['App\\Controllers\\GalleryController', 'uploadPhoto'],
+    'gallery-edit' => ['App\\Controllers\\GalleryController', 'editPhoto'],
+    'gallery-delete' => ['App\\Controllers\\GalleryController', 'deletePhoto'],
+    'api-locations' => ['App\\Controllers\\GalleryController', 'getLocationsApi'],
+
+    'iks' => ['App\\Controllers\\KnowledgeController', 'iks'],
+
+    'population' => function() { include __DIR__ . '/../app/Views/population.php'; },
+    'publications' => function() { include __DIR__ . '/../app/Views/publications.php'; },
+    'download' => function() { include __DIR__ . '/../app/Views/download.php'; }
+];
+
+if (array_key_exists($route, $routes)) {
+    $handler = $routes[$route];
+    if (is_callable($handler)) {
+        // Closure or function
+        $handler();
+    } elseif (is_array($handler) && count($handler) === 2) {
+        // Controller Action
+        $controllerName = $handler[0];
+        $method = $handler[1];
+        if (class_exists($controllerName) && method_exists($controllerName, $method)) {
+            $controller = new $controllerName();
+            $controller->$method();
         } else {
-            $auth->loginForm();
+            http_response_code(500);
+            echo "Handler {$controllerName}::{$method} not found.";
         }
-        break;
-    case 'register':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $auth->register();
-        } else {
-            $auth->registerForm();
-        }
-        break;
-    case 'logout':
-        $auth->logout();
-        break;
-    case 'dashboard':
-        $auth->dashboard();
-        break;
-    case 'user-profile':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $auth->userProfile();
-        } else {
-            $auth->userProfile();
-        }
-        break;
-    case 'evacuation':
-        $evac->index();
-        break;
-    case 'admin-dashboard':
-        $admin->dashboard();
-        break;
-    case 'admin-alerts':
-        $admin->alerts();
-        break;
-    case 'admin-hazard-maps':
-        $admin->hazardMaps();
-        break;
-    case 'admin-hazard-map-create':
-        $admin->createHazardMap();
-        break;
-    case 'admin-hazard-map-edit':
-        $admin->editHazardMap();
-        break;
-    case 'admin-hazard-map-delete':
-        $admin->deleteHazardMap();
-        break;
-    case 'admin-iks':
-        $admin->iks();
-        break;
-    case 'admin-iks-create':
-        $admin->createIks();
-        break;
-    case 'admin-iks-edit':
-        $admin->editIks();
-        break;
-    case 'admin-iks-delete':
-        $admin->deleteIks();
-        break;
-    case 'admin-flood-zones':
-        $admin->floodZones();
-        break;
-    case 'admin-flood-zones-create':
-        $admin->createFloodZone();
-        break;
-    case 'admin-flood-zones-edit':
-        $admin->editFloodZone();
-        break;
-    case 'admin-flood-zones-delete':
-        $admin->deleteFloodZone();
-        break;
-    case 'admin-users':
-        $admin->users();
-        break;
-    case 'admin-create-user':
-        $admin->createUser();
-        break;
-    case 'admin-edit-user':
-        $admin->editUser();
-        break;
-    case 'admin-delete-user':
-        $admin->deleteUser();
-        break;
-    case 'community-map':
-        $map->communityMap();
-        break;
-    case 'alerts':
-        $alert->index();
-        break;
-    case 'hazard':
-        $hazard->index();
-        break;
-    case 'flood-monitoring':
-        $flood->index();
-        break;
-    case 'socio':
-        $socio->index();
-        break;
-    case 'api-add-age-bracket':
-        $socio->addAgeBracket();
-        break;
-    case 'api-update-socio-data':
-        $socio->updateSocioData();
-        break;
-    case 'population':
-        include __DIR__ . '/../app/Views/population.php';
-        break;
-    case 'vulnerability':
-        $vulnerability->index();
-        break;
-    case 'api-hazard-data':
-        $vulnerability->apiGetHazardData();
-        break;
-    case 'api-update-hazard':
-        $vulnerability->update();
-        break;
-    case 'purok-demographics':
-        $purokDemographics->index();
-        break;
-    case 'api-get-purok-data':
-        $purokDemographics->apiGetPurokData();
-        break;
-    case 'api-update-purok-data':
-        $purokDemographics->update();
-        break;
-    case 'household-materials':
-        $householdMaterials->index();
-        break;
-    case 'api-update-material':
-        $householdMaterials->updateMaterial();
-        break;
-    case 'api-update-ownership':
-        $householdMaterials->updateOwnership();
-        break;
-    case 'purok-evacuation':
-        $purokEvacuation->index();
-        break;
-    case 'gallery':
-        $gallery->index();
-        break;
-    case 'gallery-upload':
-        $gallery->uploadPhoto();
-        break;
-    case 'gallery-edit':
-        $gallery->editPhoto();
-        break;
-    case 'gallery-delete':
-        $gallery->deletePhoto();
-        break;
-    case 'api-locations':
-        $gallery->getLocationsApi();
-        break;
-    case 'iks':
-        $knowledge->iks();
-        break;
-    case 'publications':
-        include __DIR__ . '/../app/Views/publications.php';
-        break;
-    case 'download':
-        include __DIR__ . '/../app/Views/download.php';
-        break;
-    default:
-        http_response_code(404);
-        echo 'Page not found';
+    }
+} else {
+    http_response_code(404);
+    echo 'Page not found';
 }
