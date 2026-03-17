@@ -187,7 +187,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
         <!-- Map Section -->
         <div class="row mb-5">
-            <div class="col-lg-6">
+            <div class="col-lg-8">
                 <div class="map-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0">Interactive Control Map</h5>
