@@ -219,7 +219,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <h5 class="fw-bold mb-4">Real-time Metrics</h5>
                     <div class="mb-4">
                         <label class="small text-muted mb-2">Occupancy Distribution</label>
-                        <div style="height: 200px;"><canvas id="pieChart"></canvas></div>
+                        <div style="height: 280px;"><canvas id="pieChart"></canvas></div>
                     </div>
                     <hr class="opacity-10 my-4">
                     <h6 class="fw-bold small text-uppercase mb-3 opacity-50">Quick Navigation</h6>
@@ -458,9 +458,25 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         }]
                     },
                     options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 30
+                            }
+                        },
                         plugins: {
                             legend: {
-                                position: 'bottom'
+                                position: 'right',
+                                labels: {
+                                    padding: 25,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
                             }
                         }
                     }
