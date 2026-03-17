@@ -68,6 +68,24 @@
     .dashboard-card:hover .bg-profile { background-color: #e0e7ff; }
 </style>
 <main class="container mb-5">
+    <?php if (isset($_SESSION['show_welcome_card']) && $_SESSION['show_welcome_card']): ?>
+        <div class="row mb-4 animate__animated animate__fadeInDown">
+            <div class="col-12">
+                <div class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center p-4 bg-white" style="border-left: 5px solid #10b981 !important;">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle me-4 text-success">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading fw-bold mb-1 text-dark" style="font-size: 1.1rem;">Log in successfully</h4>
+                        <p class="mb-0 text-muted">Welcome back! You are now securely logged into your account.</p>
+                    </div>
+                    <button type="button" class="btn-close ms-auto shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <?php unset($_SESSION['show_welcome_card']); ?>
+    <?php endif; ?>
+
     <div class="row g-4 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
         <!-- Community Map -->
         <div class="col">
