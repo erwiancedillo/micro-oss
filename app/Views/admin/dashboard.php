@@ -555,11 +555,12 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     icon: getMarkerColor(c.status)
                 });
                 const infoWindow = new google.maps.InfoWindow({
-                    content: `<div class="p-2">
+                    content: `<div class="p-2" style="font-family: 'Inter', sans-serif;">
                     <h6 class="fw-bold mb-1">${c.name}</h6>
-                    <div class="small">Capacity: ${c.capacity}</div>
-                    <div class="small">Occupancy: ${c.occupied}</div>
-                    <div class="mt-2"><span class="badge ${c.status === 'Full' ? 'bg-danger' : (c.status === 'Limited' ? 'bg-warning' : 'bg-success')}">${c.status}</span></div>
+                    <div class="small text-muted mb-2">
+                        <i class="fas fa-users me-1"></i> Occupants: <span class="fw-bold text-primary">${c.occupied}/${c.capacity}</span>
+                    </div>
+                    <div><span class="badge ${c.status === 'Full' ? 'bg-danger' : (c.status === 'Limited' ? 'bg-warning' : 'bg-success')} rounded-pill px-2">${c.status}</span></div>
                 </div>`
                 });
                 marker.addListener('click', () => infoWindow.open(map, marker));
@@ -583,8 +584,8 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <div class="font-monospace small text-muted">${parseFloat(c.latitude).toFixed(4)}, ${parseFloat(c.longitude).toFixed(4)}</div>
                 </td>
                 <td>
-                    <div class="fw-bold">${c.capacity}</div>
-                    <div class="small text-muted">Max spots</div>
+                    <div class="fw-bold text-primary">${c.occupied}<span class="text-muted mx-1">/</span>${c.capacity}</div>
+                    <div class="small text-muted">Occupied / Capacity</div>
                 </td>
                 <td style="width: 200px;">
                     <div class="d-flex align-items-center">
@@ -598,7 +599,11 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <span class="badge ${statusClass} ${statusText} rounded-pill px-3">${c.status}</span>
                 </td>
                 <td>
-                    <button class="btn btn-success btn-sm" onclick="addEvacuees(${c.id})">Add Evacuees</button>
+                    <button class="btn btn-sm rounded-pill px-3 text-white border-0 shadow-sm" 
+                            style="font-size: 0.75rem; background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);"
+                            onclick="addEvacuees(${c.id})">
+                        <i class="fas fa-plus me-1"></i> Add
+                    </button>
                 </td>
                 <td class="text-end">
                     <div class="dropdown">
@@ -825,6 +830,29 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             alert('Error saving center');
         }
     });
+
+    async function addEvacuees(id) {
+        try {
+            const res = await fetch('/micro-oss/api/add-evacuee.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                loadDashboard();
+            } else {
+                alert('Action failed: ' + result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error adding evacuee');
+        }
+    }
 
     async function deleteCenter(id) {
         if (!confirm('This will permanently remove the evacuation center. Continue?')) return;
