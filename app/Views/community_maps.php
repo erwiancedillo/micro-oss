@@ -70,18 +70,29 @@
     .loc-btn i { font-size: 1.2rem; }
 
     @media (max-width: 768px) {
-        #map { height: 400px; }
+        #map { height: 450px; border-radius: 12px 12px 0 0; }
+        .card-body { display: flex; flex-direction: column; }
         .map-legend-overlay {
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            max-width: 180px;
+            position: relative;
+            top: 0;
+            right: 0;
+            max-width: 100%;
+            margin: 0;
+            border-radius: 0 0 12px 12px;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            background: #fff;
+            box-shadow: none;
+            order: 2;
         }
+        #map { order: 1; }
         .loc-btn {
             bottom: 20px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
         }
     }
 </style>
