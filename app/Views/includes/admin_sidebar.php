@@ -46,11 +46,12 @@
         min-height: calc(100vh - 70px);
         transition: var(--admin-transition);
         position: sticky;
-        top: 0;
+        top: 70px;
         z-index: 1040;
-        height: 100vh;
+        height: calc(100vh - 70px);
         flex-direction: column;
         overflow-x: hidden;
+        border-top: none !important;
     }
 
     .admin-sidebar.collapsed {
