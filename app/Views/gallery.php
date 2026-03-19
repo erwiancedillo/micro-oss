@@ -77,27 +77,6 @@
         color: white;
     }
 
-    .gallery-card {
-        margin-bottom: 20px;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease;
-        border: none;
-        background: #fff;
-        overflow: hidden;
-    }
-
-    .gallery-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .card-img-top {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-    }
-
     #map {
         height: 300px;
         width: 100%;
@@ -109,6 +88,48 @@
         #map {
             height: 400px;
         }
+    }
+
+    /* Masonry Layout for Gallery */
+    .masonry-grid {
+        column-count: 1; /* Default to 1 column for very small screens */
+        column-gap: 20px;
+    }
+
+    @media (min-width: 576px) {
+        .masonry-grid {
+            column-count: 2; /* 2 columns for tablets/medium screens */
+        }
+    }
+
+    @media (min-width: 992px) {
+        .masonry-grid {
+            column-count: 3; /* 3 columns for desktop */
+        }
+    }
+
+    .gallery-card {
+        margin-bottom: 20px;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        border: none;
+        background: #fff;
+        overflow: hidden;
+        break-inside: avoid; /* Prevent card from breaking across columns */
+        display: inline-block; /* Required for break-inside to work reliably */
+        width: 100%;
+    }
+
+    .gallery-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: auto; /* Allow image to scale normally preserving aspect ratio */
+        object-fit: contain; /* Ensure no cropping occurs */
     }
 
     .sticky-search {
@@ -168,7 +189,7 @@
                     </button>
                 </div>
 
-                <div class="row">
+                <div class="masonry-grid">
                     <?php if (!empty($photos)): ?>
                         <?php foreach ($photos as $row): 
                             $photo = base64_encode($row['photo']);
@@ -176,8 +197,7 @@
                             $sitioPurokName = htmlspecialchars($row['sitio_purok'], ENT_QUOTES, 'UTF-8');
                             $description = htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8');
                         ?>
-                            <div class="col-6 col-md-6 mb-4">
-                                <div class="card gallery-card h-100">
+                                <div class="card gallery-card">
                                     <img src="data:image/jpeg;base64,<?= $photo ?>" class="card-img-top" alt="<?= $barangayName ?> - <?= $sitioPurokName ?>">
                                     <div class="card-body">
                                         <h6 class="card-subtitle mb-2 text-muted fw-bold"><?= ucfirst($barangayName) ?> - <?= ucfirst($sitioPurokName) ?></h6>
@@ -194,10 +214,9 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                            </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="col-12 text-center py-5">
+                        <div class="col-12 text-center py-5" style="width: 100%;">
                             <div class="text-muted"><i class="fas fa-images fa-3x mb-3 text-light"></i><p class="lead">
                             <?php if (!empty($selectedSitio) || !empty($selectedBarangay)): ?>
                                 No records found for the selected filters.

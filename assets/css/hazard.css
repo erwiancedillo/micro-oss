@@ -261,7 +261,7 @@
   bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%;
+  width: 95%; /* Increased slightly to give more breathing room */
   max-width: 400px;
   height: 70px;
   background: rgba(255, 255, 255, 0.9);
@@ -274,7 +274,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   z-index: 1050;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0 15px;
+  padding: 0 5px; /* Reduced padding on the container */
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -285,14 +285,33 @@
 
 .nav-item-mobile {
   color: #64748b;
-  font-size: 1.4rem;
+  font-size: 1.2rem; /* Slightly reduced icon size to fit 5 items */
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
   position: relative;
-  padding: 10px;
+  padding: 5px; /* Reduced padding on individual items */
+  flex: 1; /* Ensure they share space equally */
+  text-align: center;
+}
+
+/* Base styles for labels */
+.nav-item-mobile .nav-label {
+    font-size: 0.65rem;
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+/* Hide labels on very small screens to prevent overflow */
+@media (max-width: 375px) {
+    .nav-item-mobile .nav-label {
+        display: none;
+    }
+    .mobile-bottom-nav {
+        height: 60px; /* Slimmer nav bar if no labels */
+    }
 }
 
 .nav-item-mobile:active {
@@ -314,8 +333,8 @@
 }
 
 .nav-profile-img {
-  width: 38px;
-  height: 38px;
+  width: 32px; /* Marginally smaller profile image */
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
