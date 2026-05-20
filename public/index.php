@@ -16,7 +16,9 @@ use App\Controllers\VulnerabilityController;
 use App\Controllers\PurokDemographicsController;
 use App\Controllers\HouseholdMaterialsController;
 use App\Controllers\PurokEvacuationController;
-
+use App\Controllers\CitizenScienceController;
+use App\Controllers\PlasticWasteController;
+use App\Controllers\ResourceAssessmentController;
 
 // simple autoloader
 spl_autoload_register(function ($class) {
@@ -24,6 +26,11 @@ spl_autoload_register(function ($class) {
     $file = __DIR__ . '/../app/' . str_replace('\\', '/', substr($class, 4)) . '.php';
     if (file_exists($file)) require $file;
 });
+
+$route = $_GET['route'] ?? 'login';
+
+// Simple autoloader (already exists)
+// ...
 
 $route = $_GET['route'] ?? 'login';
 
@@ -87,6 +94,22 @@ $routes = [
     'api-locations' => ['App\\Controllers\\GalleryController', 'getLocationsApi'],
 
     'iks' => ['App\\Controllers\\KnowledgeController', 'iks'],
+
+    // Citizen Science Admin Actions
+    'admin-citizen-science' => ['App\\Controllers\\AdminController', 'citizenScience'],
+    'gallery-verify-citizen' => ['App\\Controllers\\GalleryController', 'verifyCitizenReport'],
+    'gallery-delete-citizen' => ['App\\Controllers\\GalleryController', 'deleteCitizenReport'],
+    'admin-citizen-verify' => ['App\\Controllers\\AdminController', 'verifyCitizenReport'],
+    'admin-citizen-delete' => ['App\\Controllers\\AdminController', 'deleteCitizenReport'],
+
+    // Plastic Waste & Resource Assessment
+    'plastic-waste' => ['App\\Controllers\\PlasticWasteController', 'index'],
+    'api-waste-add' => ['App\\Controllers\\PlasticWasteController', 'addListing'],
+    'api-junkshops' => ['App\\Controllers\\PlasticWasteController', 'apiGetJunkshops'],
+    'resource-assessment' => ['App\\Controllers\\ResourceAssessmentController', 'index'],
+    'api-resource-add' => ['App\\Controllers\\ResourceAssessmentController', 'addResource'],
+    'api-resources' => ['App\\Controllers\\ResourceAssessmentController', 'apiGetResources'],
+    'api-resource-update' => ['App\\Controllers\\ResourceAssessmentController', 'updateResourceStatus'],
 
     'population' => function() { include __DIR__ . '/../app/Views/population.php'; },
     'publications' => function() { include __DIR__ . '/../app/Views/publications.php'; },

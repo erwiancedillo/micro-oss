@@ -189,7 +189,7 @@
     <!-- Page Header -->
     <div class="page-header">
         <h1 class="page-title">
-            <i class="fas fa-images me-3"></i>Community Gallery
+            <i class="fas fa-camera-retro me-3"></i>Citizen Science
         </h1>
         <p class="page-subtitle">Visual Archive of Barangay Conditions</p>
     </div>
@@ -208,24 +208,33 @@
                 </div>
 
                 <div class="masonry-grid">
-                    <?php if (!empty($photos)): ?>
-                        <?php foreach ($photos as $row): 
-                            $photo = base64_encode($row['photo']);
-                            $barangayName = htmlspecialchars($row['barangay'], ENT_QUOTES, 'UTF-8');
-                            $sitioPurokName = htmlspecialchars($row['sitio_purok'], ENT_QUOTES, 'UTF-8');
-                            $description = htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8');
-                        ?>
-                                <div class="card gallery-card">
-                                    <img src="data:image/jpeg;base64,<?= $photo ?>" class="card-img-top" alt="<?= $barangayName ?> - <?= $sitioPurokName ?>">
-                                    <div class="card-body">
-                                        <h6 class="card-subtitle mb-2 text-muted fw-bold"><?= ucfirst($barangayName) ?> - <?= ucfirst($sitioPurokName) ?></h6>
-                                        <p class="card-text small"><?= $description ?></p>
+                    <?php if (!empty($citizenPhotos)): ?>
+                        <!-- Citizen Science Photos / Gallery -->
+                        <?php foreach ($citizenPhotos as $cr): ?>
+                                <div class="card gallery-card h-100 border border-warning" style="border-width: 2px !important;">
+                                    <div class="position-absolute top-0 end-0 m-2 z-3">
+                                        <span class="badge bg-warning text-dark shadow-sm border border-white"><i class="fas fa-bullhorn me-1"></i>Citizen Report</span>
+                                    </div>
+                                    <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($cr['category']) ?>">
+                                    <div class="card-body bg-light">
+                                        <h6 class="card-subtitle mb-2 text-muted fw-bold"><?= htmlspecialchars($cr['barangay']) ?></h6>
+                                        <p class="card-text small mb-1 fw-bold text-danger"><?= htmlspecialchars($cr['category']) ?></p>
+                                        <p class="card-text small text-muted"><?= htmlspecialchars($cr['description']) ?></p>
+                                        <div class="mt-2 pt-2 border-top">
+                                            <?php if (($cr['status'] ?? '') === 'verified'): ?>
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-2 py-1" style="font-size:0.7rem;"><i class="fas fa-check-circle me-1"></i>Verified</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-2 py-1" style="font-size:0.7rem;"><i class="fas fa-clock me-1"></i>Pending Verification</span>
+                                            <?php endif; ?>
+                                        </div>
                                         <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
                                             <div class="mt-3 d-flex justify-content-end border-top pt-2">
-                                                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(<?= $row['id'] ?>, '<?= addslashes($barangayName) ?>', '<?= addslashes($sitioPurokName) ?>', '<?= addslashes($description) ?>', <?= $row['latitude'] ?>, <?= $row['longitude'] ?>)">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </button>
-                                                <a href="index.php?route=gallery-delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this photo?')">
+                                                <?php if($cr['status'] !== 'verified'): ?>
+                                                <a href="index.php?route=gallery-verify-citizen&id=<?= $cr['id'] ?>" class="btn btn-sm btn-success me-2">
+                                                    <i class="fas fa-check"></i> Verify
+                                                </a>
+                                                <?php endif; ?>
+                                                <a href="index.php?route=gallery-delete-citizen&id=<?= $cr['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this report?')">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </a>
                                             </div>
@@ -233,6 +242,7 @@
                                     </div>
                                 </div>
                         <?php endforeach; ?>
+
                     <?php else: ?>
                         <div class="col-12 text-center py-5" style="width: 100%;">
                             <div class="text-muted"><i class="fas fa-images fa-3x mb-3 text-light"></i><p class="lead">
@@ -281,6 +291,17 @@
             <form id="photoForm" action="index.php?route=gallery-upload" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="photoIdModal" value="">
                 <div class="modal-body p-4 bg-light">
+                    <!-- Optional Citizen Science Category -->
+                    <div class="mb-3">
+                        <label for="categoryModal" class="form-label fw-bold small text-muted">Citizen Science Category (Optional)</label>
+                        <select class="form-select border-0 shadow-sm bg-white" id="categoryModal" name="category">
+                            <option value="">-- No Category (General Photo) --</option>
+                            <option value="Flood">Flood</option>
+                            <option value="Plastic waste">Plastic waste</option>
+                            <option value="Damaged infrastructure">Damaged infrastructure</option>
+                        </select>
+                    </div>
+                
                     <div class="row g-3">
                         <div class="col-md-6 mb-2">
                             <label for="barangayModal" class="form-label fw-bold small text-muted">Barangay</label>

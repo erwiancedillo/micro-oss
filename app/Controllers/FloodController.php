@@ -179,6 +179,12 @@ class FloodController
             $barangayPolygons = $this->barangayModel->getAllPolygons();
         } catch (\Exception $e) { }
 
+        $citizenModel = new \App\Models\CitizenReport();
+        $citizenReports = [];
+        try {
+            $citizenReports = $citizenModel->getAllReports();
+        } catch (\Exception $e) { }
+
         $title = 'Flood Monitoring Dashboard';
         
         // Using output buffering to fit into the layout

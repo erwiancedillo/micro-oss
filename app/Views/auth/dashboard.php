@@ -86,7 +86,8 @@
         <?php unset($_SESSION['show_welcome_card']); ?>
     <?php endif; ?>
 
-    <div class="row g-4 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">
+    <!-- Top 2 rows as requested -->
+    <div class="row g-4 row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 justify-content-center">
         <!-- Community Map -->
         <div class="col">
             <a href="/micro-oss/index.php?route=community-map" class="dashboard-card">
@@ -132,25 +133,16 @@
                 <h3 class="card-title">Evacuation Map</h3>
             </a>
         </div>
+        <!-- Plastic Waste (NEW) -->
+        <div class="col">
+            <a href="/micro-oss/index.php?route=plastic-waste" class="dashboard-card">
+                <div class="icon-wrapper bg-success text-white" style="background-color: #dcfce7 !important;">
+                    <i class="fas fa-recycle text-success fa-2x"></i>
+                </div>
+                <h3 class="card-title">Plastic Waste</h3>
+            </a>
+        </div>
 
-        <!-- Socio-Demographic Data -->
-        <div class="col">
-            <a href="/micro-oss/index.php?route=socio" class="dashboard-card">
-                <div class="icon-wrapper bg-socio">
-                    <img src="/micro-oss/assets/icons/socio-data.png" alt="Socio-Demographic Data">
-                </div>
-                <h3 class="card-title">Socio-Demographic</h3>
-            </a>
-        </div>
-        <!-- Media Gallery -->
-        <div class="col">
-            <a href="/micro-oss/index.php?route=gallery" class="dashboard-card">
-                <div class="icon-wrapper bg-media">
-                    <img src="/micro-oss/assets/icons/media-gallery.png" alt="Media Gallery">
-                </div>
-                <h3 class="card-title">Media Gallery</h3>
-            </a>
-        </div>
         <!-- Indigenous Knowledge System -->
         <div class="col">
             <a href="/micro-oss/index.php?route=iks" class="dashboard-card">
@@ -167,6 +159,25 @@
                     <img src="/micro-oss/assets/icons/policy.png" alt="Policies & Publications">
                 </div>
                 <h3 class="card-title">Publications</h3>
+            </a>
+        </div>
+        <!-- separator removed to allow dynamic flowing in single grid -->
+        <!-- Socio-Demographic Data -->
+        <div class="col">
+            <a href="/micro-oss/index.php?route=socio" class="dashboard-card">
+                <div class="icon-wrapper bg-socio">
+                    <img src="/micro-oss/assets/icons/socio-data.png" alt="Socio-Demographic Data">
+                </div>
+                <h3 class="card-title">Socio-Demographic</h3>
+            </a>
+        </div>
+        <!-- Citizen Science -->
+        <div class="col">
+            <a href="/micro-oss/index.php?route=gallery" class="dashboard-card">
+                <div class="icon-wrapper bg-media">
+                    <i class="fas fa-camera-retro text-primary fa-2x"></i>
+                </div>
+                <h3 class="card-title">Citizen Science</h3>
             </a>
         </div>
         <!-- User Profile -->

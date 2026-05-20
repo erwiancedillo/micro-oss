@@ -22,6 +22,12 @@ class EvacuationController
             $barangayPolygons = $barangayModel->getAllPolygons();
         } catch (\Exception $e) { }
 
+        $resourceModel = new \App\Models\Resource();
+        $resources = [];
+        try {
+            $resources = $resourceModel->getAllResources();
+        } catch (\Exception $e) { }
+
         ob_start();
         include __DIR__ . '/../Views/evacuation/index.php';
         $content = ob_get_clean();

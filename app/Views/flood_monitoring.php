@@ -569,6 +569,33 @@
             evacMarkers.push({ marker, data: evac });
         });
 
+        // --- Citizen Science Reports ---
+        const citizenReports = <?= json_encode($citizenReports ?? []) ?>;
+        citizenReports.forEach(report => {
+            if (!report.latitude || !report.longitude) return;
+            const marker = new google.maps.Marker({
+                position: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+                map: map,
+                title: report.category,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png',
+                    scaledSize: new google.maps.Size(32, 32)
+                }
+            });
+            marker.addListener('click', () => {
+                const imgTag = report.image ? `<img src="/micro-oss/assets/uploads/citizen_science/${report.image}" style="width:100%; border-radius:5px; margin-top:5px; max-height:100px; object-fit:cover;">` : '';
+                const info = new google.maps.InfoWindow({
+                    content: `<div style="font-family:Inter,sans-serif; max-width: 200px;">
+                        <h6 style="color:#f97316; font-weight:bold; margin-bottom:2px;"><i class="fas fa-camera me-1"></i>${report.category}</h6>
+                        <p style="font-size:12px; margin-bottom:5px;">${report.description}</p>
+                        <small style="color:#666; display:block;">By: ${report.first_name} | ${report.status}</small>
+                        ${imgTag}
+                    </div>`
+                });
+                info.open(map, marker);
+            });
+        });
+
         // Show user location if available and find nearest evac center
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {

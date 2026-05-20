@@ -17,6 +17,10 @@ class HazardController
     {
         $maps = $this->hazardModel->getAllHazardMaps();
         
+        $citizenModel = new \App\Models\CitizenReport();
+        $citizenReports = [];
+        try { $citizenReports = $citizenModel->getAllReports(); } catch (\Exception $e) {}
+
         // Format maps for JSON if needed by JS, or pass to view
         $formattedMaps = [];
         foreach ($maps as $map) {

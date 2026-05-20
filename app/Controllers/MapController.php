@@ -60,6 +60,10 @@ class MapController
         $floodModel = new FloodZone();
         $floodZones = $floodModel->getAllZones();
 
+        $citizenModel = new \App\Models\CitizenReport();
+        $citizenReports = [];
+        try { $citizenReports = $citizenModel->getAllReports(); } catch (\Exception $e) {}
+
         $title = 'Community Map';
         ob_start();
         include __DIR__ . '/../Views/community_maps.php';

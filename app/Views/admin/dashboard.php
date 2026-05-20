@@ -255,6 +255,63 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             </div>
         </div>
 
+        <!-- Pending Citizen Science Verification -->
+        <?php if (isset($pendingReports) && count($pendingReports) > 0): ?>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-warning" style="border-width: 2px !important;">
+            <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-warning"><i class="fas fa-camera me-2"></i>Pending Citizen Science Reports</h5>
+                <span class="badge bg-warning text-dark rounded-pill px-3"><?= count($pendingReports) ?> Pending</span>
+            </div>
+            <div class="table-responsive px-4 pb-4">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Details</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pendingReports as $pr): ?>
+                        <tr>
+                            <td>
+                                <a href="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" target="_blank">
+                                    <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" alt="thumbnail" class="rounded object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
+                                </a>
+                            </td>
+                            <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-2 py-1"><?= htmlspecialchars($pr['category']) ?></span></td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;" title="<?= htmlspecialchars($pr['description']) ?>">
+                                    <?= htmlspecialchars($pr['description'] ?: 'No description provided') ?>
+                                </div>
+                                <div class="small text-muted mt-1">By: <?= htmlspecialchars($pr['first_name'] . ' ' . $pr['last_name']) ?></div>
+                            </td>
+                            <td>
+                                <strong><?= htmlspecialchars($pr['barangay']) ?></strong>
+                                <?php if (!empty($pr['sitio'])): ?>
+                                    <br><small class="text-muted"><?= htmlspecialchars($pr['sitio']) ?></small>
+                                <?php endif; ?>
+                            </td>
+                            <td class="small text-muted"><?= date('M j, Y g:i A', strtotime($pr['created_at'])) ?></td>
+                            <td class="text-end">
+                                <a href="index.php?route=admin-citizen-verify&id=<?= $pr['id'] ?>" class="btn btn-sm btn-success me-1 shadow-sm" title="Verify & Publish">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="index.php?route=admin-citizen-delete&id=<?= $pr['id'] ?>" class="btn btn-sm btn-outline-danger shadow-sm" title="Reject & Delete" onclick="return confirm('Are you sure you want to reject and delete this report?')">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
             <h5 class="fw-bold mb-4">Capacity Overview per Center</h5>
             <canvas id="barChart" style="max-height: 400px;"></canvas>

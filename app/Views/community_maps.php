@@ -238,6 +238,28 @@ function initMap() {
         });
     });
 
+    // --- Citizen Science Reports ---
+    var citizenReports = <?= json_encode($citizenReports ?? []) ?>;
+    citizenReports.forEach(function(report) {
+        if (!report.latitude || !report.longitude) return;
+        var m = new google.maps.Marker({
+            position: {lat: parseFloat(report.latitude), lng: parseFloat(report.longitude)},
+            map: map,
+            title: report.category,
+            icon: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png'
+        });
+        m.addListener('click', function() {
+            var info = new google.maps.InfoWindow({
+                content: '<div style="font-family:Inter,sans-serif; max-width:200px;">' +
+                         '<h6 style="color:#f97316; font-weight:bold"><i class="fas fa-camera me-1"></i> ' + report.category + '</h6>' +
+                         '<p style="font-size:12px; margin-bottom:5px;">' + report.description + '</p>' +
+                         '<small style="color:#666">By: ' + report.first_name + ' | ' + report.status + '</small>' +
+                         '</div>'
+            });
+            info.open(map, m);
+        });
+    });
+
     // --- Flood Zones Layer ---
     var floodZones = <?= json_encode($floodZones) ?>;
     floodZones.forEach(function(zone) {

@@ -192,6 +192,61 @@
                     infoWindow.open(map);
                 });
             });
+
+            // Display Community Resources on the Map
+            const dbResources = <?= json_encode($resources ?? []) ?>;
+            const resourceIcons = {
+                'Rescue Boat': 'fas fa-ship text-info',
+                'Ambulance': 'fas fa-ambulance text-danger',
+                'Food Packs': 'fas fa-box text-warning',
+                'Evacuation Tents': 'fas fa-campground text-success',
+                'Medical Team': 'fas fa-user-nurse text-primary'
+            };
+            
+            // We group resources by barangay (simulating their central location using the polygon's first coordinate)
+            const barangayCenters = {};
+            barangayPolygonsRaw.forEach(bp => {
+                const paths = parseWKT(bp.polygon);
+                if (paths && paths.length > 0) barangayCenters[bp.name] = paths[0];
+            });
+
+            const resourcesByBrgy = {};
+            dbResources.forEach(res => {
+                if(!resourcesByBrgy[res.barangay]) resourcesByBrgy[res.barangay] = [];
+                resourcesByBrgy[res.barangay].push(res);
+            });
+
+            Object.keys(resourcesByBrgy).forEach(brgy => {
+                if(barangayCenters[brgy]) {
+                    const center = barangayCenters[brgy];
+                    const loc = { lat: center.lat + 0.002, lng: center.lng + 0.002 }; // offset slightly
+                    
+                    const marker = new google.maps.Marker({
+                        position: loc,
+                        map: map,
+                        title: `Resources in ${brgy}`,
+                        icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
+                    });
+
+                    let resourceHtml = `<div style="font-family:Inter,sans-serif; max-width:250px;">
+                        <h6 style="color:#d97706; font-weight:bold; margin-bottom:10px;"><i class="fas fa-boxes-stacked me-2"></i>Resources: ${brgy}</h6>`;
+                    
+                    resourcesByBrgy[brgy].forEach(r => {
+                        const icon = resourceIcons[r.type] || 'fas fa-box text-muted';
+                        const stClass = r.status === 'available' ? 'text-success' : 'text-danger';
+                        resourceHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; border-bottom:1px solid #eee; padding-bottom:3px;">
+                            <span><i class="${icon} me-1" style="width:16px;"></i> ${r.type}</span>
+                            <strong class="${stClass}">${r.quantity} (${r.status})</strong>
+                        </div>`;
+                    });
+                    resourceHtml += '</div>';
+
+                    marker.addListener('click', () => {
+                        const info = new google.maps.InfoWindow({ content: resourceHtml });
+                        info.open(map, marker);
+                    });
+                }
+            });
         }
     });
     // --- Map Download Feature ---

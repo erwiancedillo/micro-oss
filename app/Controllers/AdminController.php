@@ -201,10 +201,57 @@ class AdminController
         $barangayPolygons = $this->barangayModel->getAllPolygons();
         $floodZones = $this->floodZoneModel->getAllZones();
         
+        $citizenModel = new \App\Models\CitizenReport();
+        $allReports = $citizenModel->getAllReports();
+        $pendingReports = array_filter($allReports, function($r) { return $r['status'] === 'pending'; });
+        
         ob_start();
         include __DIR__ . '/../Views/admin/dashboard.php';
         $content = ob_get_clean();
         include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function citizenScience()
+    {
+        $this->checkAdmin();
+        $title = 'Manage Citizen Science';
+        $userName = $_SESSION['user_name'] ?? 'Admin';
+        
+        $citizenModel = new \App\Models\CitizenReport();
+        $reports = $citizenModel->getAllReports();
+        
+        ob_start();
+        include __DIR__ . '/../Views/admin/citizen_science.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function verifyCitizenReport()
+    {
+        $this->checkAdmin();
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $citizenModel = new \App\Models\CitizenReport();
+            $citizenModel->updateStatus($id, 'verified');
+            $_SESSION['flash_message'] = 'Report verified successfully.';
+        }
+        $redirect = $_SERVER['HTTP_REFERER'] ?? '/micro-oss/index.php?route=admin-dashboard';
+        header("Location: $redirect");
+        exit();
+    }
+
+    public function deleteCitizenReport()
+    {
+        $this->checkAdmin();
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $citizenModel = new \App\Models\CitizenReport();
+            $citizenModel->delete($id);
+            $_SESSION['flash_message'] = 'Report deleted successfully.';
+        }
+        $redirect = $_SERVER['HTTP_REFERER'] ?? '/micro-oss/index.php?route=admin-dashboard';
+        header("Location: $redirect");
+        exit();
     }
 
     public function hazardMaps()

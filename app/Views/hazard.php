@@ -109,6 +109,30 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="mt-4 border-top pt-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-users-viewfinder me-2 text-primary"></i>Community Reports</h5>
+                        <div class="list-group list-group-flush list-group-custom" style="max-height: 250px; overflow-y: auto;">
+                            <?php if (empty($citizenReports)): ?>
+                                <div class="p-3 text-center text-muted small border rounded">No community reports at this time.</div>
+                            <?php else: ?>
+                                <?php foreach(array_slice($citizenReports, 0, 5) as $report): ?>
+                                    <div class="list-group-item px-3 py-2 mb-2 border rounded shadow-sm bg-light">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <h6 class="mb-1 text-danger fw-bold" style="font-size: 0.85rem;"><i class="fas fa-camera me-1"></i><?= htmlspecialchars($report['category']) ?></h6>
+                                            <small class="text-muted" style="font-size: 0.70rem;"><?= date('M d, y', strtotime($report['created_at'])) ?></small>
+                                        </div>
+                                        <p class="mb-1 text-dark" style="font-size: 0.8rem;"><?= htmlspecialchars($report['description']) ?></p>
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <small class="text-muted" style="font-size: 0.70rem;"><i class="fas fa-map-marker-alt me-1"></i><?= htmlspecialchars($report['barangay']) ?></small>
+                                            <small class="text-<?= $report['status'] === 'verified' ? 'success' : 'warning text-dark' ?>" style="font-size: 0.70rem;"><?= ucfirst($report['status']) ?></small>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <a href="/micro-oss/index.php?route=citizen-science" class="btn btn-sm btn-outline-primary mt-2 w-100 rounded-pill">View All Reports in Live Map</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

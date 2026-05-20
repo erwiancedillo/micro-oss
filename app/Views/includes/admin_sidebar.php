@@ -26,6 +26,12 @@
             <a href="index.php?route=admin-users" class="admin-sidebar-link <?= (strpos($route, 'admin-user') !== false) ? 'active' : '' ?>" title="User Management">
                 <i class="fas fa-users"></i><span class="link-text">User Management</span>
             </a>
+            <a href="index.php?route=admin-citizen-science" class="admin-sidebar-link <?= ($route === 'admin-citizen-science') ? 'active' : '' ?>" title="Citizen Science List">
+                <i class="fas fa-camera-retro"></i><span class="link-text">Citizen Science</span>
+            </a>
+            <a href="index.php?route=resource-assessment" class="admin-sidebar-link <?= ($route === 'resource-assessment') ? 'active' : '' ?>" title="Resource Management">
+                <i class="fas fa-boxes-stacked"></i><span class="link-text">Resources</span>
+            </a>
             <hr class="my-3 opacity-50">
             <a href="index.php?route=dashboard" class="admin-sidebar-link" title="User Dashboard">
                 <i class="fas fa-home"></i><span class="link-text">User Dashboard</span>
