@@ -61,6 +61,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Barangay</th>
                                     <th>Role</th>
                                     <th>Status</th>
                                     <th>Created</th>
@@ -70,7 +71,7 @@
                             <tbody>
                                 <?php if (empty($users)): ?>
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
+                                        <td colspan="7" class="text-center py-4">
                                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                             <div class="text-muted">No users found</div>
                                             <a href="index.php?route=admin-create-user" class="btn btn-primary mt-2">
@@ -93,6 +94,7 @@
                                                 </div>
                                             </td>
                                             <td><?= htmlspecialchars($user['email']) ?></td>
+                                            <td><?= htmlspecialchars($user['barangay'] ?? 'N/A') ?></td>
                                             <td>
                                                 <?php if ($user['role'] === 'admin'): ?>
                                                     <span class="badge bg-danger">Admin</span>

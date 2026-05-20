@@ -41,15 +41,28 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" 
-                                   class="form-control" 
-                                   id="email" 
-                                   name="email" 
-                                   value="<?= htmlspecialchars($user['email'] ?? '') ?>" 
-                                   required
-                                   placeholder="user@example.com">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       value="<?= htmlspecialchars($user['email'] ?? '') ?>" 
+                                       required
+                                       placeholder="user@example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="barangay" class="form-label">Barangay</label>
+                                <select class="form-select" id="barangay" name="barangay" required>
+                                    <option value="" disabled selected hidden>Select Barangay</option>
+                                    <?php if (isset($barangayList)): ?>
+                                        <?php foreach ($barangayList as $b): ?>
+                                            <option value="<?= htmlspecialchars($b) ?>" <?= (isset($user) && $user['barangay'] === $b) ? 'selected' : '' ?>><?= htmlspecialchars($b) ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -212,10 +225,33 @@ function isValidEmail(email) {
 </script>
 
 <style>
-.form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s ease-in-out;
 }
+
+.form-control:hover,
+.form-select:hover {
+    border-color: #cbd5e1;
+    background-color: #f1f5f9;
+}
+
+.form-select:hover {
+    cursor: pointer;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    outline: none;
+}
+
 
 .btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

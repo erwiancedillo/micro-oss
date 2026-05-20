@@ -24,6 +24,8 @@ class MapController
         }
 
         $barangay = $_GET['barangay'] ?? 'Lizada';
+        $alertModel = new \App\Models\BarangayAlert();
+        $barangayList = $alertModel->getBarangayNames();
         $result = $this->polygonModel->getByName($barangay);
 
         $markers = [];
@@ -35,7 +37,7 @@ class MapController
             $mapCenter = ['lat' => floatval($result['latitude'] ?? 0), 'lng' => floatval($result['longitude'] ?? 0)];
             $polygonWKT = $result['polygon'];
 
-            if (preg_match('/\(\((.*)\)\)/', $polygonWKT, $matches)) {
+            if ($polygonWKT && preg_match('/\(\((.*)\)\)/', $polygonWKT, $matches)) {
                 $coords = explode(',', $matches[1]);
                 $polygonCoords = [];
                 foreach ($coords as $coord) {
@@ -47,7 +49,7 @@ class MapController
                 $polygonCoordsJS = json_encode($polygonCoords);
             }
 
-            $markers = $this->polygonModel->getSitiosInPolygon($polygonWKT);
+            $markers = $polygonWKT ? $this->polygonModel->getSitiosInPolygon($polygonWKT) : [];
         } else {
             $notFound = true;
         }

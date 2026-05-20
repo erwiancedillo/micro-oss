@@ -18,8 +18,11 @@ class BarangayPolygon
         return $stmt->fetch();
     }
 
-    public function getSitiosInPolygon(string $polygonWKT)
+    public function getSitiosInPolygon(?string $polygonWKT)
     {
+        if (empty($polygonWKT)) {
+            return [];
+        }
         // Construct point from lat/lng in SQL
         $query = "
             SELECT sitio_name, latitude, longitude

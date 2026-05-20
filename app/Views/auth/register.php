@@ -30,10 +30,21 @@
                         <label for="name">Full Name</label>
                     </div>
                     <div class="form-floating mb-3">
+                        <select name="barangay" class="form-select" id="barangay" required>
+                            <option value="" disabled selected hidden></option>
+                            <?php if (isset($barangayList)): ?>
+                                <?php foreach ($barangayList as $b): ?>
+                                    <option value="<?= htmlspecialchars($b) ?>"><?= htmlspecialchars($b) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <label for="barangay">Barangay</label>
+                    </div>
+                    <div class="form-floating mb-3">
                         <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com" required>
                         <label for="email">Email Address</label>
                     </div>
-                    <div class="form-floating mb-4">
+                    <div class="form-floating mb-3">
                         <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
                         <label for="password">Password</label>
                     </div>
@@ -80,7 +91,8 @@
         transform: scale(1.1) rotate(10deg);
     }
 
-    .form-floating>.form-control {
+    .form-floating>.form-control,
+    .form-floating>.form-select {
         border-radius: 12px;
         border: 1.5px solid #f1f5f9;
         background-color: #f8fafc;
@@ -92,11 +104,23 @@
         padding-left: 1rem;
     }
 
-    .form-floating>.form-control:focus {
+    .form-floating>.form-control:hover,
+    .form-floating>.form-select:hover {
+        border-color: #cbd5e1;
+        background-color: #f1f5f9;
+    }
+
+    .form-floating>.form-select:hover {
+        cursor: pointer;
+    }
+
+    .form-floating>.form-control:focus,
+    .form-floating>.form-select:focus {
         border-color: #6366f1;
         background-color: #fff;
         box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
+
 
     .transition-all {
         transition: all 0.3s ease;

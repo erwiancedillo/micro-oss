@@ -1,6 +1,6 @@
 <!-- View Purok Demographics Modal -->
 <div class="modal fade" id="viewPurokModal" tabindex="-1" aria-labelledby="viewPurokModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-bottom: none;">
                 <h5 class="modal-title fw-bold" id="viewPurokModalLabel">
@@ -8,8 +8,8 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4 bg-light">
-                <div class="text-center mb-4 pb-3 border-bottom">
+            <div class="modal-body p-3 bg-light">
+                <div class="text-center mb-3 pb-2 border-bottom">
                     <h4 class="fw-bold text-dark mb-1" id="view_purok_name_display">Purok Name</h4>
                     <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">Demographic Data</span>
                 </div>
@@ -17,7 +17,7 @@
                 <div class="row g-3">
                     <div class="col-12 col-md-4">
                         <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-users me-2"></i>General Overview</h6>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted fw-medium">Total Families:</span>
@@ -37,7 +37,7 @@
 
                     <div class="col-12 col-md-8">
                         <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-venus-mars me-2"></i>Age Groups (Male & Female)</h6>
                                 <div class="row">
                                     <div class="col-6">
@@ -83,7 +83,7 @@
 
                     <div class="col-12">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-heartbeat me-2 text-danger"></i>Special Categories</h6>
                                 <div class="row">
                                     <div class="col-12 col-md-4">

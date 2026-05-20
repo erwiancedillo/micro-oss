@@ -146,6 +146,24 @@
     .btn-close-white {
         filter: invert(1) grayscale(100%) brightness(200%);
     }
+
+    .form-select {
+        border-radius: 8px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        transition: all 0.2s ease-in-out;
+    }
+    .form-select:hover {
+        border-color: #cbd5e1 !important;
+        background-color: #f1f5f9 !important;
+        cursor: pointer;
+    }
+    .form-select:focus {
+        border-color: #8b5cf6 !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15) !important;
+        outline: none;
+    }
 </style>
 
 <!-- Google Maps API -->

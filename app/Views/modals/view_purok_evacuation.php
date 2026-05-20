@@ -1,6 +1,6 @@
 <!-- View Evacuation Plan Modal -->
 <div class="modal fade" id="viewEvacuationModal" tabindex="-1" aria-labelledby="viewEvacuationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-bottom: none;">
                 <h5 class="modal-title fw-bold" id="viewEvacuationModalLabel">
@@ -8,8 +8,8 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4 bg-light">
-                <div class="text-center mb-4 pb-3 border-bottom">
+            <div class="modal-body p-3 bg-light">
+                <div class="text-center mb-3 pb-2 border-bottom">
                     <h4 class="fw-bold text-dark mb-1" id="view_evac_purok_name">Purok Name</h4>
                     <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">Evacuation Plan</span>
                 </div>
@@ -17,7 +17,7 @@
                 <div class="row g-3">
                     <div class="col-12 col-md-6">
                         <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-users me-2"></i>Population Overview</h6>
                                 <div class="row">
                                     <div class="col-6">
@@ -49,7 +49,7 @@
 
                     <div class="col-12 col-md-6">
                         <div class="card border-0 shadow-sm h-100 bg-warning bg-opacity-10 border border-warning">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Not Accommodated (A & B)</h6>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted fw-medium">Unaccommodated Families:</span>
@@ -65,7 +65,7 @@
 
                     <div class="col-12">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-building text-primary me-2"></i>Plan A: Primary Evacuation Center</h6>
                                 <div class="mb-3">
                                     <h5 class="fw-bold text-dark mb-0" id="view_evac_plan_a_center">Plan A Center Name</h5>
@@ -106,7 +106,7 @@
 
                     <div class="col-12">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-body">
+                            <div class="card-body p-3">
                                 <h6 class="text-secondary fw-bold mb-3 border-bottom pb-2"><i class="fas fa-campground text-info me-2"></i>Plan B: Secondary Evacuation Center</h6>
                                 <div class="mb-3">
                                     <h5 class="fw-bold text-dark mb-0" id="view_evac_plan_b_center">Plan B Center Name</h5>

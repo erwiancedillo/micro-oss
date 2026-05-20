@@ -1,7 +1,25 @@
 <style>
+    .form-select {
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
+    }
+    .form-select:hover {
+        border-color: #cbd5e1;
+        background-color: #f1f5f9;
+        cursor: pointer;
+    }
+    .form-select:focus {
+        border-color: #6366f1;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        outline: none;
+    }
     .alert-card { border: none; border-radius: 12px; transition: all 0.3s ease; }
     .alert-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
     .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+
     .bg-Green { background-color: #22c55e; }
     .bg-Yellow { background-color: #eab308; }
     .bg-Orange { background-color: #f97316; }

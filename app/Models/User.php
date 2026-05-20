@@ -21,7 +21,7 @@ class User
     public function create(array $data)
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO users (first_name, last_name, email, password, token, status, created_at) VALUES (?,?,?,?,?,?, NOW())'
+            'INSERT INTO users (first_name, last_name, email, password, token, status, barangay, created_at) VALUES (?,?,?,?,?,?,?, NOW())'
         );
         return $stmt->execute([
             $data['first_name'],
@@ -29,7 +29,8 @@ class User
             $data['email'],
             $data['password'],
             $data['token'],
-            $data['status']
+            $data['status'],
+            $data['barangay'] ?? null
         ]);
     }
 
@@ -41,14 +42,14 @@ class User
 
     public function getAllUsers()
     {
-        $stmt = $this->db->prepare('SELECT id, first_name, last_name, email, role, status, created_at FROM users ORDER BY created_at DESC');
+        $stmt = $this->db->prepare('SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM users ORDER BY created_at DESC');
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public function getUserById($id)
     {
-        $stmt = $this->db->prepare('SELECT id, first_name, last_name, email, role, status, created_at FROM users WHERE id = ?');
+        $stmt = $this->db->prepare('SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM users WHERE id = ?');
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -56,7 +57,7 @@ class User
     public function updateUser($id, $data)
     {
         $stmt = $this->db->prepare(
-            'UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, status = ? WHERE id = ?'
+            'UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?'
         );
         return $stmt->execute([
             $data['first_name'],
@@ -64,6 +65,7 @@ class User
             $data['email'],
             $data['role'],
             $data['status'],
+            $data['barangay'] ?? null,
             $id
         ]);
     }

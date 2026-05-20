@@ -1,7 +1,7 @@
 <link href="/micro-oss/assets/css/flood_monitoring.css" rel="stylesheet">
 
 <div class="main-container">
-    <div class="page-header mb-4">
+    <div class="page-header mb-4 me-3">
         <h1 class="page-title d-flex align-items-center">
             <i class="fas fa-water me-3 text-primary"></i>
             Flood Monitoring System

@@ -1,6 +1,6 @@
 <!-- Edit Construction Material Modal -->
 <div class="modal fade" id="editMaterialModal" tabindex="-1" aria-labelledby="editMaterialModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <h5 class="modal-title" id="editMaterialModalLabel">
@@ -31,7 +31,7 @@
 
 <!-- Edit Ownership Type Modal -->
 <div class="modal fade" id="editOwnershipModal" tabindex="-1" aria-labelledby="editOwnershipModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                 <h5 class="modal-title" id="editOwnershipModalLabel">

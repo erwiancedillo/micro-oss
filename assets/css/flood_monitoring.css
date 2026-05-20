@@ -5,6 +5,28 @@
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.main-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 1rem;
+    }
+}
+
+.page-header {
+    transition: padding 0.3s ease;
+}
+
+@media (min-width: 769px) {
+    .page-header {
+        padding-left: 2.5rem;
+    }
+}
+
 .flood-dashboard {
     height: calc(100vh - 100px);
     display: flex;

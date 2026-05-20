@@ -1,11 +1,29 @@
 <style>
+    .form-select {
+        border-radius: 20px !important;
+        border: 1.5px solid #e2e8f0;
+        background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
+    }
+    .form-select:hover {
+        border-color: #cbd5e1;
+        background-color: #f1f5f9;
+        cursor: pointer;
+    }
+    .form-select:focus {
+        border-color: #6366f1;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        outline: none;
+    }
     #map { height: 600px; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; }
     .map-card { border: none; border-radius: 16px; overflow: hidden; }
     
     .map-legend-overlay {
         position: absolute;
-        top: 20px;
+        bottom: 225px;
         right: 20px;
+        left: auto;
         z-index: 1000;
         background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(8px);
@@ -45,29 +63,34 @@
     /* Floating Location Button */
     .loc-btn {
         position: absolute;
-        bottom: 25px;
+        bottom: 165px;
         right: 20px;
         z-index: 1000;
         background: #fff;
-        border: none;
+        border: 1px solid rgba(0, 0, 0, 0.05);
         border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        width: 48px;
+        height: 48px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #3b82f6;
-        transition: all 0.2s;
+        color: #4f46e5;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .loc-btn:hover {
-        background: #f8fafc;
-        transform: scale(1.05);
+        background: #4f46e5;
+        color: #fff;
+        transform: scale(1.1) translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.3), 0 10px 10px -5px rgba(79, 70, 229, 0.2);
     }
     
-    .loc-btn i { font-size: 1.2rem; }
+    .loc-btn i { 
+        font-size: 1.25rem; 
+        transition: transform 0.3s ease;
+    }
 
     @media (max-width: 768px) {
         #map { height: 450px; border-radius: 12px 12px 0 0; }
@@ -75,6 +98,8 @@
         .map-legend-overlay {
             position: relative;
             top: 0;
+            bottom: auto;
+            left: 0;
             right: 0;
             max-width: 100%;
             margin: 0;
@@ -87,12 +112,13 @@
         }
         #map { order: 1; }
         .loc-btn {
-            bottom: 20px;
+            bottom: 155px;
             right: 20px;
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(4px);
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
     }
 </style>
@@ -113,7 +139,13 @@
                             <input type="hidden" name="route" value="community-map">
                             <label for="barangay" class="fw-bold text-nowrap d-none d-sm-block">Change Barangay:</label>
                             <select name="barangay" id="barangay" class="form-select w-auto rounded-pill px-3" onchange="this.form.submit()">
-                                <option value="Lizada" <?= $barangay=='Lizada'?'selected':'' ?>>Lizada</option>
+                                <?php if (isset($barangayList)): ?>
+                                    <?php foreach ($barangayList as $b): ?>
+                                        <option value="<?= htmlspecialchars($b) ?>" <?= ($barangay === $b) ? 'selected' : '' ?>><?= htmlspecialchars($b) ?></option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="Lizada" <?= $barangay=='Lizada'?'selected':'' ?>>Lizada</option>
+                                <?php endif; ?>
                             </select>
                         </form>
                     </div>
@@ -132,7 +164,7 @@
                     <h6 class="fw-bold mb-3 small text-uppercase tracking-wider text-muted">Map Legend</h6>
                     
                     <div class="legend-item">
-                        <div class="legend-line" style="background: #4338ca;"></div>
+                        <div class="legend-line" style="background: #2563eb;"></div>
                         <span>Barangay Boundary</span>
                     </div>
 
@@ -140,10 +172,6 @@
                         <img src="https://maps.google.com/mapfiles/ms/icons/red-pushpin.png" width="18" height="18">
                         <span class="text-primary fw-bold">Your Location</span>
                     </div>
-                    <!-- Location Center Button -->
-                <button id="center-location" class="loc-btn" title="Show my location">
-                    <i class="fas fa-location-arrow"></i>
-                </button>
 
                     <div class="legend-item">
                         <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" width="18" height="18">
@@ -167,7 +195,10 @@
                     </div>
                 </div>
 
-                
+                <!-- Location Center Button -->
+                <button id="center-location" class="loc-btn" title="Show my location">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
 
                 <div id="map"></div>
             </div>
@@ -189,9 +220,9 @@ function initMap() {
     if (polygonCoords.length > 0) {
         new google.maps.Polygon({
             paths: polygonCoords,
-            strokeColor: "#4338ca",
-            strokeOpacity: 0.8,
-            strokeWeight: 2.5,
+            strokeColor: "#2563eb",
+            strokeOpacity: 1.0,
+            strokeWeight: 3,
             fillColor: "#6366f1",
             fillOpacity: 0.2
         }).setMap(map);

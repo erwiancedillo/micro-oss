@@ -386,11 +386,12 @@ class AdminController
             $email = trim($_POST['email']);
             $role = $_POST['role'];
             $status = $_POST['status'];
+            $barangay = trim($_POST['barangay'] ?? '');
             $password = $_POST['password'];
             $confirmPassword = $_POST['confirm_password'];
             
             // Validation
-            if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($barangay)) {
                 $error = 'All fields are required.';
             } elseif ($password !== $confirmPassword) {
                 $error = 'Passwords do not match.';
@@ -411,7 +412,8 @@ class AdminController
                     'email' => $email,
                     'password' => $hashedPassword,
                     'token' => $token,
-                    'status' => $status
+                    'status' => $status,
+                    'barangay' => $barangay
                 ];
                 
                 if ($this->userModel->create($userData)) {
@@ -424,6 +426,7 @@ class AdminController
             }
         }
         
+        $barangayList = $this->alertModel->getBarangayNames();
         $title = 'Add User';
         $userName = $_SESSION['user_name'] ?? 'Admin';
         
@@ -457,12 +460,13 @@ class AdminController
             $email = trim($_POST['email']);
             $role = $_POST['role'];
             $status = $_POST['status'];
+            $barangay = trim($_POST['barangay'] ?? '');
             $password = $_POST['password'] ?? '';
             $confirmPassword = $_POST['confirm_password'] ?? '';
             
             // Validation
-            if (empty($firstName) || empty($lastName) || empty($email)) {
-                $error = 'First name, last name, and email are required.';
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($barangay)) {
+                $error = 'First name, last name, email, and barangay are required.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Please enter a valid email address.';
             } elseif ($this->userModel->emailExists($email, $id)) {
@@ -478,7 +482,8 @@ class AdminController
                     'last_name' => $lastName,
                     'email' => $email,
                     'role' => $role,
-                    'status' => $status
+                    'status' => $status,
+                    'barangay' => $barangay
                 ];
                 
                 if ($this->userModel->updateUser($id, $userData)) {
@@ -497,6 +502,7 @@ class AdminController
             }
         }
         
+        $barangayList = $this->alertModel->getBarangayNames();
         $title = 'Edit User';
         $userName = $_SESSION['user_name'] ?? 'Admin';
         

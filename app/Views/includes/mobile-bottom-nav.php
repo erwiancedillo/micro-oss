@@ -20,7 +20,7 @@
         <span class="nav-label">Alerts</span>
     </a>
     <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="/micro-oss/index.php?route=logout" class="nav-item-mobile" onclick="return confirm('Are you sure you want to logout?')">
+        <a href="#" class="nav-item-mobile" data-bs-toggle="modal" data-bs-target="#logoutModal">
             <?php
             $profile_src = (isset($_SESSION['profile_picture']) && !empty($_SESSION['profile_picture']))
                 ? 'assets/uploads/' . $_SESSION['profile_picture']

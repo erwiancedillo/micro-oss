@@ -6,7 +6,7 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 $current_route = $_GET['route'] ?? 'dashboard';
 ?>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none; z-index: 1060 !important;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none; z-index: 1045 !important;">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="/micro-oss/index.php?route=dashboard">
             <i class="fas fa-shield-alt me-2"></i>
@@ -73,7 +73,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
                 <?php endif; ?>
 
                 <li class="nav-item ms-lg-2">
-                    <a class="nav-link text-warning" href="/micro-oss/index.php?route=logout" onclick="return confirm('Are you sure you want to logout?')">
+                    <a class="nav-link text-warning" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" title="Log Out">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </li>
@@ -81,6 +81,29 @@ $current_route = $_GET['route'] ?? 'dashboard';
         </div>
     </div>
 </nav>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered logout-modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden glass-modal-content">
+            <div class="modal-body text-center p-4 p-md-5">
+                <div class="logout-icon-container bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-4">
+                    <i class="fas fa-right-from-bracket fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-2 text-dark">Confirm Log Out</h4>
+                <p class="text-muted mb-4 px-2">Are you sure you want to log out of your account?</p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light py-2 px-4 rounded-pill fw-semibold border w-100" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <a href="/micro-oss/index.php?route=logout" class="btn btn-danger py-2 px-4 rounded-pill fw-semibold w-100 btn-logout-confirm shadow-sm d-flex align-items-center justify-content-center">
+                        Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     .navbar-nav .nav-link {
@@ -103,5 +126,84 @@ $current_route = $_GET['route'] ?? 'dashboard';
             padding: 1rem;
             border-radius: 0 0 1rem 1rem;
         }
+    }
+
+    /* Responsive dialog width & centering for Logout Modal */
+    .logout-modal-dialog {
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Glassmorphism styling for Logout Modal */
+    .glass-modal-content {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .logout-icon-container {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(239, 68, 68, 0.1);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-logout-confirm {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        border: none !important;
+        transition: all 0.2s ease-in-out;
+        color: white !important;
+    }
+
+    .btn-logout-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.4) !important;
+        filter: brightness(1.05);
+    }
+
+    /* Mobile specific modal shrinkage */
+    @media (max-width: 575.98px) {
+        .logout-modal-dialog {
+            max-width: 300px !important;
+            width: 85% !important;
+            margin: 1.75rem auto !important;
+        }
+        .glass-modal-content .modal-body {
+            padding: 1.75rem 1.25rem !important;
+        }
+        .logout-icon-container {
+            width: 48px !important;
+            height: 48px !important;
+            margin-bottom: 1rem !important;
+        }
+        .logout-icon-container i {
+            font-size: 1.25rem !important;
+        }
+        .glass-modal-content h4 {
+            font-size: 1.15rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        .glass-modal-content p {
+            font-size: 0.85rem !important;
+            margin-bottom: 1.25rem !important;
+            padding: 0 !important;
+        }
+        .glass-modal-content .btn {
+            font-size: 0.85rem !important;
+            padding: 0.45rem 1rem !important;
+        }
+    }
+
+    @keyframes scaleIn {
+        0% { transform: scale(0.6); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
     }
 </style>

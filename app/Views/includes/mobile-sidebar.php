@@ -95,7 +95,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
                         <i class="fas fa-user-shield me-3 text-danger"></i>Admin Panel
                     </a>
                 <?php endif; ?>
-                <a href="/micro-oss/index.php?route=logout" class="list-group-item list-group-item-action py-3 border-0 text-danger" onclick="return confirm('Are you sure you want to logout?')">
+                <a href="#" class="list-group-item list-group-item-action py-3 border-0 text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     <i class="fas fa-right-from-bracket me-3"></i>Log Out
                 </a>
             <?php else: ?>

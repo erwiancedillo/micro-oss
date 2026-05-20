@@ -49,6 +49,9 @@ class AuthController
 
     public function registerForm($error = null, $success = null)
     {
+        $alertModel = new \App\Models\BarangayAlert();
+        $barangayList = $alertModel->getBarangayNames();
+        
         $title = 'Register';
         ob_start();
         include __DIR__ . '/../Views/auth/register.php';
@@ -59,10 +62,11 @@ class AuthController
     public function register()
     {
         $fullName = trim($_POST['name'] ?? '');
+        $barangay = trim($_POST['barangay'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        if (empty($fullName) || empty($email) || empty($password)) {
+        if (empty($fullName) || empty($barangay) || empty($email) || empty($password)) {
             return $this->registerForm("All fields are required.");
         }
 
@@ -88,7 +92,8 @@ class AuthController
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'token' => '',
-            'status' => 'active' // Set to active for immediate login
+            'status' => 'active', // Set to active for immediate login
+            'barangay' => $barangay
         ];
 
         if ($this->userModel->create($data)) {
@@ -139,13 +144,14 @@ class AuthController
             $firstName = trim($_POST['first_name']);
             $lastName = trim($_POST['last_name']);
             $email = trim($_POST['email']);
+            $barangay = trim($_POST['barangay'] ?? '');
             $currentPassword = $_POST['current_password'] ?? '';
             $newPassword = $_POST['new_password'] ?? '';
             $confirmPassword = $_POST['confirm_password'] ?? '';
             
             // Validation
-            if (empty($firstName) || empty($lastName) || empty($email)) {
-                $error = 'First name, last name, and email are required.';
+            if (empty($firstName) || empty($lastName) || empty($email) || empty($barangay)) {
+                $error = 'First name, last name, email, and barangay are required.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = 'Please enter a valid email address.';
             } elseif ($this->userModel->emailExists($email, $userId)) {
@@ -160,14 +166,17 @@ class AuthController
                 } elseif (strlen($newPassword) < 6) {
                     $error = 'New password must be at least 6 characters long.';
                 }
-            } else {
+            }
+            
+            if (empty($error)) {
                 // Update user
                 $userData = [
                     'first_name' => $firstName,
                     'last_name' => $lastName,
                     'email' => $email,
                     'role' => $user['role'],
-                    'status' => $user['status']
+                    'status' => $user['status'],
+                    'barangay' => $barangay
                 ];
                 
                 if ($this->userModel->updateUser($userId, $userData)) {
@@ -185,6 +194,9 @@ class AuthController
                 }
             }
         }
+        
+        $alertModel = new \App\Models\BarangayAlert();
+        $barangayList = $alertModel->getBarangayNames();
         
         $title = 'My Profile';
         ob_start();
