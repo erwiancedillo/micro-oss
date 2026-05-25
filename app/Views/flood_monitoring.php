@@ -1,6 +1,6 @@
 <link href="/micro-oss/assets/css/flood_monitoring.css" rel="stylesheet">
 
-<div class="main-container">
+<div class="container-fluid px-4 pt-4">
     <div class="page-header mb-4 me-3">
         <h1 class="page-title d-flex align-items-center">
             <i class="fas fa-water me-3 text-primary"></i>
@@ -8,11 +8,12 @@
         </h1>
         <p class="text-muted">Real-time river sensors and flood risk assessment for Toril areas.</p>
     </div>
+</div>
 
-    <div class="flood-dashboard">
-        <div class="map-card">
-            <div id="map"></div>
-        </div>
+<div class="flood-dashboard">
+    <div class="map-card">
+        <div id="map"></div>
+    </div>
 
         <!-- Floating Side Panel -->
         <div class="side-panel">
@@ -187,11 +188,12 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>
 
     <!-- Detailed Weekly Forecast Section -->
-    <div class="row mt-5">
-        <div class="col-12">
+    <div class="container-fluid px-4 py-4">
+        <div class="row mt-5">
+            <div class="col-12">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);">
                 <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-dark">
