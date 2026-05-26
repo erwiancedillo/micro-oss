@@ -13,7 +13,8 @@ class BarangayPolygon
 
     public function getByName(string $name)
     {
-        $stmt = $this->db->prepare("SELECT ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM barangay_polygons WHERE name=?");
+        $table = Database::getTableName('barangay_polygons');
+        $stmt = $this->db->prepare("SELECT ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM `$table` WHERE name=?");
         $stmt->execute([$name]);
         return $stmt->fetch();
     }
@@ -23,10 +24,11 @@ class BarangayPolygon
         if (empty($polygonWKT)) {
             return [];
         }
+        $sitiosTable = Database::getTableName('sitios');
         // Construct point from lat/lng in SQL
         $query = "
             SELECT sitio_name, latitude, longitude
-            FROM sitios
+            FROM `$sitiosTable`
             WHERE ST_Contains(
                 ST_GeomFromText(?),
                 ST_PointFromText(CONCAT('POINT(', latitude, ' ', longitude, ')'))
@@ -36,9 +38,11 @@ class BarangayPolygon
         $stmt->execute([$polygonWKT]);
         return $stmt->fetchAll();
     }
+
     public function getAllPolygons()
     {
-        $stmt = $this->db->query("SELECT name, ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM barangay_polygons");
+        $table = Database::getTableName('barangay_polygons');
+        $stmt = $this->db->query("SELECT name, ST_AsText(polygon) AS polygon, ST_X(center) AS latitude, ST_Y(center) AS longitude FROM `$table`");
         return $stmt->fetchAll();
     }
 }

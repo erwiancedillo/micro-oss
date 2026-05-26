@@ -13,44 +13,51 @@ class HouseholdMaterials
 
     public function getConstructionMaterials()
     {
-        $stmt = $this->db->query("SELECT * FROM household_materials ORDER BY id");
+        $table = Database::getTableName('household_materials');
+        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY id");
         return $stmt->fetchAll();
     }
 
     public function getOwnershipTypes()
     {
-        $stmt = $this->db->query("SELECT * FROM household_ownership ORDER BY id");
+        $table = Database::getTableName('household_ownership');
+        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY id");
         return $stmt->fetchAll();
     }
 
     public function getMaterialsTotals()
     {
-        $stmt = $this->db->query("SELECT SUM(households) as total FROM household_materials");
+        $table = Database::getTableName('household_materials');
+        $stmt = $this->db->query("SELECT SUM(households) as total FROM `$table`");
         return $stmt->fetch()['total'] ?? 0;
     }
 
     public function getOwnershipTotals()
     {
-        $stmt = $this->db->query("SELECT SUM(households) as total FROM household_ownership");
+        $table = Database::getTableName('household_ownership');
+        $stmt = $this->db->query("SELECT SUM(households) as total FROM `$table`");
         return $stmt->fetch()['total'] ?? 0;
     }
 
     public function getMostCommonMaterial()
     {
-        $stmt = $this->db->query("SELECT material_name FROM household_materials ORDER BY households DESC LIMIT 1");
+        $table = Database::getTableName('household_materials');
+        $stmt = $this->db->query("SELECT material_name FROM `$table` ORDER BY households DESC LIMIT 1");
         return $stmt->fetch()['material_name'] ?? 'N/A';
     }
 
     public function getOwnedHouseholdsCount()
     {
-        $stmt = $this->db->prepare("SELECT SUM(households) as total FROM household_ownership WHERE ownership_type LIKE :owned");
+        $table = Database::getTableName('household_ownership');
+        $stmt = $this->db->prepare("SELECT SUM(households) as total FROM `$table` WHERE ownership_type LIKE :owned");
         $stmt->execute(['owned' => '%Owned%']);
         return $stmt->fetch()['total'] ?? 0;
     }
 
     public function updateMaterialHouseholds($materialName, $households)
     {
-        $stmt = $this->db->prepare("UPDATE household_materials SET households = :households WHERE material_name = :material_name");
+        $table = Database::getTableName('household_materials');
+        $stmt = $this->db->prepare("UPDATE `$table` SET households = :households WHERE material_name = :material_name");
         return $stmt->execute([
             'households' => $households,
             'material_name' => $materialName
@@ -59,7 +66,8 @@ class HouseholdMaterials
 
     public function updateOwnershipHouseholds($ownershipType, $households)
     {
-        $stmt = $this->db->prepare("UPDATE household_ownership SET households = :households WHERE ownership_type = :ownership_type");
+        $table = Database::getTableName('household_ownership');
+        $stmt = $this->db->prepare("UPDATE `$table` SET households = :households WHERE ownership_type = :ownership_type");
         return $stmt->execute([
             'households' => $households,
             'ownership_type' => $ownershipType

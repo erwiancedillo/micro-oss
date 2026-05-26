@@ -34,4 +34,20 @@ class Database
     {
         return $this->conn;
     }
+
+    public static function getTableName($baseTableName)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $barangay = $_SESSION['admin_barangay'] ?? null;
+        if (!$barangay) {
+            return $baseTableName;
+        }
+        $barangay = strtolower($barangay);
+        if (!in_array($barangay, ['lizada', 'dalio'])) {
+            return $baseTableName;
+        }
+        return $baseTableName . '_' . $barangay;
+    }
 }

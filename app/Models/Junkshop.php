@@ -13,8 +13,9 @@ class Junkshop
 
     public function create(array $data)
     {
+        $table = Database::getTableName('junkshops');
         $stmt = $this->db->prepare(
-            'INSERT INTO junkshops (name, lat, lng, contact) VALUES (?, ?, ?, ?)'
+            "INSERT INTO `$table` (name, lat, lng, contact) VALUES (?, ?, ?, ?)"
         );
         return $stmt->execute([
             $data['name'],
@@ -26,13 +27,15 @@ class Junkshop
 
     public function getAll()
     {
-        $stmt = $this->db->query('SELECT * FROM junkshops');
+        $table = Database::getTableName('junkshops');
+        $stmt = $this->db->query("SELECT * FROM `$table`");
         return $stmt->fetchAll();
     }
 
     public function delete($id)
     {
-        $stmt = $this->db->prepare('DELETE FROM junkshops WHERE id = ?');
+        $table = Database::getTableName('junkshops');
+        $stmt = $this->db->prepare("DELETE FROM `$table` WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }

@@ -39,7 +39,41 @@ class AuthController
         if ($user && password_verify($password, $user['password'])) {
             session_start();
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['role'] = $user['role'] ?? 'user';
+            
+            $role = $user['role'] ?? 'user';
+            $barangay = null;
+            
+            if ($role === 'admin_lizada') {
+                $barangay = 'lizada';
+            } elseif ($role === 'admin_dalio') {
+                $barangay = 'dalio';
+            } elseif (!empty($user['barangay'])) {
+                $bLower = strtolower($user['barangay']);
+                if (in_array($bLower, ['lizada', 'dalio'])) {
+                    $barangay = $bLower;
+                }
+            }
+
+            if (!$barangay && $role === 'master') {
+                $barangay = 'lizada';
+            }
+
+            if (in_array($role, ['admin_lizada', 'admin_dalio', 'master'])) {
+                $_SESSION['role'] = 'admin';
+            } else {
+                if ($barangay && ($role === '' || $role === '0' || $role === 'admin')) {
+                    $_SESSION['role'] = 'admin';
+                } else {
+                    $_SESSION['role'] = $role;
+                }
+            }
+
+            if ($_SESSION['role'] === 'admin' && !$barangay) {
+                $this->loginForm("Access denied. Admin account has no associated barangay.");
+                exit();
+            }
+
+            $_SESSION['admin_barangay'] = $barangay;
             $_SESSION['show_welcome_card'] = true; // Set flag for dashboard welcome message
             header('Location: /micro-oss/index.php?route=dashboard');
             exit();

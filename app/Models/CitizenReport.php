@@ -13,8 +13,9 @@ class CitizenReport
 
     public function create(array $data)
     {
+        $table = Database::getTableName('citizen_reports');
         $stmt = $this->db->prepare(
-            'INSERT INTO citizen_reports (user_id, category, description, latitude, longitude, barangay, sitio, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            "INSERT INTO `$table` (user_id, category, description, latitude, longitude, barangay, sitio, image, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         return $stmt->execute([
             $data['user_id'],
@@ -31,11 +32,13 @@ class CitizenReport
 
     public function getAllReports()
     {
+        $table = Database::getTableName('citizen_reports');
+        $usersTable = Database::getTableName('users');
         $stmt = $this->db->prepare(
-            'SELECT cr.*, u.first_name, u.last_name 
-             FROM citizen_reports cr 
-             JOIN users u ON cr.user_id = u.id 
-             ORDER BY cr.created_at DESC'
+            "SELECT cr.*, u.first_name, u.last_name 
+             FROM `$table` cr 
+             JOIN `$usersTable` u ON cr.user_id = u.id 
+             ORDER BY cr.created_at DESC"
         );
         $stmt->execute();
         return $stmt->fetchAll();
@@ -43,12 +46,14 @@ class CitizenReport
 
     public function getReportsByBarangay(string $barangay)
     {
+        $table = Database::getTableName('citizen_reports');
+        $usersTable = Database::getTableName('users');
         $stmt = $this->db->prepare(
-            'SELECT cr.*, u.first_name, u.last_name 
-             FROM citizen_reports cr 
-             JOIN users u ON cr.user_id = u.id 
+            "SELECT cr.*, u.first_name, u.last_name 
+             FROM `$table` cr 
+             JOIN `$usersTable` u ON cr.user_id = u.id 
              WHERE cr.barangay = ? 
-             ORDER BY cr.created_at DESC'
+             ORDER BY cr.created_at DESC"
         );
         $stmt->execute([$barangay]);
         return $stmt->fetchAll();
@@ -56,12 +61,14 @@ class CitizenReport
 
     public function getReportsByCategory(string $category)
     {
+        $table = Database::getTableName('citizen_reports');
+        $usersTable = Database::getTableName('users');
         $stmt = $this->db->prepare(
-            'SELECT cr.*, u.first_name, u.last_name 
-             FROM citizen_reports cr 
-             JOIN users u ON cr.user_id = u.id 
+            "SELECT cr.*, u.first_name, u.last_name 
+             FROM `$table` cr 
+             JOIN `$usersTable` u ON cr.user_id = u.id 
              WHERE cr.category = ? 
-             ORDER BY cr.created_at DESC'
+             ORDER BY cr.created_at DESC"
         );
         $stmt->execute([$category]);
         return $stmt->fetchAll();
@@ -69,13 +76,15 @@ class CitizenReport
 
     public function updateStatus($id, $status)
     {
-        $stmt = $this->db->prepare('UPDATE citizen_reports SET status = ? WHERE id = ?');
+        $table = Database::getTableName('citizen_reports');
+        $stmt = $this->db->prepare("UPDATE `$table` SET status = ? WHERE id = ?");
         return $stmt->execute([$status, $id]);
     }
 
     public function delete($id)
     {
-        $stmt = $this->db->prepare('DELETE FROM citizen_reports WHERE id = ?');
+        $table = Database::getTableName('citizen_reports');
+        $stmt = $this->db->prepare("DELETE FROM `$table` WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }

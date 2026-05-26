@@ -229,19 +229,11 @@
                         $per_page = 10; // Show 10 records per page
                         $offset = ($page - 1) * $per_page;
 
-                        // Get database connection
-                        $conn = \App\Models\Database::getInstance()->getConnection();
-
-                        // Get total records
-                        $count_query = "SELECT COUNT(*) as total FROM purok_evacuation_plan";
-                        $count_result = $conn->query($count_query);
-                        $total_rows = $count_result->fetch()['total'];
+                        // Get evacuation plan data using the model
+                        $evacModel = new \App\Models\PurokEvacuation();
+                        $total_rows = $evacModel->getTotalCount();
                         $total_pages = ceil($total_rows / $per_page);
-
-                        // Query to get evacuation plan data with pagination
-                        $query = "SELECT * FROM purok_evacuation_plan ORDER BY purok_name ASC LIMIT $per_page OFFSET $offset";
-                        $result = $conn->query($query);
-                        $rows = $result->fetchAll();
+                        $rows = $evacModel->getPaginatedData($offset, $per_page);
                         ?>
 
                         <div class="table-responsive">

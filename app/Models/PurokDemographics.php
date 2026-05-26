@@ -13,7 +13,8 @@ class PurokDemographics
 
     public function getPaginatedData($offset, $per_page)
     {
-        $stmt = $this->db->prepare("SELECT * FROM flood_data LIMIT :offset, :per_page");
+        $table = Database::getTableName('flood_data');
+        $stmt = $this->db->prepare("SELECT * FROM `$table` LIMIT :offset, :per_page");
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->bindValue(':per_page', $per_page, \PDO::PARAM_INT);
         $stmt->execute();
@@ -22,13 +23,15 @@ class PurokDemographics
 
     public function getTotalCount()
     {
-        $stmt = $this->db->query("SELECT COUNT(*) as total FROM flood_data");
+        $table = Database::getTableName('flood_data');
+        $stmt = $this->db->query("SELECT COUNT(*) as total FROM `$table`");
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return $row ? (int)$row['total'] : 0;
     }
 
     public function getTotals()
     {
+        $table = Database::getTableName('flood_data');
         $sql = "SELECT 
             SUM(total_families) as total_families,
             SUM(total_persons_male) as total_persons_male,
@@ -46,7 +49,7 @@ class PurokDemographics
             SUM(sickness_male) as sickness_male,
             SUM(sickness_female) as sickness_female,
             SUM(pregnant_women) as pregnant_women
-            FROM flood_data";
+            FROM `$table`";
 
         $stmt = $this->db->query($sql);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -54,7 +57,8 @@ class PurokDemographics
 
     public function getPurokByPurokName($purokName)
     {
-        $stmt = $this->db->prepare("SELECT * FROM flood_data WHERE purok_name = :purok_name");
+        $table = Database::getTableName('flood_data');
+        $stmt = $this->db->prepare("SELECT * FROM `$table` WHERE purok_name = :purok_name");
         $stmt->bindValue(':purok_name', $purokName, \PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -62,7 +66,8 @@ class PurokDemographics
 
     public function updatePurokData($purokName, $data)
     {
-        $sql = "UPDATE flood_data SET 
+        $table = Database::getTableName('flood_data');
+        $sql = "UPDATE `$table` SET 
                 total_families = :total_families,
                 total_persons_male = :total_persons_male,
                 total_persons_female = :total_persons_female,
