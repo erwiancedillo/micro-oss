@@ -26,7 +26,7 @@ class SocioController
 
         $is_logged_in = true;
         $user_role = $_SESSION['role'] ?? null;
-        $is_admin = $user_role === 'admin';
+        $is_admin = in_array($user_role, ['admin', 'master']);
 
         $agePopulation = $this->agePopulationModel->getAll();
         $totals = $this->agePopulationModel->getTotals();
@@ -46,7 +46,7 @@ class SocioController
             session_start();
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_SESSION['role'] ?? '') === 'admin') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
             $female = (int)$_POST['female'];
             $male = (int)$_POST['male'];
             $data = [
@@ -69,7 +69,7 @@ class SocioController
             session_start();
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_SESSION['role'] ?? '') === 'admin') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
             $original_age_bracket = $_POST['original_age_bracket'];
             $female = (int)$_POST['female'];
             $male = (int)$_POST['male'];

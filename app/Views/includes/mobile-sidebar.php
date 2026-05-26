@@ -90,7 +90,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
 
             <div class="sidebar-divider p-2 px-3 bg-light text-muted small fw-bold">ACCOUNT</div>
             <?php if (isset($_SESSION['user_id'])): ?>
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <?php if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'master'])): ?>
                     <a href="/micro-oss/index.php?route=admin-dashboard" class="list-group-item list-group-item-action py-3 border-0 <?= $current_route === 'admin-dashboard' ? 'active' : '' ?>">
                         <i class="fas fa-user-shield me-3 text-danger"></i>Admin Panel
                     </a>

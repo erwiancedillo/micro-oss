@@ -27,8 +27,17 @@ class Resource
 
     public function getAllResources()
     {
-        $table = Database::getTableName('resources');
-        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY barangay, type");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("
+                SELECT id, barangay, type, quantity, status, 'Lizada' AS source FROM resources_lizada
+                UNION ALL
+                SELECT id, barangay, type, quantity, status, 'Dalio' AS source FROM resources_dalio
+                ORDER BY barangay, type
+            ");
+        } else {
+            $table = Database::getTableName('resources');
+            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY barangay, type");
+        }
         return $stmt->fetchAll();
     }
 

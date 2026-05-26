@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+$is_admin = isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'master']);
 $current_route = $_GET['route'] ?? 'dashboard';
 ?>
 

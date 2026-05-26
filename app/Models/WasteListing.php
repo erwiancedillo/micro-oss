@@ -28,8 +28,17 @@ class WasteListing
 
     public function getAll()
     {
-        $table = Database::getTableName('socio_data');
-        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY purok, household_head");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("
+                SELECT id, household_head, purok, members, monthly_income, plastic_waste_kg, 'Lizada' AS source FROM socio_data_lizada
+                UNION ALL
+                SELECT id, household_head, purok, members, monthly_income, plastic_waste_kg, 'Dalio' AS source FROM socio_data_dalio
+                ORDER BY purok, household_head
+            ");
+        } else {
+            $table = Database::getTableName('socio_data');
+            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY purok, household_head");
+        }
         return $stmt->fetchAll();
     }
 }

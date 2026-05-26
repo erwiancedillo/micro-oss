@@ -36,7 +36,8 @@ class AdminController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+        $role = $_SESSION['role'] ?? '';
+        if (!isset($_SESSION['user_id']) || !in_array($role, ['admin', 'master'])) {
             header('Location: /micro-oss/index.php?route=login');
             exit();
         }
@@ -557,6 +558,50 @@ class AdminController
         include __DIR__ . '/../Views/admin/user_form.php';
         $content = ob_get_clean();
         include __DIR__ . '/../Views/layout.php';
+    }
+
+    public function approveUser()
+    {
+        $this->checkAdmin();
+
+        // Only the master account can approve users
+        if (($_SESSION['role'] ?? '') !== 'master') {
+            $_SESSION['flash_message'] = 'Unauthorized: Only the master account can approve users.';
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+
+        $user = $this->userModel->getUserById($id);
+        if (!$user) {
+            $_SESSION['flash_message'] = 'User not found.';
+            header('Location: /micro-oss/index.php?route=admin-users');
+            exit();
+        }
+
+        // updateUser with status active will move the record to the barangay table
+        $userData = [
+            'first_name' => $user['first_name'],
+            'last_name'  => $user['last_name'],
+            'email'      => $user['email'],
+            'role'       => $user['role'] ?? 'admin',
+            'status'     => 'active',
+            'barangay'   => $user['barangay']
+        ];
+
+        if ($this->userModel->updateUser($id, $userData)) {
+            $_SESSION['flash_message'] = 'User approved and activated successfully.';
+        } else {
+            $_SESSION['flash_message'] = 'Failed to approve user. Please try again.';
+        }
+
+        header('Location: /micro-oss/index.php?route=admin-users');
+        exit();
     }
 
     public function deleteUser()

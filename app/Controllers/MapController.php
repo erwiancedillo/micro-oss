@@ -23,6 +23,12 @@ class MapController
             exit();
         }
 
+        // Temporarily elevate 'user' role to view all data (like master) for the community map
+        $originalAdminBarangay = $_SESSION['admin_barangay'] ?? null;
+        if (($_SESSION['role'] ?? '') === 'user') {
+            $_SESSION['admin_barangay'] = 'master';
+        }
+
         $barangay = $_GET['barangay'] ?? 'Lizada';
         $alertModel = new \App\Models\BarangayAlert();
         $barangayList = $alertModel->getBarangayNames();
@@ -68,6 +74,12 @@ class MapController
         ob_start();
         include __DIR__ . '/../Views/community_maps.php';
         $content = ob_get_clean();
+
+        // Restore original admin_barangay session value
+        if (($_SESSION['role'] ?? '') === 'user') {
+            $_SESSION['admin_barangay'] = $originalAdminBarangay;
+        }
+
         include __DIR__ . '/../Views/layout.php';
     }
 }

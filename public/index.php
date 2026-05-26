@@ -63,6 +63,7 @@ $routes = [
     'admin-create-user' => ['App\\Controllers\\AdminController', 'createUser'],
     'admin-edit-user' => ['App\\Controllers\\AdminController', 'editUser'],
     'admin-delete-user' => ['App\\Controllers\\AdminController', 'deleteUser'],
+    'admin-approve-user' => ['App\\Controllers\\AdminController', 'approveUser'],
 
     'community-map' => ['App\\Controllers\\MapController', 'communityMap'],
     'alerts' => ['App\\Controllers\\AlertController', 'index'],

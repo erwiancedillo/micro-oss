@@ -25,6 +25,16 @@ class FloodController
 
     public function index()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Temporarily elevate 'user' role to view all data (like master) for the flood monitoring page
+        $originalAdminBarangay = $_SESSION['admin_barangay'] ?? null;
+        if (($_SESSION['role'] ?? '') === 'user') {
+            $_SESSION['admin_barangay'] = 'master';
+        }
+
         $zones = $this->floodModel->getAllZones();
         
         // Fetch Real-time Weather Data for Toril, Davao (Lat: 7.028, Lng: 125.448)
@@ -191,6 +201,11 @@ class FloodController
         ob_start();
         include __DIR__ . '/../Views/flood_monitoring.php';
         $content = ob_get_clean();
+        
+        // Restore original admin_barangay session value
+        if (($_SESSION['role'] ?? '') === 'user') {
+            $_SESSION['admin_barangay'] = $originalAdminBarangay;
+        }
         
         include __DIR__ . '/../Views/layout.php';
     }

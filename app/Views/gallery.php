@@ -227,7 +227,7 @@
                                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-2 py-1" style="font-size:0.7rem;"><i class="fas fa-clock me-1"></i>Pending Verification</span>
                                             <?php endif; ?>
                                         </div>
-                                        <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+                                        <?php if (in_array($_SESSION['role'] ?? '', ['admin', 'master'])): ?>
                                             <div class="mt-3 d-flex justify-content-end border-top pt-2">
                                                 <?php if($cr['status'] !== 'verified'): ?>
                                                 <a href="index.php?route=gallery-verify-citizen&id=<?= $cr['id'] ?>" class="btn btn-sm btn-success me-2">

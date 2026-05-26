@@ -13,8 +13,17 @@ class HazardMap
 
     public function getAllHazardMaps()
     {
-        $table = Database::getTableName('hazard_maps');
-        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY name ASC");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("
+                SELECT id, name, image_url, description FROM hazard_maps_lizada
+                UNION ALL
+                SELECT id, name, image_url, description FROM hazard_maps_dalio
+                ORDER BY name ASC
+            ");
+        } else {
+            $table = Database::getTableName('hazard_maps');
+            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY name ASC");
+        }
         return $stmt->fetchAll();
     }
 

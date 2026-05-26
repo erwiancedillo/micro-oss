@@ -252,7 +252,7 @@
                                             echo "<td class='purok-name'>" . htmlspecialchars($row["purok_name"]) . "</td>";
                                             echo "<td class='action-column'>";
                                             echo "<button class='btn-view' style='background: #10b981; border: none; color: white; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.8rem; margin-right: 5px; margin-bottom: 5px;' onclick='viewEvacuationPlan(" . htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8') . ")'><i class='fas fa-eye me-1'></i>View Details</button>";
-                                            if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                                            if (isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'master'])) {
                                                 echo "<button class='btn-edit' style='margin-bottom: 5px;' onclick='editEvacuationPlan(" . $row["purok_id"] . ")'>";
                                                 echo "<i class='fas fa-edit me-1'></i>Edit";
                                                 echo "</button>";

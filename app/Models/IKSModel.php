@@ -21,8 +21,17 @@ class IKSModel
 
     public function getAllItems()
     {
-        $table = Database::getTableName('iks_items');
-        $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY category, order_index ASC");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("
+                SELECT id, category, title, description, significance, icon_url, source_url, order_index, 'Lizada' as source FROM iks_items_lizada
+                UNION ALL
+                SELECT id, category, title, description, significance, icon_url, source_url, order_index, 'Dalio' as source FROM iks_items_dalio
+                ORDER BY category, order_index ASC
+            ");
+        } else {
+            $table = Database::getTableName('iks_items');
+            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY category, order_index ASC");
+        }
         return $stmt->fetchAll();
     }
 

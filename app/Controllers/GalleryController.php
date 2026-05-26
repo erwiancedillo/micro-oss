@@ -32,7 +32,7 @@ class GalleryController
         } catch (\Exception $e) {}
         
         $citizenPhotos = [];
-        $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
+        $isAdmin = (isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'master']));
         
         foreach ($citizenReportsRaw as $cr) {
             // Admins see all, users see only verified
@@ -126,7 +126,7 @@ class GalleryController
     public function verifyCitizenReport()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        if (($_SESSION['role'] ?? '') !== 'admin') {
+        if (!in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
             header("Location: index.php?route=gallery");
             exit;
         }
@@ -143,7 +143,7 @@ class GalleryController
     public function deleteCitizenReport()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        if (($_SESSION['role'] ?? '') !== 'admin') {
+        if (!in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
             header("Location: index.php?route=gallery");
             exit;
         }

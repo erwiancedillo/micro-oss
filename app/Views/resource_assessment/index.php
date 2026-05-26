@@ -11,7 +11,7 @@
     </div>
 
     <div class="row g-4">
-        <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+        <?php if (in_array($_SESSION['role'] ?? '', ['admin', 'master'])): ?>
         <div class="col-lg-4">
             <div class="glass-card p-4 h-100">
                 <h5 class="text-warning text-darken-3 fw-bold border-bottom pb-2 mb-3"><i class="fas fa-plus-circle me-2"></i>Add Resource Update</h5>
@@ -75,7 +75,7 @@
                                 <hr class="my-2">
                                 <small class="text-muted" style="font-size: 0.7rem;">Updated: <?= date('M d, Y H:i', strtotime($res['last_updated'])) ?></small>
                                 
-                                <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+                                <?php if (in_array($_SESSION['role'] ?? '', ['admin', 'master'])): ?>
                                 <select class="form-select form-select-sm mt-3 status-updater" data-id="<?= $res['id'] ?>">
                                     <option value="available" <?= $res['status'] == 'available' ? 'selected' : '' ?>>Available (Standby)</option>
                                     <option value="deployed" <?= $res['status'] == 'deployed' ? 'selected' : '' ?>>Deployed (In Use)</option>

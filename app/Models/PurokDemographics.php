@@ -13,8 +13,19 @@ class PurokDemographics
 
     public function getPaginatedData($offset, $per_page)
     {
-        $table = Database::getTableName('flood_data');
-        $stmt = $this->db->prepare("SELECT * FROM `$table` LIMIT :offset, :per_page");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->prepare("
+                SELECT * FROM (
+                    SELECT * FROM flood_data_lizada
+                    UNION ALL
+                    SELECT * FROM flood_data_dalio
+                ) AS combined
+                LIMIT :offset, :per_page
+            ");
+        } else {
+            $table = Database::getTableName('flood_data');
+            $stmt = $this->db->prepare("SELECT * FROM `$table` LIMIT :offset, :per_page");
+        }
         $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
         $stmt->bindValue(':per_page', $per_page, \PDO::PARAM_INT);
         $stmt->execute();
@@ -23,17 +34,19 @@ class PurokDemographics
 
     public function getTotalCount()
     {
-        $table = Database::getTableName('flood_data');
-        $stmt = $this->db->query("SELECT COUNT(*) as total FROM `$table`");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("SELECT COUNT(*) as total FROM (SELECT id FROM flood_data_lizada UNION ALL SELECT id FROM flood_data_dalio) AS combined");
+        } else {
+            $table = Database::getTableName('flood_data');
+            $stmt = $this->db->query("SELECT COUNT(*) as total FROM `$table`");
+        }
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return $row ? (int)$row['total'] : 0;
     }
 
     public function getTotals()
     {
-        $table = Database::getTableName('flood_data');
-        $sql = "SELECT 
-            SUM(total_families) as total_families,
+        $cols = "SUM(total_families) as total_families,
             SUM(total_persons_male) as total_persons_male,
             SUM(total_persons_female) as total_persons_female,
             SUM(infant_male) as infant_male,
@@ -48,8 +61,14 @@ class PurokDemographics
             SUM(pwd_female) as pwd_female,
             SUM(sickness_male) as sickness_male,
             SUM(sickness_female) as sickness_female,
-            SUM(pregnant_women) as pregnant_women
-            FROM `$table`";
+            SUM(pregnant_women) as pregnant_women";
+
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $sql = "SELECT $cols FROM (SELECT * FROM flood_data_lizada UNION ALL SELECT * FROM flood_data_dalio) AS combined";
+        } else {
+            $table = Database::getTableName('flood_data');
+            $sql = "SELECT $cols FROM `$table`";
+        }
 
         $stmt = $this->db->query($sql);
         return $stmt->fetch(\PDO::FETCH_ASSOC);

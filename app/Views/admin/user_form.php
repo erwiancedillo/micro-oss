@@ -70,7 +70,7 @@
                                 <label for="role" class="form-label">Role</label>
                                 <select class="form-select" id="role" name="role" required>
                                     <option value="user" <?= (isset($user) && $user['role'] === 'user') ? 'selected' : '' ?>>Regular User</option>
-                                    <option value="admin" <?= (isset($user) && $user['role'] === 'admin') ? 'selected' : '' ?>>Administrator</option>
+                                    <option value="admin" <?= (isset($user) && in_array($user['role'], ['admin', 'admin_lizada', 'admin_dalio', 'master'])) ? 'selected' : '' ?>>Administrator</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -102,22 +102,20 @@
                             <?php endif; ?>
                         </div>
 
-                        <?php if (!isset($user)): ?>
-                            <div class="mb-4">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <div class="input-group">
-                                    <input type="password" 
-                                           class="form-control" 
-                                           id="confirm_password" 
-                                           name="confirm_password" 
-                                           required
-                                           placeholder="Confirm password">
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="confirm_password" 
+                                       name="confirm_password" 
+                                       <?= !isset($user) ? 'required' : '' ?>
+                                       placeholder="Confirm password">
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
-                        <?php endif; ?>
+                        </div>
 
                         <div class="d-flex justify-content-between">
                             <a href="index.php?route=admin-users" class="btn btn-secondary">
@@ -168,8 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm_password');
             
-            // For new users, check password match
-            if (confirmPassword && password !== confirmPassword.value) {
+            // For users, check password match if password is provided
+            if (password && confirmPassword && password !== confirmPassword.value) {
                 e.preventDefault();
                 alert('Passwords do not match. Please check and try again.');
                 return false;

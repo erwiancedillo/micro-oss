@@ -18,7 +18,7 @@ class ResourceAssessmentController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+        if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
             header('Location: /micro-oss/index.php?route=login');
             exit;
         }
@@ -39,7 +39,7 @@ class ResourceAssessmentController
         
         header('Content-Type: application/json');
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             return;
         }
@@ -74,7 +74,7 @@ class ResourceAssessmentController
         }
         header('Content-Type: application/json');
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+        if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
             echo json_encode(['success' => false, 'message' => 'Unauthorized']);
             return;
         }

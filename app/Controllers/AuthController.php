@@ -37,13 +37,21 @@ class AuthController
         $password = $_POST['password'] ?? '';
         $user = $this->userModel->findByEmail($email);
         if ($user && password_verify($password, $user['password'])) {
+            if ($user['status'] !== 'active') {
+                $this->loginForm("Your account is pending approval by the Master Administrator.");
+                exit();
+            }
+
             session_start();
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['first_name'];
             
             $role = $user['role'] ?? 'user';
             $barangay = null;
             
-            if ($role === 'admin_lizada') {
+            if ($role === 'master') {
+                $barangay = 'master';
+            } elseif ($role === 'admin_lizada') {
                 $barangay = 'lizada';
             } elseif ($role === 'admin_dalio') {
                 $barangay = 'dalio';
@@ -55,10 +63,13 @@ class AuthController
             }
 
             if (!$barangay && $role === 'master') {
-                $barangay = 'lizada';
+                $barangay = 'master';
             }
 
-            if (in_array($role, ['admin_lizada', 'admin_dalio', 'master'])) {
+            // Preserve master role explicitly; collapse barangay-specific admin roles into 'admin'
+            if ($role === 'master') {
+                $_SESSION['role'] = 'master';
+            } elseif (in_array($role, ['admin_lizada', 'admin_dalio'])) {
                 $_SESSION['role'] = 'admin';
             } else {
                 if ($barangay && ($role === '' || $role === '0' || $role === 'admin')) {
@@ -68,7 +79,7 @@ class AuthController
                 }
             }
 
-            if ($_SESSION['role'] === 'admin' && !$barangay) {
+            if (in_array($_SESSION['role'], ['admin', 'master']) && !$barangay) {
                 $this->loginForm("Access denied. Admin account has no associated barangay.");
                 exit();
             }
@@ -126,12 +137,12 @@ class AuthController
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'token' => '',
-            'status' => 'active', // Set to active for immediate login
+            'status' => 'inactive', // Set to inactive for Master Administrator approval
             'barangay' => $barangay
         ];
 
         if ($this->userModel->create($data)) {
-            return $this->registerForm(null, "Registration successful! You can now login.");
+            return $this->registerForm(null, "Registration successful! Your account is pending approval by the Master Administrator.");
         } else {
             return $this->registerForm("Registration failed. Please try again.");
         }

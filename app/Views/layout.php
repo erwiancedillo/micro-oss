@@ -55,7 +55,7 @@ $isAuthPage = in_array($route, ['login', 'register']);
         <?php include __DIR__ . '/includes/mobile-bottom-nav.php'; ?>
     <?php endif; ?>
 
-    <main class="main-content <?= $isAuthPage ? 'd-flex align-items-center py-5 min-vh-100' : '' ?>">
+    <main class="main-content <?= $isAuthPage ? 'd-flex align-items-center py-3 py-sm-4 min-vh-100' : '' ?>">
         <div class="<?= $isAuthPage ? 'container' : '' ?>">
             <?= $content ?>
         </div>

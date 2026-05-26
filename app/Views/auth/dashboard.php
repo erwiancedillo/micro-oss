@@ -189,7 +189,7 @@
                 <h3 class="card-title">My Profile</h3>
             </a>
         </div>
-        <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+        <?php if (in_array($_SESSION['role'] ?? '', ['admin', 'master'])): ?>
         <!-- Admin Console -->
         <div class="col">
             <a href="/micro-oss/index.php?route=admin-dashboard" class="dashboard-card border-primary-subtle" style="background-color: #f8fafc;">

@@ -13,14 +13,20 @@ class FloodZone
 
     public function getAllZones()
     {
-        $table = Database::getTableName('flood_zones');
-        $stmt = $this->db->query("SELECT * FROM `$table`");
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            $stmt = $this->db->query("
+                SELECT id, zone_name, risk_level, polygon FROM flood_zones_lizada
+                UNION ALL
+                SELECT id, zone_name, risk_level, polygon FROM flood_zones_dalio
+            ");
+        } else {
+            $table = Database::getTableName('flood_zones');
+            $stmt = $this->db->query("SELECT * FROM `$table`");
+        }
         $zones = $stmt->fetchAll();
-        
         foreach ($zones as &$row) {
             $row['polygon'] = json_decode($row['polygon']);
         }
-        
         return $zones;
     }
 

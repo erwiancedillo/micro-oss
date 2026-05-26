@@ -213,7 +213,7 @@
     }
 </style>
 <?php
-if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
     echo '<div class="alert alert-warning m-3">Access denied. Admins only.</div>';
     exit;
 }
