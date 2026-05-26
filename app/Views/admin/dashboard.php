@@ -129,6 +129,88 @@
         border-radius: 0.6rem;
         padding: 0.5rem 1rem;
     }
+
+    /* Custom Modern Toast Notification */
+    .custom-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: #ffffff;
+        color: #1e293b;
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        min-width: 320px;
+        animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-toast.hide {
+        animation: fadeOutToast 0.3s ease forwards;
+    }
+
+    @keyframes fadeOutToast {
+        to {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+    }
+
+    .custom-toast .toast-icon {
+        font-size: 1.25rem;
+        color: #10b981;
+    }
+
+    .custom-toast .toast-content {
+        flex-grow: 1;
+    }
+
+    .custom-toast .toast-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .custom-toast .toast-desc {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .custom-toast .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #34d399);
+        width: 100%;
+        animation: progressDecrease 4s linear forwards;
+    }
+
+    @keyframes progressDecrease {
+        from {
+            width: 100%;
+        }
+        to {
+            width: 0%;
+        }
+    }
 </style>
 <?php
 if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -257,59 +339,59 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
         <!-- Pending Citizen Science Verification -->
         <?php if (isset($pendingReports) && count($pendingReports) > 0): ?>
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-warning" style="border-width: 2px !important;">
-            <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-warning"><i class="fas fa-camera me-2"></i>Pending Citizen Science Reports</h5>
-                <span class="badge bg-warning text-dark rounded-pill px-3"><?= count($pendingReports) ?> Pending</span>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-warning" style="border-width: 2px !important;">
+                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-warning"><i class="fas fa-camera me-2"></i>Pending Citizen Science Reports</h5>
+                    <span class="badge bg-warning text-dark rounded-pill px-3"><?= count($pendingReports) ?> Pending</span>
+                </div>
+                <div class="table-responsive px-4 pb-4">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Category</th>
+                                <th>Details</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pendingReports as $pr): ?>
+                                <tr>
+                                    <td>
+                                        <a href="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" target="_blank">
+                                            <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" alt="thumbnail" class="rounded object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
+                                        </a>
+                                    </td>
+                                    <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-2 py-1"><?= htmlspecialchars($pr['category']) ?></span></td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="<?= htmlspecialchars($pr['description']) ?>">
+                                            <?= htmlspecialchars($pr['description'] ?: 'No description provided') ?>
+                                        </div>
+                                        <div class="small text-muted mt-1">By: <?= htmlspecialchars($pr['first_name'] . ' ' . $pr['last_name']) ?></div>
+                                    </td>
+                                    <td>
+                                        <strong><?= htmlspecialchars($pr['barangay']) ?></strong>
+                                        <?php if (!empty($pr['sitio'])): ?>
+                                            <br><small class="text-muted"><?= htmlspecialchars($pr['sitio']) ?></small>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="small text-muted"><?= date('M j, Y g:i A', strtotime($pr['created_at'])) ?></td>
+                                    <td class="text-end">
+                                        <a href="index.php?route=admin-citizen-verify&id=<?= $pr['id'] ?>" class="btn btn-sm btn-success me-1 shadow-sm" title="Verify & Publish">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                        <a href="index.php?route=admin-citizen-delete&id=<?= $pr['id'] ?>" class="btn btn-sm btn-outline-danger shadow-sm" title="Reject & Delete" onclick="return confirm('Are you sure you want to reject and delete this report?')">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="table-responsive px-4 pb-4">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Category</th>
-                            <th>Details</th>
-                            <th>Location</th>
-                            <th>Date</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($pendingReports as $pr): ?>
-                        <tr>
-                            <td>
-                                <a href="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" target="_blank">
-                                    <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($pr['image']) ?>" alt="thumbnail" class="rounded object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
-                                </a>
-                            </td>
-                            <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-2 py-1"><?= htmlspecialchars($pr['category']) ?></span></td>
-                            <td>
-                                <div class="text-truncate" style="max-width: 200px;" title="<?= htmlspecialchars($pr['description']) ?>">
-                                    <?= htmlspecialchars($pr['description'] ?: 'No description provided') ?>
-                                </div>
-                                <div class="small text-muted mt-1">By: <?= htmlspecialchars($pr['first_name'] . ' ' . $pr['last_name']) ?></div>
-                            </td>
-                            <td>
-                                <strong><?= htmlspecialchars($pr['barangay']) ?></strong>
-                                <?php if (!empty($pr['sitio'])): ?>
-                                    <br><small class="text-muted"><?= htmlspecialchars($pr['sitio']) ?></small>
-                                <?php endif; ?>
-                            </td>
-                            <td class="small text-muted"><?= date('M j, Y g:i A', strtotime($pr['created_at'])) ?></td>
-                            <td class="text-end">
-                                <a href="index.php?route=admin-citizen-verify&id=<?= $pr['id'] ?>" class="btn btn-sm btn-success me-1 shadow-sm" title="Verify & Publish">
-                                    <i class="fas fa-check"></i>
-                                </a>
-                                <a href="index.php?route=admin-citizen-delete&id=<?= $pr['id'] ?>" class="btn btn-sm btn-outline-danger shadow-sm" title="Reject & Delete" onclick="return confirm('Are you sure you want to reject and delete this report?')">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
         <?php endif; ?>
 
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
@@ -335,16 +417,16 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         <input type="hidden" id="centerId">
         <div class="mb-4">
             <label class="form-label fw-bold small text-muted">Center Name</label>
-            <input type="text" class="form-control rounded-3 p-3 bg-light border-0" id="centerName" placeholder="e.g. Toril Covered Court" required>
+            <input type="text" class="form-control rounded-3 p-3 bg-light border-0" id="centerName" placeholder="e.g. Toril Covered Court">
         </div>
         <div class="row g-3 mb-4">
             <div class="col-6">
                 <label class="form-label fw-bold small text-muted">Latitude</label>
-                <input type="number" class="form-control rounded-3 p-3 bg-light border-0" id="centerLat" step="0.00001" placeholder="7.0000" required>
+                <input type="number" class="form-control rounded-3 p-3 bg-light border-0" id="centerLat" step="any" placeholder="7.0000">
             </div>
             <div class="col-6">
                 <label class="form-label fw-bold small text-muted">Longitude</label>
-                <input type="number" class="form-control rounded-3 p-3 bg-light border-0" id="centerLng" step="0.00001" placeholder="125.0000" required>
+                <input type="number" class="form-control rounded-3 p-3 bg-light border-0" id="centerLng" step="any" placeholder="125.0000">
             </div>
         </div>
         <div class="mb-4">
@@ -856,6 +938,31 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         document.getElementById('editPanelOverlay').style.display = 'block';
     }
 
+    function showToast(title, desc) {
+        const existing = document.querySelector('.custom-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        toast.innerHTML = `
+            <div class="toast-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">${title}</h4>
+                <p class="toast-desc">${desc}</p>
+            </div>
+            <div class="toast-progress"></div>
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
     document.getElementById('editForm').addEventListener('submit', async e => {
         e.preventDefault();
         const id = document.getElementById('centerId').value;
@@ -881,6 +988,7 @@ if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             if (result.success) {
                 loadDashboard();
                 closePanel();
+                showToast(id ? 'Center Modified Successfully' : 'Center Added Successfully', `The center "${data.name}" has been successfully saved.`);
             } else alert('Save failed: ' + result.message);
         } catch (err) {
             console.error(err);

@@ -1,0 +1,74 @@
+## SYSTEM REQUIREMENT
+
+You are building a PHP MVC application running on **XAMPP** with **MySQL** database `micro_oss`.  
+The application already has multiple CRUD modules (e.g., residents, products, requests, appointments, inventory).  
+Each module has its own **table** in the database.
+
+**Objective:**  
+Modify the entire system so that **every page** and **every CRUD operation** displays/filters data based on which barangay the logged‑in admin belongs to – **Lizada** or **Dalio**.
+
+Additionally, create **separate database tables** for each barangay, for **every existing CRUD table**, without breaking the original structure.
+
+## CRITICAL DATA PRESERVATION RULE
+
+- **Do not delete, truncate, or modify any existing data** in the original tables, nor in any other part of the database, during migration or runtime.
+- The original tables must remain **intact and unchanged** (data and structure). They can be kept as templates, backups, or for future reference.
+- The migration script may **copy** existing data from original tables into the new `_lizada` / `_dalio` tables only if the original table contains a `barangay` column. **Copying never removes data**.
+- If the original tables have no `barangay` column, the new tables must be created **empty** – no data is moved or deleted.
+- Under no circumstance should any `DROP`, `TRUNCATE`, or `DELETE` affect the original tables or any existing data outside the newly created barangay tables.
+
+## TECHNICAL STACK (must be strictly followed)
+
+- **Backend:** PHP (native, no heavy frameworks unless already using a lightweight MVC like CodeIgniter 3/4 or a custom MVC).  
+- **Database:** MySQL via phpMyAdmin / XAMPP.  
+- **Architecture:** **MVC pattern** (Models handle DB queries, Controllers contain logic, Views display data).  
+- **Environment:** XAMPP (Apache + MySQL).  
+- **Deployment target:** Standard online shared hosting (cPanel, PHP 7.4+ , MySQL 5.7+).
+
+## DETAILED REQUIREMENTS
+
+### 1. Database Changes (MySQL – Preserving All Existing Data)
+
+- Use the existing database: `micro_oss`.
+- Identify **all existing tables** that are used in any CRUD operation throughout the system.  
+  Examples (but not limited to): `residents`, `products`, `service_requests`, `appointments`, `inventory`, `clearances`, `blotter`, `officials`, etc.  
+- For **each** such table, create **two new tables** with the following naming pattern:
+
+  - `{original_table}_lizada`
+  - `{original_table}_dalio`
+
+- The **structure** (columns, data types, indexes, primary keys, foreign keys) must be **identical** to the original table.  
+- If the original table has foreign keys that point to another table that is also being duplicated, update those foreign keys to point to the corresponding barangay‑specific table.  
+  Example:  
+  Original: `appointments.resident_id` → `residents.id`  
+  New: `appointments_lizada.resident_id` → `residents_lizada.id`
+
+- **Do not delete, alter, or drop the original tables** – they remain untouched.  
+- **Provide a full SQL migration script** that:
+  - Reads the schema of each original table.
+  - Generates and runs `CREATE TABLE ... LIKE` or explicit `CREATE TABLE` statements.
+  - Copies existing data **only if** the original table contains a `barangay` column with values `'lizada'` or `'dalio'`. The copy operation is `INSERT INTO ... SELECT` – no deletion of source data.
+  - If the original table does **not** have a `barangay` column, the new tables are created empty (no data copied).
+  - Handles foreign key constraints correctly and preserves all original data.
+
+### 2. PHP MVC Implementation – Dynamic Table Switching
+
+#### A) Admin Authentication & Barangay Detection
+
+- The system already has a login system. Extend it so that after successful login:
+  - Determine the admin’s barangay (`lizada` or `dalio`) from the `admins` table (or from a column like `barangay` in the user session).
+  - Store the barangay in `$_SESSION['admin_barangay']`.
+  - If no barangay is set for the admin, deny access or assign a default (but preferably block).
+
+#### B) Centralised Table Name Helper
+
+Create a **helper function / method** available globally (e.g., in a `BaseModel` or a `Database` class):
+
+```php
+function getDynamicTableName($baseTableName) {
+    $barangay = $_SESSION['admin_barangay'] ?? null;
+    if (!in_array($barangay, ['lizada', 'dalio'])) {
+        die('Invalid admin barangay');
+    }
+    return $baseTableName . '_' . $barangay;
+}
