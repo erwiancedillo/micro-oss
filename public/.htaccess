@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /micro-oss/public/
+RewriteBase /
 
 # redirect everything to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
