@@ -1,4 +1,4 @@
-<link href="/assets/css/flood_monitoring.css" rel="stylesheet">
+<link href="<?= APP_BASE_PATH ?>/assets/css/flood_monitoring.css" rel="stylesheet">
 
 <div class="container-fluid px-4 pt-4">
     <div class="page-header mb-4 me-3">

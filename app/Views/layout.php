@@ -15,13 +15,13 @@
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.15.0/dist/leaflet-geoman.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.15.0/dist/leaflet-geoman.min.js"></script>
-    <script src="assets/js/leaflet-services.js"></script>
+    <script src="<?= APP_BASE_PATH ?>/assets/js/leaflet-services.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/assets/css/style.css" rel="stylesheet">
-    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/assets/css/flood_monitoring.css" rel="stylesheet">
-    <link href="<?= $_SERVER['REQUEST_SCHEME'] ?>://<?= $_SERVER['HTTP_HOST'] ?>/assets/css/hazard.css" rel="stylesheet">
+    <link href="<?= APP_BASE_PATH ?>/assets/css/style.css" rel="stylesheet">
+    <link href="<?= APP_BASE_PATH ?>/assets/css/flood_monitoring.css" rel="stylesheet">
+    <link href="<?= APP_BASE_PATH ?>/assets/css/hazard.css" rel="stylesheet">
 
     <style>
         body {

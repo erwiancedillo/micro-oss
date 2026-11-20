@@ -18,7 +18,7 @@ $googleURL = $googleURL ?? '/auth/google';
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Custom Modern Login CSS -->
-    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/login.css">
 </head>
 
 <body>
@@ -113,7 +113,7 @@ $googleURL = $googleURL ?? '/auth/google';
                         <!-- Barangay Lizada -->
                         <div class="barangay-card-item">
                             <div class="barangay-logo-wrap">
-                                <img src="/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada Logo">
+                                <img src="<?= APP_BASE_PATH ?>/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada Logo">
                             </div>
                             <div class="barangay-info">
                                 <span class="barangay-name">Barangay Lizada</span>
@@ -124,7 +124,7 @@ $googleURL = $googleURL ?? '/auth/google';
                         <!-- Barangay Dalio -->
                         <div class="barangay-card-item">
                             <div class="barangay-logo-wrap">
-                                <img src="/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio Logo">
+                                <img src="<?= APP_BASE_PATH ?>/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio Logo">
                             </div>
                             <div class="barangay-info">
                                 <span class="barangay-name">Barangay Dalio</span>
@@ -174,7 +174,7 @@ $googleURL = $googleURL ?? '/auth/google';
                     <?php endif; ?>
 
                     <!-- Login Form -->
-                    <form action="/index.php?route=login" method="POST" id="loginForm">
+                    <form action="<?= APP_BASE_PATH ?>/index.php?route=login" method="POST" id="loginForm">
 
                         <?php if (!empty($csrfToken)): ?>
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
@@ -230,7 +230,7 @@ $googleURL = $googleURL ?? '/auth/google';
                                 <span>Remember Me</span>
                             </label>
 
-                            <a href="/index.php?route=forgot-password" class="forgot-password-link">Forgot Password?</a>
+                            <a href="<?= APP_BASE_PATH ?>/index.php?route=forgot-password" class="forgot-password-link">Forgot Password?</a>
                         </div>
 
                         <!-- Submit Button -->
@@ -284,7 +284,7 @@ $googleURL = $googleURL ?? '/auth/google';
                     <!-- Register Link -->
                     <div class="card-footer-register">
                         <span>Don't have an account?</span>
-                        <a href="/index.php?route=register" class="auth-switch-link" data-direction="left">Register Here</a>
+                        <a href="<?= APP_BASE_PATH ?>/index.php?route=register" class="auth-switch-link" data-direction="left">Register Here</a>
                     </div>
 
                 </div>
@@ -296,7 +296,7 @@ $googleURL = $googleURL ?? '/auth/google';
     </div>
 
     <!-- Login JS -->
-    <script src="/assets/js/login.js"></script>
+    <script src="<?= APP_BASE_PATH ?>/assets/js/login.js"></script>
 
 </body>
 

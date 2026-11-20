@@ -1,5 +1,17 @@
 <?php
 
+$scriptDirectory = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+if (basename($scriptDirectory) === 'public') {
+    $scriptDirectory = dirname($scriptDirectory);
+}
+$appBasePath = rtrim($scriptDirectory, '/');
+if ($appBasePath === '.' || $appBasePath === '/') {
+    $appBasePath = '';
+}
+if (!defined('APP_BASE_PATH')) {
+    define('APP_BASE_PATH', $appBasePath);
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\AuthController;

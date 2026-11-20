@@ -18,7 +18,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Custom Modern Auth CSS -->
-    <link rel="stylesheet" href="/assets/css/login.css">
+    <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/login.css">
 </head>
 <body>
 
@@ -110,7 +110,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
                         <!-- Barangay Lizada -->
                         <div class="barangay-card-item">
                             <div class="barangay-logo-wrap">
-                                <img src="/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada Logo">
+                                <img src="<?= APP_BASE_PATH ?>/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada Logo">
                             </div>
                             <div class="barangay-info">
                                 <span class="barangay-name">Barangay Lizada</span>
@@ -121,7 +121,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
                         <!-- Barangay Dalio -->
                         <div class="barangay-card-item">
                             <div class="barangay-logo-wrap">
-                                <img src="/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio Logo">
+                                <img src="<?= APP_BASE_PATH ?>/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio Logo">
                             </div>
                             <div class="barangay-info">
                                 <span class="barangay-name">Barangay Dalio</span>
@@ -183,7 +183,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
                     <?php endif; ?>
 
                     <!-- Register Form -->
-                    <form action="/index.php?route=register" method="POST" id="authForm">
+                    <form action="<?= APP_BASE_PATH ?>/index.php?route=register" method="POST" id="authForm">
 
                         <?php if (!empty($csrfToken)): ?>
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
@@ -281,7 +281,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
                     <!-- Footer Link (Back to Login with Smooth Animation) -->
                     <div class="card-footer-register">
                         <span>Already have an account?</span>
-                        <a href="/index.php?route=login" class="auth-switch-link" data-direction="right">Log In</a>
+                        <a href="<?= APP_BASE_PATH ?>/index.php?route=login" class="auth-switch-link" data-direction="right">Log In</a>
                     </div>
 
                 </div>
@@ -293,7 +293,7 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
     </div>
 
     <!-- Auth JS -->
-    <script src="/assets/js/login.js"></script>
+    <script src="<?= APP_BASE_PATH ?>/assets/js/login.js"></script>
 
 </body>
 </html>
