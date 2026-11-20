@@ -12,7 +12,7 @@
     <!-- Use Bootstrap 5 for consistency -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="/micro-oss/assets/css/hazard.css" rel="stylesheet">
+    <link href="/assets/css/hazard.css" rel="stylesheet">
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -116,7 +116,7 @@
                             <?php if (empty($citizenReports)): ?>
                                 <div class="p-3 text-center text-muted small border rounded">No community reports at this time.</div>
                             <?php else: ?>
-                                <?php foreach(array_slice($citizenReports, 0, 5) as $report): ?>
+                                <?php foreach (array_slice($citizenReports, 0, 5) as $report): ?>
                                     <div class="list-group-item px-3 py-2 mb-2 border rounded shadow-sm bg-light">
                                         <div class="d-flex w-100 justify-content-between align-items-center">
                                             <h6 class="mb-1 text-danger fw-bold" style="font-size: 0.85rem;"><i class="fas fa-camera me-1"></i><?= htmlspecialchars($report['category']) ?></h6>
@@ -130,7 +130,7 @@
                                     </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
-                            <a href="/micro-oss/index.php?route=citizen-science" class="btn btn-sm btn-outline-primary mt-2 w-100 rounded-pill">View All Reports in Live Map</a>
+                            <!--      <a href="/index.php?route=citizen-science" class="btn btn-sm btn-outline-primary mt-2 w-100 rounded-pill">View All Reports in Live Ma p</a>-->
                         </div>
                     </div>
                 </div>

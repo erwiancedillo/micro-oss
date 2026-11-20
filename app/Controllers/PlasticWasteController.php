@@ -22,7 +22,7 @@ class PlasticWasteController
             session_start();
         }
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit;
         }
 
@@ -75,3 +75,4 @@ class PlasticWasteController
         echo json_encode(['success' => true, 'data' => $junkshops]);
     }
 }
+

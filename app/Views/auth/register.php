@@ -1,153 +1,299 @@
 <?php
-// Register view — compact, fully visible on small screens and phones
+// Modern Split Register View - Micro OSS Disaster System
+$error = $error ?? '';
+$success = $success ?? '';
+$csrfToken = $csrfToken ?? '';
+$barangayList = $barangayList ?? ['Lizada', 'Dalio'];
 ?>
-<div class="login-wrapper d-flex align-items-center justify-content-center">
-    <div class="login-card-col w-100">
-        <div class="card border-0 shadow-2xl rounded-4 overflow-hidden glass-card">
-            <!-- Header -->
-            <div class="card-header border-0 text-center px-4 py-3 dashboard-gradient text-white">
-                <div class="icon-container bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
-                    <img src="assets/uploads/Lizadalogo.jpg" alt="Logo" class="rounded-circle" style="width:100%;height:100%;object-fit:cover;border:2px solid #fff;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Micro OSS Disaster System</title>
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Modern Auth CSS -->
+    <link rel="stylesheet" href="/assets/css/login.css">
+</head>
+<body>
+
+    <div class="login-wrapper">
+
+        <!-- Background Decorative Curve Ribbons (Project Purple/Indigo Palette) -->
+        <div class="curve-bg-accent" aria-hidden="true">
+            <svg class="curve-svg" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="purpleRibbon" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#5a3d8a" />
+                        <stop offset="50%" stop-color="#764ba2" />
+                        <stop offset="100%" stop-color="#a855f7" />
+                    </linearGradient>
+                    <linearGradient id="indigoRibbon" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(102, 126, 234, 0.45)" />
+                        <stop offset="50%" stop-color="rgba(118, 75, 162, 0.15)" />
+                        <stop offset="100%" stop-color="rgba(102, 126, 234, 0.02)" />
+                    </linearGradient>
+                    <linearGradient id="whiteWave" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(255, 255, 255, 0.35)" />
+                        <stop offset="100%" stop-color="rgba(255, 255, 255, 0.02)" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Flowing White / Indigo Top-Right Curve -->
+                <path d="M720 0C900 120 1140 180 1440 100V0H720Z" fill="url(#whiteWave)" />
+                <path d="M500 0C700 240 1050 320 1440 260V0H500Z" fill="url(#indigoRibbon)" />
+
+                <!-- Bottom Sweeping Purple & Indigo Ribbon Waves -->
+                <path d="M0 900C300 870 650 820 900 700C1100 600 1320 620 1440 680V900H0Z" fill="url(#whiteWave)" />
+                <path d="M0 900C350 885 620 830 880 735C1080 655 1280 670 1440 720V735C1280 685 1080 670 880 750C620 845 350 900 0 900Z" fill="url(#purpleRibbon)" />
+            </svg>
+        </div>
+
+        <div class="login-container">
+
+            <!-- LEFT: HERO & COMMUNITY INFO -->
+            <section class="hero-section">
+
+                <!-- Brand Header -->
+                <div class="brand-header">
+                    <div class="brand-logo-wrap">
+                        <div class="brand-seal">
+                            <div class="brand-seal-inner">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="brand-title">
+                            <span class="brand-name">Micro OSS</span>
+                            <span class="brand-sub">Disaster Information System</span>
+                        </div>
+                    </div>
+
+                    <div class="brand-divider"></div>
+
+                    <div class="brand-motto">
+                        PREPARE &bull; RESPOND &bull; PROTECT
+                    </div>
                 </div>
-                <h2 class="fw-bold mb-0 fs-5">Create Account</h2>
-                <p class="opacity-75 mb-0 mt-1" style="font-size:0.78rem;">Register &mdash; subject to Master approval</p>
-            </div>
 
-            <!-- Body -->
-            <div class="card-body px-4 py-3 bg-white">
+                <!-- Main Hero Headline -->
+                <div class="hero-content">
+                    <h1 class="hero-heading">
+                        Building a<br>
+                        Smarter, Stronger<br>
+                        <span class="highlight-brand">Resilient</span> Community
+                    </h1>
 
-                <?php if (isset($error)): ?>
-                    <div class="alert alert-danger border-0 rounded-3 mb-2 py-2 d-flex align-items-center" style="font-size:0.85rem;">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <div><?= htmlspecialchars($error) ?></div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (isset($success)): ?>
-                    <div class="alert alert-success border-0 rounded-3 mb-2 py-2 d-flex align-items-center" style="font-size:0.85rem;">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div><?= htmlspecialchars($success) ?></div>
-                    </div>
-                <?php endif; ?>
-
-                <form action="/micro-oss/index.php?route=register" method="POST">
-                    <div class="form-floating mb-2">
-                        <input type="text" name="name" class="form-control" id="name" placeholder="Full Name" required>
-                        <label for="name" style="font-size:0.85rem;">Full Name</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <select name="barangay" class="form-select" id="barangay" required>
-                            <option value="" disabled selected hidden>Select your Barangay</option>
-                            <?php if (isset($barangayList)): ?>
-                                <?php foreach ($barangayList as $b): ?>
-                                    <option value="<?= htmlspecialchars($b) ?>"><?= htmlspecialchars($b) ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                        <label for="barangay" style="font-size:0.85rem;">Barangay</label>
-                    </div>
-                    <div class="form-floating mb-2">
-                        <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com" required>
-                        <label for="email" style="font-size:0.85rem;">Email Address</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
-                        <label for="password" style="font-size:0.85rem;">Password</label>
-                    </div>
-                    <button class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow-sm transition-all mb-2" style="font-size:0.9rem;">
-                        <i class="fas fa-user-plus me-2"></i>Create Account
-                    </button>
-                </form>
-
-                <div class="text-center pt-2 border-top mt-2">
-                    <p class="text-muted mb-0" style="font-size:0.8rem;">
-                        Already have an account?
-                        <a href="/micro-oss/index.php?route=login" class="text-primary fw-bold text-decoration-none ms-1 hover-underline">Login here</a>
+                    <p class="hero-subheading">
+                        Coordinated disaster response, evacuation center management, and community alerts for our partner barangays.
                     </p>
                 </div>
-            </div>
+
+                <!-- Our Partner Barangays Card -->
+                <div class="partners-card">
+                    <div class="partners-badge-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 17a1 1 0 0 0 1.41 0l5.88-5.88a5 5 0 0 0-7.07-7.07L9 6.34 6.78 4.05a5 5 0 0 0-7.07 7.07l5.88 5.88A1 1 0 0 0 7 17"></path>
+                            <path d="m15.5 8.5 2 2"></path>
+                            <path d="m11 13 2 2"></path>
+                        </svg>
+                        <span>Our Partner Barangays</span>
+                    </div>
+
+                    <div class="barangays-partner-grid">
+                        <!-- Barangay Lizada -->
+                        <div class="barangay-card-item">
+                            <div class="barangay-logo-wrap">
+                                <img src="/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada Logo">
+                            </div>
+                            <div class="barangay-info">
+                                <span class="barangay-name">Barangay Lizada</span>
+                                <span class="barangay-role">Community Partner</span>
+                            </div>
+                        </div>
+
+                        <!-- Barangay Dalio -->
+                        <div class="barangay-card-item">
+                            <div class="barangay-logo-wrap">
+                                <img src="/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio Logo">
+                            </div>
+                            <div class="barangay-info">
+                                <span class="barangay-name">Barangay Dalio</span>
+                                <span class="barangay-role">Community Partner</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Tagline -->
+                <div class="hero-footer-tagline">
+                    <span class="line"></span>
+                    <span>Together for a safer and disaster-resilient community</span>
+                    <span class="line"></span>
+                </div>
+
+            </section>
+
+            <!-- RIGHT: MODERN FLOATING REGISTER CARD -->
+            <section class="login-card-container">
+
+                <div class="login-card anim-enter-right">
+
+                    <!-- User Plus Badge Icon -->
+                    <div class="card-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                    </div>
+
+                    <!-- Title & Subtitle -->
+                    <h2 class="card-title">Create Account</h2>
+                    <p class="card-subtitle">Register to join the disaster response network</p>
+
+                    <!-- Error Alert -->
+                    <?php if (!empty($error)): ?>
+                        <div class="login-error-alert" role="alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span><?= htmlspecialchars($error) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Success Alert -->
+                    <?php if (!empty($success)): ?>
+                        <div class="login-success-alert" role="alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <span><?= htmlspecialchars($success) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Register Form -->
+                    <form action="/index.php?route=register" method="POST" id="authForm">
+
+                        <?php if (!empty($csrfToken)): ?>
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                        <?php endif; ?>
+
+                        <!-- Full Name -->
+                        <div class="form-field-group">
+                            <div class="input-container">
+                                <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    id="name" 
+                                    placeholder="Full Name (e.g. Juan Santos)" 
+                                    autocomplete="name" 
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Barangay Dropdown -->
+                        <div class="form-field-group">
+                            <div class="input-container">
+                                <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <select name="barangay" id="barangay" required>
+                                    <option value="" disabled selected hidden>Select your Barangay</option>
+                                    <?php foreach ($barangayList as $b): ?>
+                                        <option value="<?= htmlspecialchars($b) ?>"><?= htmlspecialchars($b) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Email Address -->
+                        <div class="form-field-group">
+                            <div class="input-container">
+                                <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    id="email" 
+                                    placeholder="Email Address" 
+                                    autocomplete="email" 
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-field-group">
+                            <div class="input-container">
+                                <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password" 
+                                    placeholder="Password (min. 6 characters)" 
+                                    autocomplete="new-password" 
+                                    required
+                                >
+                                <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Toggle password visibility">
+                                    <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-submit-login" id="submitBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                            <span class="btn-text" data-loading-text="Creating Account...">Create Account</span>
+                        </button>
+
+                    </form>
+
+                    <!-- Footer Link (Back to Login with Smooth Animation) -->
+                    <div class="card-footer-register">
+                        <span>Already have an account?</span>
+                        <a href="/index.php?route=login" class="auth-switch-link" data-direction="right">Log In</a>
+                    </div>
+
+                </div>
+
+            </section>
+
         </div>
-        <p class="text-center text-muted mt-2 opacity-50" style="font-size:0.75rem;">&copy; <?= date('Y') ?> Micro OSS. All rights reserved.</p>
+
     </div>
-</div>
 
-<style>
-    :root {
-        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        --glass-bg: rgba(255, 255, 255, 0.97);
-    }
+    <!-- Auth JS -->
+    <script src="/assets/js/login.js"></script>
 
-    /* Wrapper — let the parent layout handle centering and height */
-    .login-wrapper {
-        padding: 0.5rem 0.25rem;
-        box-sizing: border-box;
-    }
-
-    .login-card-col {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .dashboard-gradient { background: var(--primary-gradient); }
-
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .icon-container {
-        width: 54px;
-        height: 54px;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .card:hover .icon-container { transform: scale(1.08) rotate(8deg); }
-
-    .form-floating > .form-control,
-    .form-floating > .form-select {
-        border-radius: 10px;
-        border: 1.5px solid #e2e8f0;
-        background-color: #f8fafc;
-        padding-left: 0.85rem;
-        height: calc(3rem + 2px);
-    }
-    .form-floating > label { padding-left: 0.85rem; }
-    .form-floating > .form-control:focus,
-    .form-floating > .form-select:focus {
-        border-color: #6366f1;
-        background-color: #fff;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
-    }
-    .form-floating > .form-control:hover,
-    .form-floating > .form-select:hover {
-        border-color: #cbd5e1;
-        background-color: #f1f5f9;
-        cursor: pointer;
-    }
-
-    .transition-all { transition: all 0.3s ease; }
-
-    .btn-primary { background: var(--primary-gradient); border: none; }
-    .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 20px -4px rgba(99,102,241,0.45) !important;
-        filter: brightness(1.08);
-    }
-
-    .hover-underline:hover { text-decoration: underline !important; }
-    .shadow-2xl { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.13); }
-
-    @media (max-width: 360px) {
-        .login-wrapper { padding: 0.5rem; }
-        .icon-container { width: 44px; height: 44px; }
-    }
-
-    @media (max-height: 600px) {
-        .login-wrapper { align-items: flex-start; padding-top: 0.5rem; }
-        .icon-container { width: 40px; height: 40px; }
-        .card-header { padding: 0.6rem 1rem !important; }
-        .card-body { padding: 0.75rem 1rem !important; }
-        .mb-2 { margin-bottom: 0.35rem !important; }
-        .mb-3 { margin-bottom: 0.5rem !important; }
-    }
-</style>
+</body>
+</html>

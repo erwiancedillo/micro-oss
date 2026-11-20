@@ -1,4 +1,4 @@
-<link href="/micro-oss/assets/css/flood_monitoring.css" rel="stylesheet">
+<link href="/assets/css/flood_monitoring.css" rel="stylesheet">
 
 <div class="container-fluid px-4 pt-4">
     <div class="page-header mb-4 me-3">
@@ -146,7 +146,7 @@
             <div class="glass-panel">
                 <div class="panel-title d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-exclamation-triangle"></i> Active Alerts</span>
-                    <a href="/micro-oss/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
+                    <a href="/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
                         View All <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
@@ -173,7 +173,7 @@
                             };
                     ?>
                         <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color: rgba(0,0,0,0.05) !important; font-size: 0.8rem;">
-                            <a href="/micro-oss/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
+                            <a href="/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
                                 <?= htmlspecialchars($a['name']) ?>
                             </a>
                             <span class="badge <?= $badgeClass ?> rounded-pill" style="font-size: 0.6rem;">
@@ -313,7 +313,7 @@
 </div>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry"></script>
-<script src="/micro-oss/assets/js/floodzones.js"></script>
+<script src="/assets/js/floodzones.js"></script>
 <script>
     let map;
     const defaultCenter = { lat: 7.028012, lng: 125.447948 }; // Toril Center
@@ -445,7 +445,7 @@
             const marker = new google.maps.Marker({
                 position: { lat: alert.lat, lng: alert.lng },
                 map: map,
-                title: alert.name + ' — ' + alert.color + ' Alert',
+                title: alert.name + ' â€” ' + alert.color + ' Alert',
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
                     fillColor: color,
@@ -466,9 +466,9 @@
                             ${alert.color.toUpperCase()} ALERT
                         </div>
                         <p style="font-size: 0.8rem; color: #555; margin: 6px 0 8px;">${advisory}</p>
-                        <a href="/micro-oss/index.php?route=alerts&barangay=${encodeURIComponent(alert.name)}" 
+                        <a href="/index.php?route=alerts&barangay=${encodeURIComponent(alert.name)}" 
                            style="font-size: 0.75rem; color: #667eea; text-decoration: none; font-weight: 600;">
-                            View Full Alert Details →
+                            View Full Alert Details â†’
                         </a>
                     </div>
                 `);
@@ -585,7 +585,7 @@
                 }
             });
             marker.addListener('click', () => {
-                const imgTag = report.image ? `<img src="/micro-oss/assets/uploads/citizen_science/${report.image}" style="width:100%; border-radius:5px; margin-top:5px; max-height:100px; object-fit:cover;">` : '';
+                const imgTag = report.image ? `<img src="/assets/uploads/citizen_science/${report.image}" style="width:100%; border-radius:5px; margin-top:5px; max-height:100px; object-fit:cover;">` : '';
                 const info = new google.maps.InfoWindow({
                     content: `<div style="font-family:Inter,sans-serif; max-width: 200px;">
                         <h6 style="color:#f97316; font-weight:bold; margin-bottom:2px;"><i class="fas fa-camera me-1"></i>${report.category}</h6>
@@ -689,3 +689,4 @@
         window.addEventListener('load', initMap);
     }
 </script>
+

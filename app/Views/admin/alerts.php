@@ -1,17 +1,30 @@
+<!-- Admin POV - Flood Alert Management (Micro OSS Modern Purple/Indigo Theme) -->
 <style>
     :root {
-        --alert-green: #22c55e;
-        --alert-yellow: #eab308;
+        --brand-primary: #667eea;
+        --brand-secondary: #764ba2;
+        --brand-purple-vibrant: #8b5cf6;
+        --brand-purple-light: #c084fc;
+        --brand-lavender: #eef2ff;
+        --brand-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --brand-gradient-hover: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        --alert-green: #10b981;
+        --alert-yellow: #f59e0b;
         --alert-orange: #f97316;
         --alert-red: #ef4444;
-        --admin-primary: #4338ca;
+        --card-radius: 20px;
+        --card-shadow: 0 10px 30px -5px rgba(102, 126, 234, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.85);
+    }
+
+    body {
+        background-color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .admin-layout {
         display: flex;
         min-height: calc(100vh - 70px);
         background: #f8fafc;
-        font-family: 'Inter', sans-serif;
     }
 
     .admin-main {
@@ -20,227 +33,399 @@
         overflow-x: hidden;
     }
 
-    .alert-card {
-        background: white;
-        border-radius: 1.25rem;
-        padding: 0;
-        border: none;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Top Banner Header */
+    .dashboard-header-banner {
+        background: linear-gradient(135deg, #0f142b 0%, #171d42 100%);
+        border-radius: var(--card-radius);
+        padding: 1.75rem 2rem;
         margin-bottom: 2rem;
+        position: relative;
         overflow: hidden;
+        color: #ffffff;
+        box-shadow: 0 12px 30px -5px rgba(15, 20, 43, 0.35);
+        border: 1px solid rgba(139, 92, 246, 0.2);
     }
 
-    .level-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
+    .dashboard-header-banner::before {
+        content: "";
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.3), transparent 70%);
+        pointer-events: none;
+    }
+
+    .header-badge-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(102, 126, 234, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        color: #c084fc;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
         font-weight: 700;
-        font-size: 0.7rem;
+        letter-spacing: 0.5px;
         text-transform: uppercase;
-        letter-spacing: 0.025em;
+        margin-bottom: 0.5rem;
     }
 
-    .level-0 { background: rgba(34, 197, 94, 0.1); color: var(--alert-green); }
-    .level-1 { background: rgba(234, 179, 8, 0.1); color: var(--alert-yellow); }
-    .level-2 { background: rgba(249, 115, 22, 0.1); color: var(--alert-orange); }
-    .level-3 { background: rgba(239, 68, 68, 0.1); color: var(--alert-red); }
+    .pulse-dot-red {
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        animation: pulseRed 1.8s infinite;
+    }
 
-    .table th {
-        background: #f8fafc;
-        color: #64748b;
-        font-weight: 700;
+    @keyframes pulseRed {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .dashboard-title-text {
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .dashboard-title-text .highlight-purple {
+        background: linear-gradient(135deg, #a78bfa 0%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .btn-gradient-primary {
+        background: var(--brand-gradient);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 0.65rem 1.4rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 6px 18px rgba(118, 75, 162, 0.35);
+        transition: all 0.22s ease;
+    }
+
+    .btn-gradient-primary:hover {
+        background: var(--brand-gradient-hover);
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(118, 75, 162, 0.45);
+    }
+
+    /* Table Container Card */
+    .table-container-card {
+        background: #ffffff;
+        border-radius: var(--card-radius);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table thead th {
+        background-color: #f8fafc;
+        color: #475569;
         text-transform: uppercase;
         font-size: 0.75rem;
-        padding: 1.25rem 1.5rem;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        padding: 1.1rem 1.25rem;
         border-bottom: 1px solid #e2e8f0;
     }
 
-    .table td {
-        padding: 1.25rem 1.5rem;
-        vertical-align: middle;
+    .table tbody td {
+        padding: 1.1rem 1.25rem;
+        font-size: 0.875rem;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
     }
 
+    .table tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.03);
+    }
+
+    .level-badge {
+        padding: 5px 14px;
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .level-0 { background: #ecfdf5; color: #047857; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .level-1 { background: #fffbeb; color: #b45309; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .level-2 { background: #fff7ed; color: #c2410c; border: 1px solid rgba(249, 115, 22, 0.2); }
+    .level-3 { background: #fef2f2; color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    /* Search Input */
+    .table-search-input {
+        height: 42px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        padding: 0 14px 0 38px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        background: #f8fafc;
+        width: 260px;
+    }
+
+    .table-search-input:focus {
+        border-color: var(--brand-primary);
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+        outline: none;
+    }
+
+    /* Modal / Edit Overlay */
     .panel-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(15, 23, 42, 0.4);
-        backdrop-filter: blur(8px);
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(6px);
         z-index: 1060;
         display: none;
         align-items: center;
         justify-content: center;
-        padding: 1rem;
+        padding: 1.5rem;
     }
 
     .panel-content {
-        background: white;
+        background: #ffffff;
         width: 100%;
-        max-width: 550px;
-        max-height: 95vh;
+        max-width: 540px;
+        max-height: 90vh;
         overflow-y: auto;
-        border-radius: 1.5rem;
-        padding: 2rem;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-
-    #map {
-        height: 280px;
-        width: 100%;
-        border-radius: 1rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 2.25rem 2rem;
+        box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
     }
 
     .type-tab {
         flex: 1;
         text-align: center;
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         cursor: pointer;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border-radius: 0.75rem;
-        transition: all 0.2s;
+        font-weight: 700;
+        font-size: 0.875rem;
+        border-radius: 10px;
+        transition: all 0.2s ease;
         color: #64748b;
     }
 
     .type-tab.active {
-        background: var(--admin-primary);
-        color: white;
-        box-shadow: 0 4px 6px -1px rgba(67, 56, 202, 0.3);
+        background: var(--brand-gradient);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+    }
+
+    .form-input-styled {
+        height: 46px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0 14px;
+        font-size: 0.875rem;
+        color: #0f172a;
+        background: #ffffff;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+    .form-input-styled:focus {
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3.5px rgba(102, 126, 234, 0.12);
+        outline: none;
+    }
+
+    #map {
+        height: 240px;
+        width: 100%;
+        border-radius: 14px;
+        margin-bottom: 1.25rem;
+        border: 1px solid #e2e8f0;
     }
 
     #locationStatus {
-        font-size: 0.75rem;
+        font-size: 0.775rem;
         font-weight: 600;
         margin-top: 0.5rem;
     }
 
-    .status-valid { color: var(--alert-green); }
+    .status-valid   { color: var(--alert-green); }
     .status-invalid { color: var(--alert-red); }
     .status-warning { color: var(--alert-orange); }
 </style>
 
-<div class="admin-layout d-flex">
+<div class="admin-layout">
     <?php include __DIR__ . '/../includes/admin_sidebar.php'; ?>
 
-    <main class="admin-main p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <main class="admin-main">
+
+        <!-- Top Banner Header -->
+        <div class="dashboard-header-banner d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h2 class="fw-bold mb-1">Flood Alert Management</h2>
-                <p class="text-muted">Issue and update flood status for specific barangays and sitios</p>
+                <div class="header-badge-tag">
+                    <span class="pulse-dot-red"></span>
+                    <span>Emergency Warning Dispatcher</span>
+                </div>
+                <h1 class="dashboard-title-text">
+                    Flood Alert <span class="highlight-purple">Management</span>
+                </h1>
+                <p class="text-white-50 mb-0 small">
+                    Issue real-time flood warning signals, broadcast advisories, and manage sitio locations.
+                </p>
             </div>
             <div class="d-flex gap-2">
-                <button id="addAlertBtn" class="btn btn-primary rounded-3 px-4 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                    <i class="fas fa-plus me-2"></i>New Alert
-                </button>
-                <button id="initSchemaBtn" class="btn btn-outline-secondary rounded-3 px-4" style="display:none;">
-                    Initialize Schema
+                <button id="addAlertBtn" class="btn btn-gradient-primary">
+                    <i class="fas fa-plus"></i>
+                    <span>New Alert Signal</span>
                 </button>
             </div>
         </div>
 
-        <div class="alert-card p-0 overflow-hidden">
-            <div class="p-4 border-bottom bg-light bg-opacity-50">
-                <h5 class="fw-bold mb-0">Active Alerts</h5>
+        <!-- Alert Cards & Directory Table -->
+        <div class="table-container-card">
+            <div class="p-4 bg-white d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stats-icon mb-0" style="width: 2.5rem; height: 2.5rem; border-radius: 10px; background: #eef2ff; color: #667eea; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Active Alerts Directory</h5>
+                        <small class="text-muted">Broadcast statuses across partner barangays and sitios</small>
+                    </div>
+                </div>
+
+                <!-- Search Input -->
+                <div class="position-relative">
+                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style="font-size: 0.85rem;"></i>
+                    <input type="text" class="table-search-input" id="alertSearchInput" placeholder="Filter alerts..." oninput="filterAlertsTable()">
+                </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" id="alertsTable">
                     <thead>
                         <tr>
                             <th class="ps-4">Barangay / Sitio</th>
                             <th>Alert Level</th>
-                            <th>Current Advisory</th>
+                            <th>Broadcast Advisory</th>
                             <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Dynamic list -->
+                        <!-- Dynamically populated via JS -->
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div id="message" class="mt-3 text-danger small"></div>
+        <div id="message" class="mt-2 text-danger small"></div>
     </main>
 </div>
 
-<!-- Edit Overlay -->
+<!-- Modal / Edit Alert Overlay -->
 <div id="editOverlay" class="panel-overlay">
     <div class="panel-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold mb-0" id="panelTitle">Modify Alert</h3>
-            <button class="btn btn-light rounded-circle shadow-sm" id="cancelBtn"><i class="fas fa-times"></i></button>
+        <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width: 32px; height: 32px; border-radius: 10px; background: #eef2ff; color: #667eea; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+                <h4 class="fw-bold mb-0 text-dark" id="panelTitle">Modify Alert Status</h4>
+            </div>
+            <button class="btn btn-light rounded-circle border" id="cancelBtn" style="width: 36px; height: 36px;">
+                <i class="fas fa-times text-muted"></i>
+            </button>
         </div>
 
         <!-- Alert Type Toggle -->
-        <div class="d-flex bg-light p-1 rounded-3 mb-4" id="typeToggle">
-            <div class="type-tab active" data-type="barangay">Barangay</div>
-            <div class="type-tab" data-type="sitio">Sitio / Area</div>
+        <div class="d-flex bg-light p-1 rounded-3 mb-4 border" id="typeToggle">
+            <div class="type-tab active" data-type="barangay">Barangay Level</div>
+            <div class="type-tab" data-type="sitio">Sitio / Specific Area</div>
         </div>
 
-        <div id="locationModeBanner" class="alert alert-primary border-0 rounded-3 mb-4 py-2 px-3 small" style="display:none;">
-            <i class="fas fa-info-circle me-2"></i> Click on the map to set location coordinates.
+        <div id="locationModeBanner" class="alert alert-primary border-0 rounded-3 mb-3 py-2 px-3 small" style="display:none; background: #eef2ff; color: #4338ca;">
+            <i class="fas fa-map-pin me-2"></i> Click on the map to pin exact coordinates.
         </div>
 
         <div id="map"></div>
-
         <div id="locationStatus" class="mb-3 px-1"></div>
 
         <input type="hidden" id="fldId">
-        
+
         <div class="d-grid gap-3">
-            <button type="button" class="btn btn-light btn-sm fw-bold mb-2 py-2 border shadow-sm" id="detectLocBtn">
-                <i class="fas fa-crosshairs me-2 text-primary"></i>Use My Current Location
+            <button type="button" class="btn btn-light btn-sm fw-bold py-2 border rounded-3" id="detectLocBtn" style="color: #667eea;">
+                <i class="fas fa-crosshairs me-2"></i>Use My Current Location
             </button>
 
-            <div class="form-group row g-3">
+            <div class="row g-3">
                 <div class="col-12" id="parentBarangayGroup" style="display:none;">
                     <label class="form-label small fw-bold text-muted">Parent Barangay</label>
-                    <select id="fldParent" class="form-select bg-light border-0 py-2 rounded-3">
-                        <option value="">-- Select Barangay --</option>
-                        <!-- Dynamic list -->
+                    <select id="fldParent" class="form-input-styled">
+                        <option value="">-- Select Parent Barangay --</option>
                     </select>
                 </div>
+
                 <div class="col-12">
                     <label class="form-label small fw-bold text-muted" id="nameLabel">Barangay Name</label>
                     <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 py-2 rounded-start-3" id="fldName" placeholder="e.g. Lizada">
-                        <button type="button" id="detectInfoBtn" class="btn btn-light border border-start-0" title="Re-detect from coordinates">
-                            <i class="fas fa-sync-alt"></i>
+                        <input type="text" class="form-input-styled rounded-end-0" id="fldName" placeholder="e.g. Lizada">
+                        <button type="button" id="detectInfoBtn" class="btn btn-light border border-start-0 rounded-end-3" title="Sync from GPS coordinates">
+                            <i class="fas fa-sync-alt text-muted"></i>
                         </button>
                     </div>
                 </div>
+
                 <div class="col-12" id="addressGroup">
-                    <label class="form-label small fw-bold text-muted">Display Address / Details</label>
-                    <input type="text" id="fldAddress" class="form-control bg-light border-0 py-2 rounded-3" placeholder="Additional location info">
+                    <label class="form-label small fw-bold text-muted">Display Address / Coverage Details</label>
+                    <input type="text" id="fldAddress" class="form-input-styled" placeholder="Additional location info">
                 </div>
+
                 <div class="col-6">
                     <label class="form-label small fw-bold text-muted">Latitude</label>
-                    <input type="number" id="fldLat" class="form-control bg-light border-0 py-2 rounded-3" step="0.000001">
+                    <input type="number" id="fldLat" class="form-input-styled" step="0.000001">
                 </div>
                 <div class="col-6">
                     <label class="form-label small fw-bold text-muted">Longitude</label>
-                    <input type="number" id="fldLng" class="form-control bg-light border-0 py-2 rounded-3" step="0.000001">
+                    <input type="number" id="fldLng" class="form-input-styled" step="0.000001">
                 </div>
+
                 <div class="col-12">
                     <label class="form-label small fw-bold text-muted">Alert Level</label>
-                    <select id="fldLevel" class="form-select bg-light border-0 py-2 rounded-3">
-                        <option value="0">SAFE (Green)</option>
-                        <option value="1">WARNING (Yellow)</option>
-                        <option value="2">ALERT (Orange)</option>
-                        <option value="3">CRITICAL (Red)</option>
+                    <select id="fldLevel" class="form-input-styled">
+                        <option value="0">Level 0: SAFE (Green)</option>
+                        <option value="1">Level 1: WARNING (Yellow)</option>
+                        <option value="2">Level 2: ALERT (Orange)</option>
+                        <option value="3">Level 3: CRITICAL (Red)</option>
                     </select>
                 </div>
+
                 <div class="col-12">
-                    <label class="form-label small fw-bold text-muted">Broadcast Advisory</label>
-                    <textarea id="fldAdvisory" class="form-control bg-light border-0 py-2 rounded-3" rows="3" placeholder="What should residents do?"></textarea>
+                    <label class="form-label small fw-bold text-muted">Broadcast Advisory Notice</label>
+                    <textarea id="fldAdvisory" class="form-input-styled" style="height: auto; min-height: 80px; padding: 10px 14px;" rows="3" placeholder="What actions should community members take?"></textarea>
                 </div>
             </div>
 
-            <button class="btn btn-primary fw-bold py-3 rounded-3 mt-3 shadow-sm border-0" id="saveBtn" style="background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);">
-                Push Alert Update
+            <button class="btn btn-gradient-primary w-100 py-3 rounded-3 mt-3 shadow-sm justify-content-center" id="saveBtn">
+                <i class="fas fa-paper-plane me-2"></i> Push Alert Update
             </button>
         </div>
     </div>
@@ -251,7 +436,7 @@
     let currentType = 'barangay';
 
     async function fetchAlerts() {
-        const res = await fetch('/micro-oss/api/get-alerts.php');
+        const res = await fetch('/api/get-alerts.php');
         const data = await res.json();
         allBarangays = data.barangays || [];
         allSitios = data.sitios || [];
@@ -262,7 +447,7 @@
     function populateParentDropdown() {
         const select = document.getElementById('fldParent');
         const currentVal = select.value;
-        select.innerHTML = '<option value="">-- Select Barangay --</option>';
+        select.innerHTML = '<option value="">-- Select Parent Barangay --</option>';
         allBarangays.forEach(b => {
             const opt = document.createElement('option');
             opt.value = b.name;
@@ -272,33 +457,34 @@
         select.value = currentVal;
     }
 
-    function buildTable() {
+    function buildTable(filteredBarangays, filteredSitios) {
         const tbody = document.querySelector('#alertsTable tbody');
         tbody.innerHTML = '';
-        
-        // Add Barangays
-        allBarangays.forEach(item => {
-            appendRow(tbody, item, 'barangay');
-        });
 
-        // Add Sitios
-        allSitios.forEach(item => {
-            appendRow(tbody, item, 'sitio');
-        });
+        const bList = filteredBarangays || allBarangays;
+        const sList = filteredSitios || allSitios;
+
+        if (bList.length === 0 && sList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">No alerts match the filter.</td></tr>`;
+            return;
+        }
+
+        bList.forEach(item => appendRow(tbody, item, 'barangay'));
+        sList.forEach(item => appendRow(tbody, item, 'sitio'));
     }
 
     function appendRow(tbody, item, type) {
         const tr = document.createElement('tr');
-        const levelText = getLevelText(item.alert_level || item.flood_level);
-        const level = item.alert_level || item.flood_level;
+        const level = item.alert_level !== undefined ? item.alert_level : item.flood_level;
+        const levelText = getLevelText(level);
         const name = item.name || item.sitio_name;
-        const address = type === 'barangay' ? (item.full_address || 'District Center') : `Area in ${item.barangay}`;
-        const advisory = item.flood_advisory || 'No active advisory';
+        const address = type === 'barangay' ? (item.full_address || 'District Center') : `Sitio in ${item.barangay}`;
+        const advisory = item.flood_advisory || 'Normal conditions. No active advisory.';
 
         tr.innerHTML = `
             <td class="ps-4">
                 <div class="d-flex align-items-center">
-                    <div class="me-3 p-2 bg-light rounded-3 text-primary">
+                    <div class="me-3 p-2 rounded-3" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: ${type === 'barangay' ? '#eef2ff' : '#faf5ff'}; color: ${type === 'barangay' ? '#667eea' : '#8b5cf6'};">
                         <i class="fas ${type === 'barangay' ? 'fa-building' : 'fa-map-pin'}"></i>
                     </div>
                     <div>
@@ -308,18 +494,27 @@
                 </div>
             </td>
             <td>
-                <span class="level-badge level-${level}">${levelText}</span>
+                <span class="level-badge level-${level}">
+                    <i class="fas fa-circle" style="font-size: 6px;"></i> Level ${level}: ${levelText}
+                </span>
             </td>
             <td>
-                <div class="text-truncate small text-muted" style="max-width: 250px;">${advisory}</div>
+                <div class="text-truncate small text-dark" style="max-width: 280px;" title="${advisory}">${advisory}</div>
             </td>
             <td class="text-end pe-4">
-                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick='openEditFromData(${JSON.stringify({ ...item, _type: type }).replace(/'/g, "&apos;")})'>
-                    <i class="fas fa-edit me-1"></i>Edit
+                <button class="btn btn-sm rounded-pill px-3 text-white border-0 shadow-sm" style="background: var(--brand-gradient); font-size: 0.775rem;" onclick='openEditFromData(${JSON.stringify({ ...item, _type: type }).replace(/'/g, "&apos;")})'>
+                    <i class="fas fa-edit me-1"></i> Update
                 </button>
             </td>
         `;
         tbody.appendChild(tr);
+    }
+
+    function filterAlertsTable() {
+        const query = document.getElementById('alertSearchInput').value.toLowerCase().trim();
+        const filteredB = allBarangays.filter(b => (b.name || '').toLowerCase().includes(query) || (b.flood_advisory || '').toLowerCase().includes(query));
+        const filteredS = allSitios.filter(s => (s.sitio_name || '').toLowerCase().includes(query) || (s.barangay || '').toLowerCase().includes(query) || (s.flood_advisory || '').toLowerCase().includes(query));
+        buildTable(filteredB, filteredS);
     }
 
     function getLevelText(n) {
@@ -329,7 +524,7 @@
             case 2: return 'Alert';
             case 3: return 'Critical';
         }
-        return 'N/A';
+        return 'Safe';
     }
 
     let map, marker, geocoder, currentPolygon;
@@ -358,7 +553,6 @@
             setAutoCoords(e.latLng.lat(), e.latLng.lng());
         });
 
-        // Add input listeners for manual coordinate entry
         ['fldLat', 'fldLng'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 const lat = parseFloat(document.getElementById('fldLat').value);
@@ -376,23 +570,22 @@
     async function validateLocation(lat, lng, skipReverseGeocode = false) {
         const statusEl = document.getElementById('locationStatus');
         const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-        
+
         if (currentType === 'sitio') {
             const parentBrgy = document.getElementById('fldParent').value;
             if (parentBrgy) {
-                // Fetch polygon if not already matching
                 if (!currentPolygon || currentPolygon._name !== parentBrgy) {
-                    const res = await fetch(`/micro-oss/api/get-barangay-polygon.php?name=${encodeURIComponent(parentBrgy)}`);
+                    const res = await fetch(`/api/get-barangay-polygon.php?name=${encodeURIComponent(parentBrgy)}`);
                     const data = await res.json();
                     if (data.success) {
                         if (window._activePolygon) window._activePolygon.setMap(null);
                         window._activePolygon = new google.maps.Polygon({
                             paths: data.polygon,
-                            strokeColor: "#4338ca",
-                            strokeOpacity: 0.5,
-                            strokeWeight: 1,
-                            fillColor: "#6366f1",
-                            fillOpacity: 0.1,
+                            strokeColor: "#667eea",
+                            strokeOpacity: 0.6,
+                            strokeWeight: 1.5,
+                            fillColor: "#667eea",
+                            fillOpacity: 0.12,
                             map: map
                         });
                         currentPolygon = window._activePolygon;
@@ -438,7 +631,7 @@
         currentType = type;
         document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
         document.querySelector(`.type-tab[data-type="${type}"]`).classList.add('active');
-        
+
         if (type === 'sitio') {
             document.getElementById('parentBarangayGroup').style.display = 'block';
             document.getElementById('nameLabel').innerText = 'Sitio / Specific Area Name';
@@ -452,7 +645,7 @@
                 currentPolygon = null;
             }
         }
-        
+
         const lat = parseFloat(document.getElementById('fldLat').value);
         const lng = parseFloat(document.getElementById('fldLng').value);
         if (!isNaN(lat) && !isNaN(lng)) validateLocation(lat, lng, true);
@@ -495,15 +688,15 @@
     function openEditFromData(data) {
         document.getElementById('panelTitle').innerText = 'Edit Alert Status';
         switchType(data._type);
-        
+
         document.getElementById('fldId').value = data.id || '';
         document.getElementById('fldName').value = data.name || data.sitio_name;
-        document.getElementById('fldName').readOnly = (data._type === 'barangay'); // Barangays are protected
+        document.getElementById('fldName').readOnly = (data._type === 'barangay');
         document.getElementById('fldLevel').value = data.alert_level !== undefined ? data.alert_level : data.flood_level;
         document.getElementById('fldAdvisory').value = data.flood_advisory || '';
         document.getElementById('fldAddress').value = data.full_address || '';
         document.getElementById('fldParent').value = data.barangay || '';
-        
+
         const lat = data.latitude;
         const lng = data.longitude;
         document.getElementById('fldLat').value = lat || '';
@@ -511,7 +704,7 @@
 
         document.getElementById('editOverlay').style.display = 'flex';
         document.getElementById('map').style.display = 'block';
-        document.getElementById('typeToggle').style.pointerEvents = 'none'; // Lock type on edit
+        document.getElementById('typeToggle').style.pointerEvents = 'none';
         document.getElementById('typeToggle').style.opacity = '0.6';
 
         setTimeout(() => {
@@ -531,7 +724,7 @@
     document.getElementById('addAlertBtn').onclick = () => {
         document.getElementById('panelTitle').innerText = 'Create New Alert';
         switchType('barangay');
-        
+
         document.getElementById('fldId').value = '';
         document.getElementById('fldName').value = '';
         document.getElementById('fldName').readOnly = false;
@@ -582,7 +775,7 @@
         document.getElementById('saveBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
 
         try {
-            const res = await fetch('/micro-oss/api/save-alert.php', {
+            const res = await fetch('/api/save-alert.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

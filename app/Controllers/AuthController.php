@@ -25,10 +25,7 @@ class AuthController
         }
 
         $title = 'Login';
-        ob_start();
         include __DIR__ . '/../Views/auth/login.php';
-        $content = ob_get_clean();
-        include __DIR__ . '/../Views/layout.php';
     }
 
     public function login()
@@ -86,7 +83,7 @@ class AuthController
 
             $_SESSION['admin_barangay'] = $barangay;
             $_SESSION['show_welcome_card'] = true; // Set flag for dashboard welcome message
-            header('Location: /micro-oss/index.php?route=dashboard');
+            header('Location: /index.php?route=dashboard');
             exit();
         }
         $this->loginForm("Invalid credentials or account not activated.");
@@ -98,10 +95,7 @@ class AuthController
         $barangayList = $alertModel->getBarangayNames();
         
         $title = 'Register';
-        ob_start();
         include __DIR__ . '/../Views/auth/register.php';
-        $content = ob_get_clean();
-        include __DIR__ . '/../Views/layout.php';
     }
 
     public function register()
@@ -152,7 +146,7 @@ class AuthController
     {
         session_start();
         session_destroy();
-        header('Location: /micro-oss/index.php?route=login');
+        header('Location: /index.php?route=login');
         exit();
     }
 
@@ -160,7 +154,7 @@ class AuthController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit();
         }
         $title = 'Dashboard';
@@ -177,7 +171,7 @@ class AuthController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit();
         }
         
@@ -232,7 +226,7 @@ class AuthController
                     }
                     
                     $_SESSION['flash_message'] = 'Profile updated successfully.';
-                    header('Location: /micro-oss/index.php?route=user-profile');
+                    header('Location: /index.php?route=user-profile');
                     exit();
                 } else {
                     $error = 'Failed to update profile. Please try again.';
@@ -265,3 +259,4 @@ class AuthController
         return password_verify($currentPassword, $userWithPassword['password']);
     }
 }
+

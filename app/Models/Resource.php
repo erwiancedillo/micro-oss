@@ -28,10 +28,10 @@ class Resource
     public function getAllResources()
     {
         if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            // resources is a single table with a barangay column — no partitioned tables
             $stmt = $this->db->query("
-                SELECT id, barangay, type, quantity, status, 'Lizada' AS source FROM resources_lizada
-                UNION ALL
-                SELECT id, barangay, type, quantity, status, 'Dalio' AS source FROM resources_dalio
+                SELECT id, barangay, type, quantity, status, last_updated, barangay AS source
+                FROM resources
                 ORDER BY barangay, type
             ");
         } else {

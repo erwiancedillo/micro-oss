@@ -108,7 +108,7 @@ if (navigator.geolocation) {
 document.getElementById('wasteListingForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
-    fetch('/micro-oss/index.php?route=api-waste-add', { method: 'POST', body: formData })
+    fetch('/index.php?route=api-waste-add', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(res => {
             if (res.success) {
@@ -159,3 +159,4 @@ function initMap() {
 
 document.addEventListener('DOMContentLoaded', initMap);
 </script>
+

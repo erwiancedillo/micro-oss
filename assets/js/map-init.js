@@ -53,6 +53,8 @@ function initMap() {
                 return;
             }
 
+            const bounds = new google.maps.LatLngBounds();
+
             data.forEach(center => {
                 const lat = parseFloat(center.latitude);
                 const lng = parseFloat(center.longitude);
@@ -77,7 +79,12 @@ function initMap() {
                 marker.addListener('click', () => selectCenter(marker));
 
                 centerMarkers.push(marker);
+                bounds.extend(marker.getPosition());
             });
+
+            if (centerMarkers.length > 0 && !userMarker) {
+                map.fitBounds(bounds);
+            }
 
             console.log("Total markers added:", centerMarkers.length);
         })

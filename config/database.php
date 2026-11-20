@@ -4,7 +4,7 @@
 return [
     'host' => 'localhost',
     'username' => 'root',
-    'password' => 'misadmin',
+    'password' => '',
     'database' => 'micro_oss'
 ];
 
@@ -12,7 +12,7 @@ return [
 
 $host = "localhost";
 $username = "root";
-$password = "misadmin";
+$password = "";
 $database = "micro_oss";
 
 $conn = mysqli_connect($host, $username, $password, $database);

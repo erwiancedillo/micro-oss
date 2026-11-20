@@ -20,7 +20,7 @@ class SocioController
         }
 
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit();
         }
 
@@ -58,7 +58,7 @@ class SocioController
 
             $this->agePopulationModel->create($data);
             $_SESSION['success'] = 'Age bracket added successfully.';
-            header('Location: /micro-oss/index.php?route=socio');
+            header('Location: /index.php?route=socio');
             exit();
         }
     }
@@ -88,8 +88,9 @@ class SocioController
                 $_SESSION['error'] = 'Failed to update age bracket.';
             }
 
-            header('Location: /micro-oss/index.php?route=socio');
+            header('Location: /index.php?route=socio');
             exit();
         }
     }
 }
+

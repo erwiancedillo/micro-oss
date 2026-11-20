@@ -3,19 +3,19 @@
     <?php
     $current_page = $_GET['route'] ?? 'dashboard';
     ?>
-    <a href="/micro-oss/index.php?route=dashboard" class="nav-item-mobile <?php echo ($current_page == 'dashboard') ? 'active' : ''; ?>">
+    <a href="/index.php?route=dashboard" class="nav-item-mobile <?php echo ($current_page == 'dashboard') ? 'active' : ''; ?>">
         <i class="fas fa-house"></i>
         <span class="nav-label">Home</span>
     </a>
-    <a href="/micro-oss/index.php?route=community-map" class="nav-item-mobile <?php echo ($current_page == 'community-map') ? 'active' : ''; ?>">
+    <a href="/index.php?route=community-map" class="nav-item-mobile <?php echo ($current_page == 'community-map') ? 'active' : ''; ?>">
         <i class="fas fa-map"></i>
         <span class="nav-label">Map</span>
     </a>
-    <a href="/micro-oss/index.php?route=evacuation" class="nav-item-mobile <?php echo ($current_page == 'evacuation') ? 'active' : ''; ?>">
+    <a href="/index.php?route=evacuation" class="nav-item-mobile <?php echo ($current_page == 'evacuation') ? 'active' : ''; ?>">
         <i class="fas fa-route"></i>
         <span class="nav-label">Evacuation</span>
     </a>
-    <a href="/micro-oss/index.php?route=alerts" class="nav-item-mobile <?php echo ($current_page == 'alerts') ? 'active' : ''; ?>">
+    <a href="/index.php?route=alerts" class="nav-item-mobile <?php echo ($current_page == 'alerts') ? 'active' : ''; ?>">
         <i class="fas fa-bell"></i>
         <span class="nav-label">Alerts</span>
     </a>
@@ -30,7 +30,7 @@
             <span class="nav-label">Logout</span>
         </a>
     <?php else: ?>
-        <a href="/micro-oss/index.php?route=user-profile" class="nav-item-mobile">
+        <a href="/index.php?route=user-profile" class="nav-item-mobile">
             <i class="fas fa-user-circle"></i>
             <span class="nav-label">Profile</span>
         </a>

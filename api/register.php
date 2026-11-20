@@ -54,7 +54,7 @@ if (!mysqli_stmt_execute($stmt)) {
 
 // Activation link
 $activation_link = 
-"http://localhost/micro-oss/auth/activate.php?email=" 
+"http://micro-oss.test/auth/activate.php?email=" 
 . urlencode($email) . 
 "&token=" . urlencode($token);
 
@@ -65,8 +65,8 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'erwinacedillo@gmail.com';     // 🔴 CHANGE THIS
-    $mail->Password   = 'nydtkzlxfogeabij';       // 🔴 USE GMAIL APP PASSWORD
+    $mail->Username   = 'erwinacedillo@gmail.com';     // ðŸ”´ CHANGE THIS
+    $mail->Password   = 'nydtkzlxfogeabij';       // ðŸ”´ USE GMAIL APP PASSWORD
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 

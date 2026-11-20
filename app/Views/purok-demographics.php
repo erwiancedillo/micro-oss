@@ -491,7 +491,7 @@
             // Show loading state or modal immediately
             const modal = new bootstrap.Modal(document.getElementById('editPurokModal'));
 
-            fetch(`/micro-oss/index.php?route=api-get-purok-data&purok_name=${encodeURIComponent(purokName)}`)
+            fetch(`/index.php?route=api-get-purok-data&purok_name=${encodeURIComponent(purokName)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

@@ -43,8 +43,8 @@
                             <?php foreach ($reports as $cr): ?>
                             <tr>
                                 <td>
-                                    <a href="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" target="_blank">
-                                        <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" alt="thumbnail" class="rounded object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
+                                    <a href="/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" target="_blank">
+                                        <img src="/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" alt="thumbnail" class="rounded object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
                                     </a>
                                 </td>
                                 <td>
@@ -87,3 +87,4 @@
         </div>
     </main>
 </div>
+

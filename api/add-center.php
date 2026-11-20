@@ -11,13 +11,21 @@ if (!$data || !isset($data['name'], $data['latitude'], $data['longitude'])) {
 }
 
 try {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
     $centerModel = new EvacuationCenter();
+    $barangay = $data['barangay'] ?? ($_SESSION['admin_barangay'] ?? null);
+    if ($barangay && $barangay !== 'master') {
+        $barangay = ucfirst(strtolower($barangay));
+    }
     $success = $centerModel->create([
         'name' => $data['name'],
         'latitude' => (float)$data['latitude'],
         'longitude' => (float)$data['longitude'],
         'capacity' => (int)$data['capacity'],
-        'occupied' => (int)($data['occupied'] ?? 0)
+        'occupied' => (int)($data['occupied'] ?? 0),
+        'barangay' => $barangay
     ]);
     echo json_encode(['success' => $success]);
 } catch (Throwable $e) {

@@ -87,8 +87,8 @@
 
 <!-- Scripts -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry,directions"></script>
-<script src="/micro-oss/assets/js/map-init.js"></script>
-<script src="/micro-oss/assets/js/floodzones.js"></script>
+<script src="/assets/js/map-init.js"></script>
+<script src="/assets/js/floodzones.js"></script>
 
 <script>
     function updateLocationDisplay() {
@@ -104,7 +104,7 @@
                         </div>
                         <div>
                             <div class="fw-bold">Live GPS Active</div>
-                            <div class="small opacity-75">${lat}, ${lng} (±${accuracy}m)</div>
+                            <div class="small opacity-75">${lat}, ${lng} (Â±${accuracy}m)</div>
                         </div>
                     </div>`;
             }, () => {

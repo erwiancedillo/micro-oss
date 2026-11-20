@@ -215,7 +215,7 @@
                                     <div class="position-absolute top-0 end-0 m-2 z-3">
                                         <span class="badge bg-warning text-dark shadow-sm border border-white"><i class="fas fa-bullhorn me-1"></i>Citizen Report</span>
                                     </div>
-                                    <img src="/micro-oss/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($cr['category']) ?>">
+                                    <img src="/assets/uploads/citizen_science/<?= htmlspecialchars($cr['image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($cr['category']) ?>">
                                     <div class="card-body bg-light">
                                         <h6 class="card-subtitle mb-2 text-muted fw-bold"><?= htmlspecialchars($cr['barangay']) ?></h6>
                                         <p class="card-text small mb-1 fw-bold text-danger"><?= htmlspecialchars($cr['category']) ?></p>
@@ -546,7 +546,7 @@
         myModal.show();
     }
 
-    // ── CAMERA (getUserMedia) ─────────────────────────────────────────────────
+    // â”€â”€ CAMERA (getUserMedia) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let cameraStream = null;
     let capturedBlob  = null;
 
@@ -783,3 +783,4 @@
         }
     });
 </script>
+

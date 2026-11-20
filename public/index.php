@@ -29,13 +29,7 @@ spl_autoload_register(function ($class) {
 
 $route = $_GET['route'] ?? 'login';
 
-// Simple autoloader (already exists)
-// ...
-
-$route = $_GET['route'] ?? 'login';
-
-// Define routing map: 'route_name' => [ControllerClass::class, 'methodName']
-// Or a closure for simple includes
+// Routing map: 'route_name' => [ControllerClass::class, 'methodName']
 $routes = [
     'login' => ['App\\Controllers\\AuthController', $_SERVER['REQUEST_METHOD'] === 'POST' ? 'login' : 'loginForm'],
     'register' => ['App\\Controllers\\AuthController', $_SERVER['REQUEST_METHOD'] === 'POST' ? 'register' : 'registerForm'],

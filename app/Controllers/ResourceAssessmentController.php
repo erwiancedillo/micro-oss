@@ -19,7 +19,7 @@ class ResourceAssessmentController
             session_start();
         }
         if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['admin', 'master'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit;
         }
 
@@ -90,3 +90,4 @@ class ResourceAssessmentController
         echo json_encode(['success' => false, 'message' => 'Update failed.']);
     }
 }
+

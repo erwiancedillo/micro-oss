@@ -8,6 +8,9 @@ class EvacuationCenter
 
     public function __construct()
     {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
         $this->db = Database::getInstance()->getConnection();
     }
 
@@ -48,8 +51,14 @@ class EvacuationCenter
     public function create(array $data)
     {
         $table = Database::getTableName('evacuation_centers');
+        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master' && !empty($data['barangay'])) {
+            $b = strtolower($data['barangay']);
+            if (in_array($b, ['lizada', 'dalio'])) {
+                $table = "evacuation_centers_" . $b;
+            }
+        }
         $stmt = $this->db->prepare("INSERT INTO `$table` (name, latitude, longitude, capacity, occupied, barangay) VALUES (?, ?, ?, ?, ?, ?)");
-        return $stmt->execute([
+        $res = $stmt->execute([
             $data['name'],
             $data['latitude'],
             $data['longitude'],
@@ -57,6 +66,21 @@ class EvacuationCenter
             $data['occupied'] ?? 0,
             $data['barangay'] ?? null
         ]);
+
+        if ($table !== 'evacuation_centers') {
+            try {
+                $stmtBase = $this->db->prepare("INSERT INTO evacuation_centers (name, latitude, longitude, capacity, occupied, barangay) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmtBase->execute([
+                    $data['name'],
+                    $data['latitude'],
+                    $data['longitude'],
+                    $data['capacity'],
+                    $data['occupied'] ?? 0,
+                    $data['barangay'] ?? null
+                ]);
+            } catch (\Exception $e) {}
+        }
+        return $res;
     }
 
     public function update(int $id, array $data)

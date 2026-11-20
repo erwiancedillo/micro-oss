@@ -38,7 +38,7 @@ class AdminController
         }
         $role = $_SESSION['role'] ?? '';
         if (!isset($_SESSION['user_id']) || !in_array($role, ['admin', 'master'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit();
         }
     }
@@ -71,14 +71,14 @@ class AdminController
                 $fileName = time() . '_' . basename($_FILES['icon_image']['name']);
                 $targetFile = $uploadDir . $fileName;
                 if (move_uploaded_file($_FILES['icon_image']['tmp_name'], $targetFile)) {
-                    $icon_url = '/micro-oss/assets/uploads/iks/' . $fileName;
+                    $icon_url = '/assets/uploads/iks/' . $fileName;
                 }
             }
             
             $data['icon_url'] = $icon_url;
             $this->iksModel->createItem($data);
             $_SESSION['flash_message'] = 'IKS item created successfully.';
-            header('Location: /micro-oss/index.php?route=admin-iks');
+            header('Location: /index.php?route=admin-iks');
             exit();
         }
     }
@@ -99,14 +99,14 @@ class AdminController
                 $fileName = time() . '_' . basename($_FILES['icon_image']['name']);
                 $targetFile = $uploadDir . $fileName;
                 if (move_uploaded_file($_FILES['icon_image']['tmp_name'], $targetFile)) {
-                    $icon_url = '/micro-oss/assets/uploads/iks/' . $fileName;
+                    $icon_url = '/assets/uploads/iks/' . $fileName;
                 }
             }
             
             $data['icon_url'] = $icon_url;
             $this->iksModel->updateItem($id, $data);
             $_SESSION['flash_message'] = 'IKS item updated successfully.';
-            header('Location: /micro-oss/index.php?route=admin-iks');
+            header('Location: /index.php?route=admin-iks');
             exit();
         }
     }
@@ -119,7 +119,7 @@ class AdminController
             $this->iksModel->deleteItem($id);
             $_SESSION['flash_message'] = 'IKS item deleted successfully.';
         }
-        header('Location: /micro-oss/index.php?route=admin-iks');
+        header('Location: /index.php?route=admin-iks');
         exit();
     }
 
@@ -147,7 +147,7 @@ class AdminController
             ];
             $this->floodZoneModel->createZone($data);
             $_SESSION['flash_message'] = 'Flood zone created successfully.';
-            header('Location: /micro-oss/index.php?route=admin-flood-zones');
+            header('Location: /index.php?route=admin-flood-zones');
             exit();
         }
     }
@@ -164,7 +164,7 @@ class AdminController
             ];
             $this->floodZoneModel->updateZone($id, $data);
             $_SESSION['flash_message'] = 'Flood zone updated successfully.';
-            header('Location: /micro-oss/index.php?route=admin-flood-zones');
+            header('Location: /index.php?route=admin-flood-zones');
             exit();
         }
     }
@@ -177,7 +177,7 @@ class AdminController
             $this->floodZoneModel->deleteZone($id);
             $_SESSION['flash_message'] = 'Flood zone deleted successfully.';
         }
-        header('Location: /micro-oss/index.php?route=admin-flood-zones');
+        header('Location: /index.php?route=admin-flood-zones');
         exit();
     }
 
@@ -236,7 +236,7 @@ class AdminController
             $citizenModel->updateStatus($id, 'verified');
             $_SESSION['flash_message'] = 'Report verified successfully.';
         }
-        $redirect = $_SERVER['HTTP_REFERER'] ?? '/micro-oss/index.php?route=admin-dashboard';
+        $redirect = $_SERVER['HTTP_REFERER'] ?? '/index.php?route=admin-dashboard';
         header("Location: $redirect");
         exit();
     }
@@ -250,7 +250,7 @@ class AdminController
             $citizenModel->delete($id);
             $_SESSION['flash_message'] = 'Report deleted successfully.';
         }
-        $redirect = $_SERVER['HTTP_REFERER'] ?? '/micro-oss/index.php?route=admin-dashboard';
+        $redirect = $_SERVER['HTTP_REFERER'] ?? '/index.php?route=admin-dashboard';
         header("Location: $redirect");
         exit();
     }
@@ -286,7 +286,7 @@ class AdminController
                     $fileName = time() . '_' . basename($_FILES['image']['name']);
                     $targetFile = $uploadDir . $fileName;
                     if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-                        $image_url = '/micro-oss/assets/uploads/hazard_maps/' . $fileName;
+                        $image_url = '/assets/uploads/hazard_maps/' . $fileName;
                     } else {
                         $error = 'Failed to move uploaded file. Check directory permissions.';
                     }
@@ -303,7 +303,7 @@ class AdminController
                 ]);
 
                 $_SESSION['flash_message'] = 'Hazard map created successfully.';
-                header('Location: /micro-oss/index.php?route=admin-hazard-maps');
+                header('Location: /index.php?route=admin-hazard-maps');
                 exit();
             }
         }
@@ -322,7 +322,7 @@ class AdminController
         $this->checkAdmin();
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header('Location: /micro-oss/index.php?route=admin-hazard-maps');
+            header('Location: /index.php?route=admin-hazard-maps');
             exit();
         }
 
@@ -342,7 +342,7 @@ class AdminController
                     $fileName = time() . '_' . basename($_FILES['image']['name']);
                     $targetFile = $uploadDir . $fileName;
                     if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-                        $image_url = '/micro-oss/assets/uploads/hazard_maps/' . $fileName;
+                        $image_url = '/assets/uploads/hazard_maps/' . $fileName;
                     } else {
                         $error = 'Failed to move uploaded file.';
                     }
@@ -359,7 +359,7 @@ class AdminController
                 ]);
 
                 $_SESSION['flash_message'] = 'Hazard map updated successfully.';
-                header('Location: /micro-oss/index.php?route=admin-hazard-maps');
+                header('Location: /index.php?route=admin-hazard-maps');
                 exit();
             }
         }
@@ -383,7 +383,7 @@ class AdminController
             $this->hazardModel->deleteHazardMap($id);
             $_SESSION['flash_message'] = 'Hazard map deleted successfully.';
         }
-        header('Location: /micro-oss/index.php?route=admin-hazard-maps');
+        header('Location: /index.php?route=admin-hazard-maps');
         exit();
     }
 
@@ -466,7 +466,7 @@ class AdminController
                 
                 if ($this->userModel->create($userData)) {
                     $_SESSION['flash_message'] = 'User created successfully.';
-                    header('Location: /micro-oss/index.php?route=admin-users');
+                    header('Location: /index.php?route=admin-users');
                     exit();
                 } else {
                     $error = 'Failed to create user. Please try again.';
@@ -491,14 +491,14 @@ class AdminController
         $error = '';
         
         if (!$id) {
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
         
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
         
@@ -542,7 +542,7 @@ class AdminController
                     }
                     
                     $_SESSION['flash_message'] = 'User updated successfully.';
-                    header('Location: /micro-oss/index.php?route=admin-users');
+                    header('Location: /index.php?route=admin-users');
                     exit();
                 } else {
                     $error = 'Failed to update user. Please try again.';
@@ -567,20 +567,20 @@ class AdminController
         // Only the master account can approve users
         if (($_SESSION['role'] ?? '') !== 'master') {
             $_SESSION['flash_message'] = 'Unauthorized: Only the master account can approve users.';
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
 
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
 
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
 
@@ -600,7 +600,7 @@ class AdminController
             $_SESSION['flash_message'] = 'Failed to approve user. Please try again.';
         }
 
-        header('Location: /micro-oss/index.php?route=admin-users');
+        header('Location: /index.php?route=admin-users');
         exit();
     }
 
@@ -610,21 +610,21 @@ class AdminController
         $id = $_GET['id'] ?? null;
         
         if (!$id) {
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
         
         // Prevent self-deletion
         if ($id == $_SESSION['user_id']) {
             $_SESSION['flash_message'] = 'You cannot delete your own account.';
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
         
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /micro-oss/index.php?route=admin-users');
+            header('Location: /index.php?route=admin-users');
             exit();
         }
         
@@ -634,7 +634,8 @@ class AdminController
             $_SESSION['flash_message'] = 'Failed to delete user. Please try again.';
         }
         
-        header('Location: /micro-oss/index.php?route=admin-users');
+        header('Location: /index.php?route=admin-users');
         exit();
     }
 }
+

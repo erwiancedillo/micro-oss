@@ -95,7 +95,7 @@
 document.getElementById('resourceForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
-    fetch('/micro-oss/index.php?route=api-resource-add', { method: 'POST', body: formData })
+    fetch('/index.php?route=api-resource-add', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(res => {
             if (res.success) {
@@ -111,7 +111,7 @@ document.querySelectorAll('.status-updater').forEach(select => {
         const formData = new FormData();
         formData.append('id', this.dataset.id);
         formData.append('status', this.value);
-        fetch('/micro-oss/index.php?route=api-resource-update', { method: 'POST', body: formData })
+        fetch('/index.php?route=api-resource-update', { method: 'POST', body: formData })
             .then(r => r.json())
             .then(res => {
                 if (res.success) window.location.reload();
@@ -120,3 +120,4 @@ document.querySelectorAll('.status-updater').forEach(select => {
     });
 });
 </script>
+

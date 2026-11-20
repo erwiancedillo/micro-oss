@@ -29,15 +29,16 @@ class WasteListing
     public function getAll()
     {
         if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
+            // socio_data_lizada/dalio schema: id, barangay, sitio_purok, total_families, total_persons, risk_level, created_at
             $stmt = $this->db->query("
-                SELECT id, household_head, purok, members, monthly_income, plastic_waste_kg, 'Lizada' AS source FROM socio_data_lizada
+                SELECT id, barangay, sitio_purok, total_families, total_persons, risk_level, created_at, 'Lizada' AS source FROM socio_data_lizada
                 UNION ALL
-                SELECT id, household_head, purok, members, monthly_income, plastic_waste_kg, 'Dalio' AS source FROM socio_data_dalio
-                ORDER BY purok, household_head
+                SELECT id, barangay, sitio_purok, total_families, total_persons, risk_level, created_at, 'Dalio' AS source FROM socio_data_dalio
+                ORDER BY barangay, sitio_purok
             ");
         } else {
             $table = Database::getTableName('socio_data');
-            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY purok, household_head");
+            $stmt = $this->db->query("SELECT * FROM `$table` ORDER BY barangay, sitio_purok");
         }
         return $stmt->fetchAll();
     }

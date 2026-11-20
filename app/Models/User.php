@@ -16,7 +16,20 @@ class User
         $table = Database::getTableName('users');
         $stmt = $this->db->prepare("SELECT * FROM `$table` WHERE email = ?");
         $stmt->execute([$email]);
-        return $stmt->fetch();
+        $user = $stmt->fetch();
+        if ($user) return $user;
+
+        // Fallback across all user tables
+        foreach (['users', 'users_lizada', 'users_dalio'] as $t) {
+            if ($t === $table) continue;
+            try {
+                $stmt = $this->db->prepare("SELECT * FROM `$t` WHERE email = ?");
+                $stmt->execute([$email]);
+                $u = $stmt->fetch();
+                if ($u) return $u;
+            } catch (\Exception $e) {}
+        }
+        return false;
     }
 
     public function create(array $data)

@@ -319,9 +319,9 @@ if (session_status() === PHP_SESSION_NONE) {
                                 // Add only one total row at the end
                                 echo "<tr class='total-row'>";
                                 echo "<td class='age-bracket'>TOTAL</td>";
-                                echo "<td>" . number_format($totals["total_female"]) . "</td>";
-                                echo "<td>" . number_format($totals["total_male"]) . "</td>";
-                                echo "<td>" . number_format($totals["total_population"]) . "</td>";
+                                echo "<td>" . number_format($totals["total_female"] ?? 0) . "</td>";
+                                echo "<td>" . number_format($totals["total_male"] ?? 0) . "</td>";
+                                echo "<td>" . number_format($totals["total_population"] ?? 0) . "</td>";
                                 if ($is_admin) {
                                     echo "<td class='action-column'>-</td>";
                                 }
@@ -341,20 +341,22 @@ if (session_status() === PHP_SESSION_NONE) {
                     <h5><i class="fas fa-chart-pie me-2"></i>Population Statistics</h5>
                     <div class="stat-item">
                         <span class="stat-label">Total Population</span>
-                        <span class="stat-value highlight text-purple"><?php echo number_format($totals["total_population"]); ?></span>
+                        <span class="stat-value highlight text-purple"><?php echo number_format($totals["total_population"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Female Population</span>
-                        <span class="stat-value"><?php echo number_format($totals["total_female"]); ?></span>
+                        <span class="stat-value"><?php echo number_format($totals["total_female"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Male Population</span>
-                        <span class="stat-value"><?php echo number_format($totals["total_male"]); ?></span>
+                        <span class="stat-value"><?php echo number_format($totals["total_male"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Gender Ratio</span>
                         <span class="stat-value"><?php
-                                                    $ratio = $totals["total_male"] > 0 ? round(($totals["total_female"] / $totals["total_male"]) * 100, 1) : 0;
+                                                    $female = (float)($totals["total_female"] ?? 0);
+                                                    $male = (float)($totals["total_male"] ?? 0);
+                                                    $ratio = $male > 0 ? round(($female / $male) * 100, 1) : 0;
                                                     echo $ratio . ":100";
                                                     ?></span>
                     </div>
@@ -364,21 +366,21 @@ if (session_status() === PHP_SESSION_NONE) {
                     <h5><i class="fas fa-child me-2"></i>Age Groups</h5>
                     <div class="stat-item">
                         <span class="stat-label">0-14 years</span>
-                        <span class="stat-value"><?php echo isset($ageGroups["youth_0_14"]) ? number_format($ageGroups["youth_0_14"]) : 0; ?></span>
+                        <span class="stat-value"><?php echo number_format($ageGroups["youth_0_14"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">15-64 years</span>
-                        <span class="stat-value highlight text-purple"><?php echo isset($ageGroups["adults_15_64"]) ? number_format($ageGroups["adults_15_64"]) : 0; ?></span>
+                        <span class="stat-value highlight text-purple"><?php echo number_format($ageGroups["adults_15_64"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">65+ years</span>
-                        <span class="stat-value"><?php echo isset($ageGroups["elderly_65_plus"]) ? number_format($ageGroups["elderly_65_plus"]) : 0; ?></span>
+                        <span class="stat-value"><?php echo number_format($ageGroups["elderly_65_plus"] ?? 0); ?></span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Dependency Ratio</span>
                         <span class="stat-value"><?php
-                                                    $working_age = isset($ageGroups["adults_15_64"]) ? $ageGroups["adults_15_64"] : 0;
-                                                    $dependents = (isset($ageGroups["youth_0_14"]) ? $ageGroups["youth_0_14"] : 0) + (isset($ageGroups["elderly_65_plus"]) ? $ageGroups["elderly_65_plus"] : 0);
+                                                    $working_age = (float)($ageGroups["adults_15_64"] ?? 0);
+                                                    $dependents = (float)($ageGroups["youth_0_14"] ?? 0) + (float)($ageGroups["elderly_65_plus"] ?? 0);
                                                     $dependency_ratio = $working_age > 0 ? round(($dependents / $working_age) * 100, 1) : 0;
                                                     echo $dependency_ratio . "%";
                                                     ?></span>

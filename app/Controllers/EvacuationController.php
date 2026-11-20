@@ -10,7 +10,7 @@ class EvacuationController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /micro-oss/index.php?route=login');
+            header('Location: /index.php?route=login');
             exit();
         }
         $userName = $_SESSION['user_name'] ?? 'Guest';
@@ -34,3 +34,4 @@ class EvacuationController
         include __DIR__ . '/../Views/layout.php';
     }
 }
+
