@@ -86,9 +86,8 @@
 </div>
 
 <!-- Scripts -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry,directions"></script>
-<script src="/assets/js/map-init.js"></script>
-<script src="/assets/js/floodzones.js"></script>
+<script src="assets/js/map-init.js"></script>
+<script src="assets/js/floodzones.js"></script>
 
 <script>
     function updateLocationDisplay() {
@@ -146,7 +145,7 @@
         checkLayout();
 
         // Indicate Barangay Areas on Evacuation Map
-        if (typeof google !== 'undefined' && map) {
+        if (typeof L !== 'undefined' && map) {
             const barangayPolygonsRaw = <?= json_encode($barangayPolygons) ?>;
             
             function parseWKT(wkt) {
@@ -164,33 +163,14 @@
                 const paths = parseWKT(bp.polygon);
                 if (!paths) return;
 
-                const polygon = new google.maps.Polygon({
-                    paths: paths,
-                    strokeColor: '#4a5568',
-                    strokeOpacity: 0.5,
-                    strokeWeight: 1,
-                    fillColor: '#667eea',
-                    fillOpacity: 0.1,
-                    map: map
-                });
+                const polygon = L.polygon(paths, { color: '#4a5568', opacity: 0.5, weight: 1, fillColor: '#667eea', fillOpacity: 0.1 }).addTo(map);
 
                 // Add basic interaction: highlight on hover
-                google.maps.event.addListener(polygon, 'mouseover', function() {
-                    this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
-                });
-                google.maps.event.addListener(polygon, 'mouseout', function() {
-                    this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
-                });
+                polygon.on('mouseover', function() { this.setStyle({ fillOpacity: 0.2, weight: 2 }); });
+                polygon.on('mouseout', function() { this.setStyle({ fillOpacity: 0.1, weight: 1 }); });
 
                 // Clicking the area shows the barangay name
-                google.maps.event.addListener(polygon, 'click', function(event) {
-                    const content = `<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`;
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: content,
-                        position: event.latLng
-                    });
-                    infoWindow.open(map);
-                });
+                polygon.bindPopup(`<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`);
             });
 
             // Display Community Resources on the Map
@@ -221,12 +201,8 @@
                     const center = barangayCenters[brgy];
                     const loc = { lat: center.lat + 0.002, lng: center.lng + 0.002 }; // offset slightly
                     
-                    const marker = new google.maps.Marker({
-                        position: loc,
-                        map: map,
-                        title: `Resources in ${brgy}`,
-                        icon: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-                    });
+                    const resourceIcon = L.divIcon({ className: 'resource-map-marker', html: '<span style="display:block;width:20px;height:20px;border:2px solid #fff;border-radius:50%;background:#eab308;box-shadow:0 1px 5px #555"></span>', iconSize: [20, 20], iconAnchor: [10, 10] });
+                    const marker = L.marker([loc.lat, loc.lng], { title: `Resources in ${brgy}`, icon: resourceIcon }).addTo(map);
 
                     let resourceHtml = `<div style="font-family:Inter,sans-serif; max-width:250px;">
                         <h6 style="color:#d97706; font-weight:bold; margin-bottom:10px;"><i class="fas fa-boxes-stacked me-2"></i>Resources: ${brgy}</h6>`;
@@ -241,10 +217,7 @@
                     });
                     resourceHtml += '</div>';
 
-                    marker.addListener('click', () => {
-                        const info = new google.maps.InfoWindow({ content: resourceHtml });
-                        info.open(map, marker);
-                    });
+                    marker.bindPopup(resourceHtml);
                 }
             });
         }

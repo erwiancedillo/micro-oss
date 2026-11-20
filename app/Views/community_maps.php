@@ -403,19 +403,19 @@
             <span>Barangay Boundary</span>
         </div>
         <div class="legend-item">
-            <img src="https://maps.google.com/mapfiles/ms/icons/red-pushpin.png" class="legend-img">
+            <span class="legend-img" style="background:#dc2626;border:2px solid #fff;border-radius:50%;box-shadow:0 0 2px #555"></span>
             <span style="color:#667eea; font-weight:700;">Your Location</span>
         </div>
         <div class="legend-item">
-            <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" class="legend-img">
+            <span class="legend-img" style="background:#16a34a;border:2px solid #fff;border-radius:50%;box-shadow:0 0 2px #555"></span>
             <span>Evacuation Center</span>
         </div>
         <div class="legend-item">
-            <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" class="legend-img">
+            <span class="legend-img" style="background:#2563eb;border:2px solid #fff;border-radius:50%;box-shadow:0 0 2px #555"></span>
             <span>Sitio Marker</span>
         </div>
         <div class="legend-item">
-            <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" class="legend-img">
+            <span class="legend-img" style="background:#f97316;border:2px solid #fff;border-radius:50%;box-shadow:0 0 2px #555"></span>
             <span>Citizen Report</span>
         </div>
 
@@ -457,145 +457,101 @@
     </a>
 </div>
 
-<!-- ── Google Maps ──────────────────────────────────────────────── -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8"></script>
+<!-- ── Leaflet Map ──────────────────────────────────────────────── -->
 <script>
 function initMap() {
-    var center = { lat: <?= $mapCenter['lat'] ?>, lng: <?= $mapCenter['lng'] ?> };
-
-    var mapStyles = [
-        { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
-        { elementType: "labels.text.fill", stylers: [{ color: "#475569" }] },
-        { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#bfdbfe" }] },
-        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
-        { featureType: "road", elementType: "geometry", stylers: [{ color: "#e2e8f0" }] },
-        { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#f1f5f9" }] },
-        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#e2e8f0" }] },
-        { featureType: "poi", elementType: "geometry", stylers: [{ color: "#ecfdf5" }] },
-        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
-        { featureType: "park", elementType: "geometry", stylers: [{ color: "#dcfce7" }] }
-    ];
-
-    var map = new google.maps.Map(document.getElementById('map'), {
-        center: center,
-        zoom: 14,
-        styles: mapStyles,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            position: google.maps.ControlPosition.TOP_LEFT,
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-        },
-        zoomControl: true,
-        zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER },
-        streetViewControl: false,
-        fullscreenControl: true,
-        fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP }
+    const center = [<?= $mapCenter['lat'] ?>, <?= $mapCenter['lng'] ?>];
+    const map = L.map('map').setView(center, 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    addLeafletFullscreenControl(map);
+    const dotIcon = color => L.divIcon({
+        className: 'leaflet-dot-marker',
+        html: `<span style="display:block;width:18px;height:18px;border:2px solid #fff;border-radius:50%;background:${color};box-shadow:0 1px 5px #555"></span>`,
+        iconSize: [18, 18], iconAnchor: [9, 9]
     });
 
     // Barangay Boundary
     var polygonCoords = <?= $polygonCoordsJS ?>;
     if (polygonCoords.length > 0) {
-        new google.maps.Polygon({
-            paths: polygonCoords,
-            strokeColor: "#667eea",
-            strokeOpacity: 1.0,
-            strokeWeight: 3,
-            fillColor: "#667eea",
-            fillOpacity: 0.1
-        }).setMap(map);
+        L.polygon(polygonCoords, { color: '#2563eb', weight: 3, fillColor: '#6366f1', fillOpacity: 0.2 }).addTo(map);
     }
 
     // Sitio Markers
     var markers = <?= json_encode($markers) ?>;
     markers.forEach(function(marker) {
-        new google.maps.Marker({
-            position: { lat: parseFloat(marker.latitude), lng: parseFloat(marker.longitude) },
-            map: map,
-            title: marker.sitio_name,
-            icon: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-        });
+        L.marker([parseFloat(marker.latitude), parseFloat(marker.longitude)], { icon: dotIcon('#2563eb'), title: marker.sitio_name }).addTo(map);
     });
 
     // Citizen Reports
     var citizenReports = <?= json_encode($citizenReports ?? []) ?>;
     citizenReports.forEach(function(report) {
         if (!report.latitude || !report.longitude) return;
-        var m = new google.maps.Marker({
-            position: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
-            map: map,
-            title: report.category,
-            icon: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png'
-        });
-        m.addListener('click', function() {
-            new google.maps.InfoWindow({
-                content: '<div style="font-family:Inter,sans-serif;max-width:210px;padding:4px">' +
-                         '<div style="color:#f97316;font-weight:800;font-size:13px;margin-bottom:6px">' +
-                         '<i class="fas fa-camera" style="margin-right:5px"></i>' + report.category + '</div>' +
-                         '<p style="font-size:12px;color:#475569;margin-bottom:6px">' + report.description + '</p>' +
-                         '<span style="font-size:11px;color:#94a3b8">By: ' + report.first_name + ' · ' + report.status + '</span>' +
-                         '</div>'
-            }).open(map, m);
-        });
+        L.marker([parseFloat(report.latitude), parseFloat(report.longitude)], { icon: dotIcon('#f97316'), title: report.category })
+            .bindPopup('<div style="font-family:Inter,sans-serif; max-width:200px;">' +
+                         '<h6 style="color:#f97316; font-weight:bold"><i class="fas fa-camera me-1"></i> ' + report.category + '</h6>' +
+                         '<p style="font-size:12px; margin-bottom:5px;">' + report.description + '</p>' +
+                         '<small style="color:#666">By: ' + report.first_name + ' | ' + report.status + '</small>' +
+                         '</div>').addTo(map);
     });
 
     // Flood Zones
     var floodZones = <?= json_encode($floodZones) ?>;
     floodZones.forEach(function(zone) {
-        new google.maps.Polygon({
-            paths: zone.polygon,
-            strokeColor: "#000",
-            strokeOpacity: 0.4,
-            strokeWeight: 1,
-            fillColor: getRiskColor(zone.risk_level),
-            fillOpacity: 0.35,
-            map: map
-        });
+        L.polygon(zone.polygon, { color: '#000', opacity: 0.5, weight: 1, fillColor: getRiskColor(zone.risk_level), fillOpacity: 0.35 }).addTo(map);
     });
 
     // Evacuation Centers
     var evacuationCenters = <?= json_encode($evacuationCenters) ?>;
-    var evacInfoWindow = new google.maps.InfoWindow();
-    evacuationCenters.forEach(function(ec) {
-        var eMarker = new google.maps.Marker({
-            position: { lat: parseFloat(ec.latitude), lng: parseFloat(ec.longitude) },
-            map: map,
-            title: ec.name,
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png', scaledSize: new google.maps.Size(32, 32) }
-        });
-        eMarker.addListener('click', function() {
-            evacInfoWindow.setContent(
-                '<div style="font-family:Inter,sans-serif;max-width:210px;padding:6px">' +
-                '<div style="font-weight:800;font-size:13px;color:#1e293b;margin-bottom:6px">' + ec.name + '</div>' +
-                '<span style="display:inline-block;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px;margin-bottom:8px">' + ec.status + '</span>' +
-                '<div style="font-size:12px;color:#64748b;margin-bottom:4px"><i class="fas fa-users" style="margin-right:4px"></i>Capacity: <strong>' + ec.capacity + '</strong></div>' +
-                '<div style="font-size:12px;color:#64748b"><i class="fas fa-user-check" style="margin-right:4px"></i>Occupied: <strong>' + ec.occupied + '</strong></div>' +
-                '</div>'
-            );
-            evacInfoWindow.open(map, eMarker);
-        });
+    evacuationCenters.forEach(function(center) {
+        L.marker([parseFloat(center.latitude), parseFloat(center.longitude)], { icon: dotIcon('#16a34a'), title: center.name })
+            .bindPopup(`
+                <div style="padding: 10px; max-width: 200px; font-family: 'Inter', sans-serif;">
+                    <h6 class="fw-bold mb-1">${center.name}</h6>
+                    <div class="badge bg-success mb-2">${center.status}</div>
+                    <div class="small text-muted mb-1">
+                        <i class="fas fa-users me-1"></i> Capacity: <strong>${center.capacity}</strong>
+                    </div>
+                    <div class="small text-muted">
+                        <i class="fas fa-user-check me-1"></i> Occupied: <strong>${center.occupied}</strong>
+                    </div>
+                    <a class="btn btn-sm btn-outline-primary mt-2" target="_blank" rel="noopener" href="https://www.openstreetmap.org/directions?to=${encodeURIComponent(center.latitude)},${encodeURIComponent(center.longitude)}">Get directions</a>
+                </div>
+            `).addTo(map);
     });
 
     // User Geolocation
     var userMarker = null;
     var centerBtn = document.getElementById('center-location');
 
-    function showUserLocation(forceCenter) {
-        if (!navigator.geolocation) return;
-        navigator.geolocation.getCurrentPosition(function(pos) {
-            var latLng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            if (userMarker) {
-                userMarker.setPosition(latLng);
-            } else {
-                userMarker = new google.maps.Marker({
-                    position: latLng, map: map,
-                    title: "Your Location",
-                    icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-pushpin.png', scaledSize: new google.maps.Size(40, 40) },
-                    zIndex: 1001
-                });
-            }
-            if (forceCenter) { map.setCenter(latLng); map.setZoom(16); }
-        });
+    function showUserLocation(centerOnFound = false) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    if (userMarker) {
+                        userMarker.setLatLng([pos.lat, pos.lng]);
+                    } else {
+                        userMarker = L.circleMarker([pos.lat, pos.lng], { radius: 9, color: '#fff', weight: 3, fillColor: '#dc2626', fillOpacity: 1 }).addTo(map).bindTooltip('Your current location');
+                    }
+
+                    if (centerOnFound) {
+                        map.setView([pos.lat, pos.lng], 16);
+                    }
+                },
+                function() {
+                    console.log("Error: The Geolocation service failed.");
+                }
+            );
+        } else {
+            console.log("Error: Your browser doesn't support geolocation.");
+        }
     }
 
     centerBtn.addEventListener('click', function() {
@@ -609,8 +565,8 @@ function initMap() {
     showUserLocation(false);
 
     function getRiskColor(level) {
-        switch ((level || '').toLowerCase()) {
-            case 'high':     return '#ef4444';
+        switch((level || '').toLowerCase()) {
+            case 'high': return '#ef4444';
             case 'moderate': return '#f97316';
             case 'low':      return '#22c55e';
             default:         return '#3b82f6';

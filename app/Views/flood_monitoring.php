@@ -312,34 +312,25 @@
     </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry"></script>
-<script src="/assets/js/floodzones.js"></script>
+<script src="assets/js/floodzones.js"></script>
 <script>
     let map;
     const defaultCenter = { lat: 7.028012, lng: 125.447948 }; // Toril Center
 
     function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: defaultCenter,
-            zoom: 13,
-            styles: [
-                {
-                    "featureType": "water",
-                    "elementType": "geometry",
-                    "stylers": [{ "color": "#e9e9e9" }, { "lightness": 17 }]
-                },
-                {
-                    "featureType": "landscape",
-                    "elementType": "geometry",
-                    "stylers": [{ "color": "#f5f5f5" }, { "lightness": 20 }]
-                }
-                // Custom subtle map style could go here
-            ],
-            disableDefaultUI: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: true
+        map = L.map('map').setView([defaultCenter.lat, defaultCenter.lng], 13);
+        const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19, attribution: 'Tiles &copy; Esri'
+        });
+        addLeafletFullscreenControl(map);
+        let currentBaseLayer = streetLayer;
+        const dotIcon = (color, size = 16) => L.divIcon({
+            className: 'leaflet-alert-marker',
+            html: `<span style="display:block;width:${size}px;height:${size}px;border:2px solid #fff;border-radius:50%;background:${color};box-shadow:0 1px 5px #555"></span>`,
+            iconSize: [size, size], iconAnchor: [size / 2, size / 2]
         });
 
         // Load flood zones using the existing JS function
@@ -358,24 +349,21 @@
                 </div>
             </div>
         `;
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(weatherControl);
+        const weatherControlInstance = L.control({ position: 'topright' });
+        weatherControlInstance.onAdd = function() {
+            const container = L.DomUtil.create('div');
+            container.innerHTML = weatherControl.innerHTML;
+            return container;
+        };
+        weatherControlInstance.addTo(map);
 
         // --- OpenWeatherMap Tile Layer Integration ---
         const OWM_KEY = '<?= $openWeatherKey ?>';
         let activeOWMOverlay = null;
         let activeLayerName = null;
 
-        // Custom ImageMapType for OWM tiles
         function createOWMLayer(layerName) {
-            return new google.maps.ImageMapType({
-                getTileUrl: function(coord, zoom) {
-                    return `https://tile.openweathermap.org/map/${layerName}/${zoom}/${coord.x}/${coord.y}.png?appid=${OWM_KEY}`;
-                },
-                tileSize: new google.maps.Size(256, 256),
-                opacity: 0.6,
-                name: layerName,
-                isPng: true
-            });
+            return L.tileLayer(`https://tile.openweathermap.org/map/${layerName}/{z}/{x}/{y}.png?appid=${OWM_KEY}`, { opacity: 0.6, attribution: '&copy; OpenWeatherMap' });
         }
 
         // Toggle OWM weather layer
@@ -383,7 +371,7 @@
             // If clicking the same layer, just turn it off
             if (activeLayerName === layerName) {
                 if (activeOWMOverlay) {
-                    map.overlayMapTypes.clear();
+                    map.removeLayer(activeOWMOverlay);
                     activeOWMOverlay = null;
                 }
                 activeLayerName = null;
@@ -393,7 +381,7 @@
 
             // Remove existing overlay
             if (activeOWMOverlay) {
-                map.overlayMapTypes.clear();
+                map.removeLayer(activeOWMOverlay);
                 activeOWMOverlay = null;
             }
 
@@ -402,7 +390,7 @@
 
             // Add new overlay
             activeOWMOverlay = createOWMLayer(layerName);
-            map.overlayMapTypes.push(activeOWMOverlay);
+            activeOWMOverlay.addTo(map);
             activeLayerName = layerName;
             btn.classList.add('active');
         }
@@ -416,7 +404,11 @@
 
         // --- Map Type Switching ---
         function setMapType(type, btn) {
-            map.setMapTypeId(type);
+            const nextLayer = type === 'satellite' ? satelliteLayer : streetLayer;
+            if (currentBaseLayer !== nextLayer) {
+                map.removeLayer(currentBaseLayer);
+                currentBaseLayer = nextLayer.addTo(map);
+            }
             document.querySelectorAll('.map-type-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
@@ -436,30 +428,14 @@
         };
 
         const barangayAlerts = <?= json_encode($barangayAlerts) ?>;
-        const alertInfoWindow = new google.maps.InfoWindow();
-
         barangayAlerts.forEach(alert => {
             if (!alert.lat || !alert.lng) return;
 
             const color = alertColorMap[alert.color] || '#22c55e';
-            const marker = new google.maps.Marker({
-                position: { lat: alert.lat, lng: alert.lng },
-                map: map,
-                title: alert.name + ' â€” ' + alert.color + ' Alert',
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    fillColor: color,
-                    fillOpacity: 0.9,
-                    strokeColor: '#fff',
-                    strokeWeight: 2,
-                    scale: alert.level > 0 ? 10 : 7
-                },
-                zIndex: alert.level + 1
-            });
-
-            marker.addListener('click', () => {
+            L.marker([alert.lat, alert.lng], { title: alert.name + ' — ' + alert.color + ' Alert', icon: dotIcon(color, alert.level > 0 ? 20 : 14), zIndexOffset: (alert.level + 1) * 10 })
+                .addTo(map).bindPopup((() => {
                 const advisory = alert.advisory || 'No advisory issued.';
-                alertInfoWindow.setContent(`
+                return `
                     <div style="max-width: 220px; font-family: 'Inter', sans-serif;">
                         <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">${alert.name}</div>
                         <div style="display: inline-block; background: ${color}; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-bottom: 6px;">
@@ -471,9 +447,8 @@
                             View Full Alert Details â†’
                         </a>
                     </div>
-                `);
-                alertInfoWindow.open(map, marker);
-            });
+                `;
+            })());
         });
 
         // --- Barangay Polygons (Areas) ---
@@ -494,38 +469,18 @@
             const paths = parseWKT(bp.polygon);
             if (!paths) return;
 
-            const polygon = new google.maps.Polygon({
-                paths: paths,
-                strokeColor: '#4a5568',
-                strokeOpacity: 0.5,
-                strokeWeight: 1,
-                fillColor: '#667eea',
-                fillOpacity: 0.1,
-                map: map
-            });
+            const polygon = L.polygon(paths, { color: '#4a5568', opacity: 0.5, weight: 1, fillColor: '#667eea', fillOpacity: 0.1 }).addTo(map);
 
             // Add basic interaction: highlight on hover
-            google.maps.event.addListener(polygon, 'mouseover', function() {
-                this.setOptions({ fillOpacity: 0.2, strokeWeight: 2 });
-            });
-            google.maps.event.addListener(polygon, 'mouseout', function() {
-                this.setOptions({ fillOpacity: 0.1, strokeWeight: 1 });
-            });
+            polygon.on('mouseover', function() { this.setStyle({ fillOpacity: 0.2, weight: 2 }); });
+            polygon.on('mouseout', function() { this.setStyle({ fillOpacity: 0.1, weight: 1 }); });
 
             // Clicking the area shows the barangay name
-            google.maps.event.addListener(polygon, 'click', function(event) {
-                const content = `<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`;
-                const infoWindow = new google.maps.InfoWindow({
-                    content: content,
-                    position: event.latLng
-                });
-                infoWindow.open(map);
-            });
+            polygon.bindPopup(`<div style="padding: 10px; font-weight: 700;">Barangay ${bp.name} Zone</div>`);
         });
         
         // --- Evacuation Centers ---
         const evacuationCenters = <?= json_encode($evacuationCenters) ?>;
-        const evacInfoWindow = new google.maps.InfoWindow();
         const evacMarkers = [];
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -540,18 +495,8 @@
         }
 
         evacuationCenters.forEach(evac => {
-            const marker = new google.maps.Marker({
-                position: { lat: parseFloat(evac.latitude), lng: parseFloat(evac.longitude) },
-                map: map,
-                title: evac.name,
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                    scaledSize: new google.maps.Size(32, 32)
-                }
-            });
-
-            marker.addListener('click', () => {
-                evacInfoWindow.setContent(`
+            const marker = L.marker([parseFloat(evac.latitude), parseFloat(evac.longitude)], { title: evac.name, icon: dotIcon('#16a34a', 20) }).addTo(map);
+            marker.bindPopup(`
                     <div style="max-width: 250px; font-family: 'Inter', sans-serif;">
                         <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: #2d3748;">${evac.name}</div>
                         <div style="background: ${evac.status === 'Full' ? '#f56565' : '#48bb78'}; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin-bottom: 8px;">
@@ -560,13 +505,11 @@
                         <div style="font-size: 0.85rem; color: #4a5568; margin-bottom: 12px;">
                             Capacity: ${evac.occupied}/${evac.capacity} persons
                         </div>
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=${evac.latitude},${evac.longitude}" target="_blank" class="btn btn-primary btn-sm w-100 py-2 rounded-3 fw-bold" style="background: #3182ce; border: none; font-size: 0.8rem; color: white; display: block; text-align: center; text-decoration: none;">
+                        <a href="https://www.openstreetmap.org/directions?to=${encodeURIComponent(evac.latitude)},${encodeURIComponent(evac.longitude)}" target="_blank" rel="noopener" class="btn btn-primary btn-sm w-100 py-2 rounded-3 fw-bold" style="background: #3182ce; border: none; font-size: 0.8rem; color: white; display: block; text-align: center; text-decoration: none;">
                             <i class="fas fa-directions me-2"></i>Navigate to Center
                         </a>
                     </div>
                 `);
-                evacInfoWindow.open(map, marker);
-            });
 
             evacMarkers.push({ marker, data: evac });
         });
@@ -575,27 +518,16 @@
         const citizenReports = <?= json_encode($citizenReports ?? []) ?>;
         citizenReports.forEach(report => {
             if (!report.latitude || !report.longitude) return;
-            const marker = new google.maps.Marker({
-                position: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
-                map: map,
-                title: report.category,
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png',
-                    scaledSize: new google.maps.Size(32, 32)
-                }
-            });
-            marker.addListener('click', () => {
+            L.marker([parseFloat(report.latitude), parseFloat(report.longitude)], { title: report.category, icon: dotIcon('#f97316', 20) }).addTo(map)
+                .bindPopup((() => {
                 const imgTag = report.image ? `<img src="/assets/uploads/citizen_science/${report.image}" style="width:100%; border-radius:5px; margin-top:5px; max-height:100px; object-fit:cover;">` : '';
-                const info = new google.maps.InfoWindow({
-                    content: `<div style="font-family:Inter,sans-serif; max-width: 200px;">
+                return `<div style="font-family:Inter,sans-serif; max-width: 200px;">
                         <h6 style="color:#f97316; font-weight:bold; margin-bottom:2px;"><i class="fas fa-camera me-1"></i>${report.category}</h6>
                         <p style="font-size:12px; margin-bottom:5px;">${report.description}</p>
                         <small style="color:#666; display:block;">By: ${report.first_name} | ${report.status}</small>
                         ${imgTag}
-                    </div>`
-                });
-                info.open(map, marker);
-            });
+                    </div>`;
+            })());
         });
 
         // Show user location if available and find nearest evac center
@@ -606,15 +538,7 @@
                     lng: position.coords.longitude 
                 };
 
-                new google.maps.Marker({
-                    position: userLocation,
-                    map: map,
-                    title: "Your Location",
-                    icon: {
-                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                        scaledSize: new google.maps.Size(32, 32)
-                    }
-                });
+                L.circleMarker([userLocation.lat, userLocation.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#2563eb', fillOpacity: 1 }).addTo(map).bindTooltip('Your Location');
 
                 // Find nearest evacuation center if any exist
                 if (evacMarkers.length > 0) {
@@ -633,12 +557,8 @@
                     });
 
                     if (nearest) {
-                        google.maps.event.trigger(nearest.marker, 'click');
-                        map.panTo(nearest.marker.getPosition());
-                        
-                        // Optional: Add a subtle animation or bigger marker icon for better emphasis
-                        nearest.marker.setAnimation(google.maps.Animation.BOUNCE);
-                        setTimeout(() => nearest.marker.setAnimation(null), 3000);
+                        nearest.marker.openPopup();
+                        map.panTo(nearest.marker.getLatLng());
                     }
                 }
             });
@@ -681,12 +601,6 @@
         }, 500);
     });
 
-    // Initialize map on window load or directly if script is already loaded
-    if (typeof google !== 'undefined') {
-        initMap();
-    } else {
-        // Fallback or wait for layout.php to load Google Maps script
-        window.addEventListener('load', initMap);
-    }
+    initMap();
 </script>
 

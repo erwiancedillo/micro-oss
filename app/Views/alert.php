@@ -479,36 +479,24 @@
 
 </div>
 
-<!-- Google Maps Script -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8"></script>
 <script>
 function initMap() {
     var centerMap = <?= json_encode($mapCenter) ?>;
-    var map = new google.maps.Map(document.getElementById('map-alerts'), {
-        center: centerMap,
-        zoom: 14,
-        styles: [
-            { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "visibility": "off" }] },
-            { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
-            { "featureType": "road", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }
-        ]
-    });
+    var map = L.map('map-alerts').setView([centerMap.lat, centerMap.lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    addLeafletFullscreenControl(map);
+    const alertColors = { green: '#22c55e', yellow: '#eab308', orange: '#f97316', red: '#ef4444' };
+    const alertIcon = (colorName, square = false) => {
+        const color = alertColors[colorName] || alertColors.green;
+        return L.divIcon({ className: 'alert-location-marker', html: `<span style="display:block;width:18px;height:18px;border:2px solid #fff;border-radius:${square ? '3px' : '50%'};background:${color};box-shadow:0 1px 5px #555"></span>`, iconSize: [18, 18], iconAnchor: [9, 9] });
+    };
 
     var polygonCoords = <?= $polygonCoordsJS ?>;
     if (polygonCoords.length > 0) {
-        new google.maps.Polygon({
-            paths: polygonCoords,
-            strokeColor: "#667eea",
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: "#667eea",
-            fillOpacity: 0.14,
-            map: map
-        });
+        L.polygon(polygonCoords, { color: '#4338ca', opacity: 0.8, weight: 2.5, fillColor: '#6366f1', fillOpacity: 0.15 }).addTo(map);
     }
 
     var sitios = <?= json_encode($sitios) ?>;
-    var infoWindow = new google.maps.InfoWindow();
     var alertColorsMap = {0: 'green', 1: 'yellow', 2: 'orange', 3: 'red'};
 
     <?php if ($barangay !== null): ?>
@@ -516,23 +504,14 @@ function initMap() {
         var brgyData = <?= json_encode(['name' => $barangay, 'level' => $barangayAlert, 'lat' => $mapCenter['lat'], 'lng' => $mapCenter['lng'], 'advisory' => $barangayAdvisory]) ?>;
         if (polygonCoords.length === 0 || (brgyData.lat !== 7.028 || brgyData.lng !== 125.448)) {
             var colorName = alertColorsMap[brgyData.level] || 'green';
-            var marker = new google.maps.Marker({
-                position: {lat: brgyData.lat, lng: brgyData.lng},
-                map: map,
-                title: brgyData.name,
-                icon: 'https://maps.google.com/mapfiles/ms/icons/' + colorName + '.png',
-                zIndex: 1000
-            });
-            marker.addListener('click', function() {
-                var content = `
+            L.marker([brgyData.lat, brgyData.lng], { title: brgyData.name, icon: alertIcon(colorName, true), zIndexOffset: 1000 })
+                .addTo(map).bindPopup(`
                     <div style="padding: 10px; max-width: 250px; font-family: 'Inter', sans-serif;">
                         <h6 class="fw-bold mb-1">${brgyData.name}</h6>
                         <div class="badge bg-${colorName.charAt(0).toUpperCase() + colorName.slice(1)} mb-2">${colorName.toUpperCase()}</div>
                         <div class="small">${brgyData.advisory || 'Normal conditions.'}</div>
-                    </div>`;
-                infoWindow.setContent(content);
-                infoWindow.open(map, marker);
-            });
+                    </div>
+                `);
         }
     })();
     <?php endif; ?>
@@ -542,23 +521,14 @@ function initMap() {
             var level = parseInt(sitio.flood_level || 0);
             var colorName = alertColorsMap[level] || 'green';
             
-            var marker = new google.maps.Marker({
-                position: {lat: parseFloat(sitio.latitude), lng: parseFloat(sitio.longitude)},
-                map: map,
-                title: sitio.sitio_name,
-                icon: 'https://maps.google.com/mapfiles/ms/icons/' + colorName + '-dot.png'
-            });
-
-            marker.addListener('click', function() {
-                var content = `
+            L.marker([parseFloat(sitio.latitude), parseFloat(sitio.longitude)], { title: sitio.sitio_name, icon: alertIcon(colorName) })
+                .addTo(map).bindPopup(`
                     <div style="padding: 10px; max-width: 250px; font-family: 'Inter', sans-serif;">
                         <h6 class="fw-bold mb-1">${sitio.sitio_name}</h6>
                         <div class="badge bg-${colorName.charAt(0).toUpperCase() + colorName.slice(1)} mb-2">${colorName.toUpperCase()}</div>
                         <div class="small text-muted">${sitio.flood_advisory || 'Normal conditions.'}</div>
-                    </div>`;
-                infoWindow.setContent(content);
-                infoWindow.open(map, marker);
-            });
+                    </div>
+                `);
         }
     });
 }

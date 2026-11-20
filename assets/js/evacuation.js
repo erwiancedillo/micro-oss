@@ -1,5 +1,6 @@
 let userMarker = null;
 let centerMarker = null;
+let evacuationRouteLayer = null;
 
 function findNearest() {
 
@@ -17,18 +18,12 @@ function findNearest() {
 
         // Show user marker
         if (!userMarker) {
-            userMarker = new google.maps.Marker({
-                position: userLocation,
-                map: map,
-                title: "Your Location",
-                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-            });
+            userMarker = L.circleMarker([userLocation.lat, userLocation.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#2563eb', fillOpacity: 1 }).addTo(map).bindTooltip('Your Location');
         } else {
-            userMarker.setPosition(userLocation);
+            userMarker.setLatLng([userLocation.lat, userLocation.lng]);
         }
 
-        map.panTo(userLocation);
-        map.setZoom(15);
+        map.setView([userLocation.lat, userLocation.lng], 15);
 
         // Check flood risk
         checkFloodRisk(userLocation);
@@ -65,31 +60,18 @@ function findNearest() {
         };
 
         // Draw route
-        directionsService.route({
-            origin: userLocation,
-            destination: destination,
-            travelMode: google.maps.TravelMode.DRIVING
-        }, function (response, status) {
-
-            if (status === "OK") {
-
-                directionsRenderer.setDirections(response);
-
-                const leg = response.routes[0].legs[0];
-
+        mapServices.route(userLocation, destination).then(route => {
+                if (evacuationRouteLayer) map.removeLayer(evacuationRouteLayer);
+                evacuationRouteLayer = L.polyline(route.coordinates, { color: '#2563eb', weight: 5, opacity: 0.8 }).addTo(map);
+                map.fitBounds(evacuationRouteLayer.getBounds(), { padding: [30, 30] });
                 document.getElementById("info-panel").innerHTML =
                     "<strong>Nearest Center:</strong> " + nearestCenter.name + "<br>" +
                     "<strong>Barangay:</strong> " + nearestCenter.barangay + "<br>" +
-                    "<strong>Distance:</strong> " + leg.distance.text + "<br>" +
-                    "<strong>Estimated Time:</strong> " + leg.duration.text + "<br>" +
+                    "<strong>Distance:</strong> " + route.distanceText + "<br>" +
+                    "<strong>Estimated Time:</strong> " + route.durationText + "<br>" +
                     "<strong>Available Capacity:</strong> " +
                     (nearestCenter.capacity - nearestCenter.occupied);
-
-            } else {
-                alert("Directions request failed: " + status);
-            }
-
-        });
+        }).catch(error => alert("Directions request failed: " + error.message));
 
     }, function () {
         alert("Please allow location access.");

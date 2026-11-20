@@ -746,18 +746,17 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
 
 <!-- Charts & Maps Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry,directions"></script>
 
 <script>
     let map, markers = [],
         barChart, pieChart, userLocation = null,
         userMarker = null,
         nearestCenter = null,
-        directionsService, directionsRenderer, allCenters = [];
+        allCenters = [];
     let locationSelectionMode = false,
         locationSelectMarker = null,
-        mapClickListener = null;
-    let barangayPolygons = [];
+        routeLayer = null;
+    let barangayPolygons = []; // To store polygon objects
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
         if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
@@ -790,13 +789,8 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
                         lat: pos.coords.latitude,
                         lng: pos.coords.longitude
                     };
-                    if (userMarker) userMarker.setPosition(userLocation);
-                    else userMarker = new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        title: 'Your Location',
-                        icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                    });
+                    if (userMarker) userMarker.setLatLng([userLocation.lat, userLocation.lng]);
+                    else userMarker = L.circleMarker([userLocation.lat, userLocation.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#2563eb', fillOpacity: 1 }).addTo(map).bindTooltip('Your Location');
                     nearestCenter = findNearestCenter();
                     if (nearestCenter && document.getElementById('directionsPanel')) {
                         document.getElementById('directionsPanel').innerHTML = `
@@ -812,14 +806,16 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
     }
 
     function getMarkerColor(status) {
+        let color = '#16a34a';
         switch (status) {
             case 'Full':
-                return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                color = '#dc2626';
+                break;
             case 'Limited':
-                return 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png';
-            default:
-                return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                color = '#f97316';
+                break;
         }
+        return L.divIcon({ className: 'admin-center-marker', html: `<span style="display:block;width:20px;height:20px;border:2px solid #fff;border-radius:50%;background:${color};box-shadow:0 1px 5px #555"></span>`, iconSize: [20, 20], iconAnchor: [10, 10] });
     }
 
     async function loadDashboard() {
@@ -925,43 +921,29 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
             const mapRes = await fetch('/api/get-centers.php');
             allCenters = await mapRes.json();
 
-            markers.forEach(m => m.setMap(null));
+            markers.forEach(m => map && map.removeLayer(m));
             markers = [];
 
             if (!map) {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 13,
-                    center: { lat: 7.028, lng: 125.448 },
-                    styles: [
-                        { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "visibility": "off" }] },
-                        { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
-                        { "featureType": "road", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }
-                    ]
-                });
-                directionsService = new google.maps.DirectionsService();
-                directionsRenderer = new google.maps.DirectionsRenderer({
-                    map: map,
-                    panel: document.getElementById('directionsPanel')
+                map = L.map('map').setView([7.028, 125.448], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+                addLeafletFullscreenControl(map);
+                map.on('click', e => {
+                    if (locationSelectionMode) selectLocationOnMap(e.latlng);
                 });
                 getUserLocation();
                 renderBarangayPolygons();
                 renderFloodZones();
             }
 
-            const bounds = new google.maps.LatLngBounds();
+            const bounds = L.latLngBounds([]);
             allCenters.forEach(c => {
                 const lat = parseFloat(c.latitude),
                     lng = parseFloat(c.longitude);
                 if (isNaN(lat) || isNaN(lng)) return;
-                const marker = new google.maps.Marker({
-                    position: { lat, lng },
-                    map: map,
-                    title: c.name,
-                    icon: getMarkerColor(c.status)
-                });
                 const brgyTag = c.barangay ? `<span class="badge ${c.barangay.toLowerCase() === 'dalio' ? 'bg-info' : 'bg-primary'} mb-1">${c.barangay}</span>` : '';
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `
+                const marker = L.marker([lat, lng], { title: c.name, icon: getMarkerColor(c.status) }).addTo(map);
+                marker.bindPopup(`
                         <div class="p-2" style="font-family: 'Inter', sans-serif;">
                             ${brgyTag}
                             <h6 class="fw-bold mb-1">${c.name}</h6>
@@ -971,22 +953,22 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
                             <div>
                                 <span class="badge ${c.status === 'Full' ? 'bg-danger' : (c.status === 'Limited' ? 'bg-warning text-dark' : 'bg-success')} rounded-pill px-2">${c.status}</span>
                             </div>
-                        </div>`
-                });
-                marker.addListener('click', () => {
-                    infoWindow.open(map, marker);
-                    if (userLocation && directionsService) {
-                        directionsService.route({
-                            origin: userLocation,
-                            destination: { lat, lng },
-                            travelMode: google.maps.TravelMode.DRIVING
-                        }, (response, status) => {
-                            if (status === 'OK') directionsRenderer.setDirections(response);
-                        });
+                        </div>`);
+                marker.on('click', async () => {
+                    if (!userLocation) return;
+                    try {
+                        const route = await mapServices.route(userLocation, { lat, lng });
+                        if (routeLayer) map.removeLayer(routeLayer);
+                        routeLayer = L.polyline(route.coordinates, { color: '#667eea', weight: 5, opacity: 0.8 }).addTo(map);
+                        if (document.getElementById('directionsPanel')) {
+                            document.getElementById('directionsPanel').innerHTML = `<div class="text-start w-100"><strong>${c.name}</strong><br>${route.distanceText} · ${route.durationText}</div>`;
+                        }
+                    } catch (error) {
+                        console.warn('Directions unavailable:', error);
                     }
                 });
                 markers.push(marker);
-                bounds.extend(marker.position);
+                bounds.extend(marker.getLatLng());
             });
 
             renderCentersTableRows(allCenters);
@@ -1018,15 +1000,16 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
 
         // Update markers visibility
         if (markers && markers.length > 0) {
-            const bounds = new google.maps.LatLngBounds();
+            const bounds = L.latLngBounds([]);
             let visibleCount = 0;
             markers.forEach((m, idx) => {
                 const c = allCenters[idx];
                 if (!c) return;
                 const match = (brgy === 'all') || ((c.barangay || '').toLowerCase() === brgy.toLowerCase());
-                m.setVisible(match);
+                if (match) m.addTo(map);
+                else map.removeLayer(m);
                 if (match) {
-                    bounds.extend(m.getPosition());
+                    bounds.extend(m.getLatLng());
                     visibleCount++;
                 }
             });
@@ -1178,32 +1161,10 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
             const paths = parseWKT(bp.polygon);
             if (!paths) return;
 
-            const polygon = new google.maps.Polygon({
-                paths: paths,
-                strokeColor: '#667eea',
-                strokeOpacity: 0.6,
-                strokeWeight: 1.5,
-                fillColor: '#667eea',
-                fillOpacity: 0.1,
-                map: map,
-                zIndex: 1
-            });
-
-            google.maps.event.addListener(polygon, 'mouseover', function() {
-                this.setOptions({ fillOpacity: 0.22, strokeWeight: 2.5 });
-            });
-            google.maps.event.addListener(polygon, 'mouseout', function() {
-                this.setOptions({ fillOpacity: 0.1, strokeWeight: 1.5 });
-            });
-
-            google.maps.event.addListener(polygon, 'click', function(event) {
-                const content = `<div style="padding: 8px 12px; font-weight: 700; font-family: 'Inter', sans-serif;">Barangay ${bp.name} Boundary</div>`;
-                const infoWindow = new google.maps.InfoWindow({
-                    content: content,
-                    position: event.latLng
-                });
-                infoWindow.open(map);
-            });
+            const polygon = L.polygon(paths, { color: '#667eea', opacity: 0.6, weight: 1.5, fillColor: '#667eea', fillOpacity: 0.1 }).addTo(map);
+            polygon.on('mouseover', function() { this.setStyle({ fillOpacity: 0.22, weight: 2.5 }); });
+            polygon.on('mouseout', function() { this.setStyle({ fillOpacity: 0.1, weight: 1.5 }); });
+            polygon.bindPopup(`<div style="padding: 8px 12px; font-weight: 700; font-family: 'Inter', sans-serif;">Barangay ${bp.name} Boundary</div>`);
 
             barangayPolygons.push(polygon);
         });
@@ -1220,28 +1181,11 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
         };
 
         floodZones.forEach(zone => {
-            const polygon = new google.maps.Polygon({
-                paths: zone.polygon,
-                fillColor: getRiskColor(zone.risk_level),
-                fillOpacity: 0.28,
-                strokeColor: getRiskColor(zone.risk_level),
-                strokeWeight: 1.5,
-                map: map,
-                zIndex: 2
-            });
-
-            google.maps.event.addListener(polygon, 'click', function(event) {
-                const content = `
-                    <div style="padding: 10px; font-family: 'Inter', sans-serif;">
-                        <div style="font-weight: 800; color: ${getRiskColor(zone.risk_level)}">${zone.zone_name}</div>
-                        <div class="small text-muted mt-1">Flood Risk Level: <strong>${zone.risk_level.toUpperCase()}</strong></div>
-                    </div>`;
-                const infoWindow = new google.maps.InfoWindow({
-                    content: content,
-                    position: event.latLng
-                });
-                infoWindow.open(map);
-            });
+            const polygon = L.polygon(zone.polygon, { fillColor: getRiskColor(zone.risk_level), fillOpacity: 0.28, color: getRiskColor(zone.risk_level), weight: 1.5 }).addTo(map);
+            polygon.bindPopup(`<div style="padding: 10px; font-family: 'Inter', sans-serif;">
+                    <div style="font-weight: 800; color: ${getRiskColor(zone.risk_level)}">${zone.zone_name}</div>
+                    <div class="small text-muted mt-1">Flood Risk Level: <strong>${zone.risk_level.toUpperCase()}</strong></div>
+                </div>`);
         });
     }
 
@@ -1258,11 +1202,6 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
             btn.classList.remove('btn-light', 'text-primary');
             banner.style.display = 'block';
             document.getElementById('map').style.cursor = 'crosshair';
-            if (!mapClickListener) {
-                mapClickListener = map.addListener('click', e => {
-                    if (locationSelectionMode) selectLocationOnMap(e.latLng);
-                });
-            }
         } else {
             btn.innerHTML = '<i class="fas fa-map-location-dot me-2"></i>Pick Coordinates from Map';
             btn.classList.remove('btn-danger', 'text-white');
@@ -1270,24 +1209,20 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
             banner.style.display = 'none';
             document.getElementById('map').style.cursor = 'default';
             if (locationSelectMarker) {
-                locationSelectMarker.setMap(null);
+                map.removeLayer(locationSelectMarker);
                 locationSelectMarker = null;
             }
         }
     }
 
     function selectLocationOnMap(latLng) {
-        const lat = latLng.lat(),
-            lng = latLng.lng();
+        const lat = latLng.lat,
+            lng = latLng.lng;
         document.getElementById('centerLat').value = lat.toFixed(6);
         document.getElementById('centerLng').value = lng.toFixed(6);
-        if (locationSelectMarker) locationSelectMarker.setMap(null);
-        locationSelectMarker = new google.maps.Marker({
-            position: { lat, lng },
-            map: map,
-            title: 'Selected Point',
-            icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-        });
+        if (locationSelectMarker) map.removeLayer(locationSelectMarker);
+    const selectionIcon = L.divIcon({ className: 'selected-location-marker', html: '<span style="display:block;width:22px;height:22px;border:3px solid #fff;border-radius:50%;background:#eab308;box-shadow:0 1px 6px #444"></span>', iconSize: [22, 22], iconAnchor: [11, 11] });
+    locationSelectMarker = L.marker([lat, lng], { title: 'Selected Point', icon: selectionIcon }).addTo(map);
         toggleMapLocationSelection();
     }
 
@@ -1303,7 +1238,7 @@ if (empty($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master']
     function closePanel() {
         if (locationSelectionMode) toggleMapLocationSelection();
         if (locationSelectMarker) {
-            locationSelectMarker.setMap(null);
+            map.removeLayer(locationSelectMarker);
             locationSelectMarker = null;
         }
         document.getElementById('editPanel').classList.remove('active');

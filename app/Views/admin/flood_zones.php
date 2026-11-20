@@ -198,113 +198,78 @@
     </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=drawing,geometry"></script>
 <script>
     let map;
-    let drawingManager;
     let currentPolygon = null;
 
     function initMap() {
-        map = new google.maps.Map(document.getElementById("drawingMap"), {
-            center: {
-                lat: 7.028012,
-                lng: 125.447948
-            }, // Toril Center
-            zoom: 14,
-            mapTypeId: 'roadmap',
-            streetViewControl: false,
-            mapTypeControl: true,
-            fullscreenControl: false
+        if (map) {
+            map.invalidateSize();
+            return;
+        }
+        map = L.map('drawingMap').setView([7.028012, 125.447948], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        map.pm.addControls({
+            position: 'topleft',
+            drawMarker: false,
+            drawCircle: false,
+            drawCircleMarker: false,
+            drawPolyline: false,
+            drawRectangle: false,
+            drawPolygon: true,
+            editMode: true,
+            dragMode: false,
+            cutPolygon: false,
+            removalMode: false
         });
-
-        drawingManager = new google.maps.drawing.DrawingManager({
-            drawingMode: google.maps.drawing.OverlayType.POLYGON,
-            drawingControl: true,
-            drawingControlOptions: {
-                position: google.maps.ControlPosition.TOP_CENTER,
-                drawingModes: [google.maps.drawing.OverlayType.POLYGON],
-            },
-            polygonOptions: {
-                fillColor: '#3b82f6',
-                fillOpacity: 0.4,
-                strokeWeight: 2,
-                clickable: false,
-                editable: true,
-                zIndex: 1,
-            },
-        });
-
-        drawingManager.setMap(map);
-
-        google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
-            if (currentPolygon) currentPolygon.setMap(null); // Replace existing
-            currentPolygon = polygon;
-            drawingManager.setDrawingMode(null); // Stop drawing
-
+        map.on('pm:create', function(event) {
+            if (event.shape !== 'Polygon') return;
+            if (currentPolygon) map.removeLayer(currentPolygon);
+            currentPolygon = event.layer;
+            currentPolygon.setStyle({ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 });
+            currentPolygon.pm.enable();
             updatePolygonData();
-
-            // Listen for edits
-            google.maps.event.addListener(polygon.getPath(), 'set_at', updatePolygonData);
-            google.maps.event.addListener(polygon.getPath(), 'insert_at', updatePolygonData);
+            currentPolygon.on('pm:edit pm:vertexadded pm:vertexremoved', updatePolygonData);
         });
     }
 
     function updatePolygonData() {
         if (!currentPolygon) return;
-        const path = currentPolygon.getPath();
-        const coords = [];
-        for (let i = 0; i < path.getLength(); i++) {
-            const point = path.getAt(i);
-            coords.push({
-                lat: point.lat(),
-                lng: point.lng()
-            });
-        }
+        const coords = currentPolygon.getLatLngs()[0].map(point => ({ lat: point.lat, lng: point.lng }));
         document.getElementById('itemDescription').value = JSON.stringify(coords);
     }
 
     function clearMap() {
         if (currentPolygon) {
-            currentPolygon.setMap(null);
+            map.removeLayer(currentPolygon);
             currentPolygon = null;
         }
         document.getElementById('itemDescription').value = '';
-        drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+        if (map) map.pm.enableDraw('Polygon');
     }
 
     function loadPolygonToMap(coordsJson) {
         if (currentPolygon) {
-            currentPolygon.setMap(null);
+            map.removeLayer(currentPolygon);
+            currentPolygon = null;
         }
         document.getElementById('itemDescription').value = coordsJson;
 
         try {
             const coords = JSON.parse(coordsJson);
             if (coords && coords.length > 0) {
-                currentPolygon = new google.maps.Polygon({
-                    paths: coords,
-                    fillColor: '#3b82f6',
-                    fillOpacity: 0.4,
-                    strokeWeight: 2,
-                    editable: true,
-                    map: map
-                });
-                drawingManager.setDrawingMode(null); // Switch to edit mode
-
-                // Listen for edits on loaded polygon
-                google.maps.event.addListener(currentPolygon.getPath(), 'set_at', updatePolygonData);
-                google.maps.event.addListener(currentPolygon.getPath(), 'insert_at', updatePolygonData);
-
-                // Center map on polygon
-                const bounds = new google.maps.LatLngBounds();
-                coords.forEach(c => bounds.extend(new google.maps.LatLng(c.lat, c.lng)));
-                map.fitBounds(bounds);
+                currentPolygon = L.polygon(coords, { color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 2 }).addTo(map);
+                currentPolygon.pm.enable();
+                currentPolygon.on('pm:edit pm:vertexadded pm:vertexremoved', updatePolygonData);
+                map.fitBounds(currentPolygon.getBounds());
             } else {
-                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+                map.pm.enableDraw('Polygon');
             }
         } catch (e) {
             console.error("Invalid polygon JSON", e);
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+            map.pm.enableDraw('Polygon');
         }
     }
 
@@ -319,12 +284,9 @@
         if (!map) initMap();
         else {
             clearMap();
-            map.setCenter({
-                lat: 7.028012,
-                lng: 125.447948
-            });
-            map.setZoom(14);
+            map.setView([7.028012, 125.447948], 14);
         }
+        setTimeout(() => map.invalidateSize(), 100);
     }
 
     function openEdit(item) {
@@ -340,6 +302,7 @@
 
         // Load existing polygon onto the map and into textarea
         setTimeout(() => {
+            map.invalidateSize();
             loadPolygonToMap(item.polygon);
         }, 100);
     }

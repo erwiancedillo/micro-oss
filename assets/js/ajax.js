@@ -10,15 +10,8 @@ function loadCenters() {
 
             data.forEach(center => {
 
-                new google.maps.Marker({
-                    position: {
-                        lat: parseFloat(center.latitude),
-                        lng: parseFloat(center.longitude)
-                    },
-                    map: map,
-                    title: center.name,
-                    icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
-                });
+                const icon = L.divIcon({ className: 'center-map-marker', html: '<span style="display:block;width:18px;height:18px;border:2px solid #fff;border-radius:50%;background:#dc2626"></span>', iconSize: [18, 18], iconAnchor: [9, 9] });
+                L.marker([parseFloat(center.latitude), parseFloat(center.longitude)], { title: center.name, icon }).addTo(map);
 
             });
 

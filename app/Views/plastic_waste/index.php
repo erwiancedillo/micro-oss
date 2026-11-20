@@ -90,7 +90,6 @@
     </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8"></script>
 <script>
 // Geolocation capture
 if (navigator.geolocation) {
@@ -121,38 +120,22 @@ document.getElementById('wasteListingForm').addEventListener('submit', function(
 
 let map;
 function initMap() {
-    map = new google.maps.Map(document.getElementById('garbageMap'), {
-        center: {lat: 7.0280, lng: 125.4480}, // Default to Lizada/Daliao area
-        zoom: 14,
-        styles: [
-            { "featureType": "poi", "stylers": [{ "visibility": "off" }] }
-        ]
-    });
+    map = L.map('garbageMap').setView([7.0280, 125.4480], 14); // Default to Lizada/Daliao area
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    addLeafletFullscreenControl(map);
 
     const listings = <?= json_encode($allListings) ?>;
-    const greenMarker = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+    const greenIcon = L.divIcon({ className: 'pickup-marker', html: '<span style="display:block;width:18px;height:18px;border:2px solid #fff;border-radius:50%;background:#16a34a;box-shadow:0 1px 5px #555"></span>', iconSize: [18, 18], iconAnchor: [9, 9] });
 
     listings.forEach(list => {
         if (list.latitude && list.longitude && list.status === 'pending') {
-            const marker = new google.maps.Marker({
-                position: { lat: parseFloat(list.latitude), lng: parseFloat(list.longitude) },
-                map: map,
-                title: list.type,
-                icon: greenMarker
-            });
-
-            const infowindow = new google.maps.InfoWindow({
-                content: `<div style="font-family: Inter, sans-serif; max-width: 200px;">
+            L.marker([parseFloat(list.latitude), parseFloat(list.longitude)], { title: list.type, icon: greenIcon }).addTo(map)
+                .bindPopup(`<div style="font-family: Inter, sans-serif; max-width: 200px;">
                     <h6 class="fw-bold text-success mb-1"><i class="fas fa-trash me-2"></i>Pickup Request</h6>
                     <p class="small mb-1"><strong>Material:</strong> ${list.type}</p>
                     <p class="small mb-1"><strong>Weight:</strong> ${list.weight} kg</p>
                     <p class="small mb-0 text-muted">Posted: ${new Date(list.created_at).toLocaleDateString()}</p>
-                </div>`
-            });
-
-            marker.addListener("click", () => {
-                infowindow.open(map, marker);
-            });
+                </div>`);
         }
     });
 }

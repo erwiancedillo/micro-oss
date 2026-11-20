@@ -527,30 +527,20 @@
         return 'Safe';
     }
 
-    let map, marker, geocoder, currentPolygon;
+    let map, marker, currentPolygon;
 
     function initMap() {
-        geocoder = new google.maps.Geocoder();
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 13,
-            center: { lat: 7.028, lng: 125.448 },
-            disableDefaultUI: true,
-            zoomControl: true,
-            styles: [
-                { "featureType": "poi", "stylers": [{ "visibility": "off" }] },
-                { "featureType": "transit", "stylers": [{ "visibility": "off" }] }
-            ]
+        map = L.map('map').setView([7.028, 125.448], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        marker = L.marker([7.028, 125.448], { draggable: true }).addTo(map);
+        marker.setOpacity(0);
+        map.on('click', (e) => {
+            setAutoCoords(e.latlng.lat, e.latlng.lng);
         });
-        marker = new google.maps.Marker({
-            map: map,
-            draggable: true,
-            animation: google.maps.Animation.DROP
-        });
-        map.addListener('click', (e) => {
-            setAutoCoords(e.latLng.lat(), e.latLng.lng());
-        });
-        marker.addListener('dragend', (e) => {
-            setAutoCoords(e.latLng.lat(), e.latLng.lng());
+        marker.on('dragend', (e) => {
+            setAutoCoords(e.target.getLatLng().lat, e.target.getLatLng().lng);
         });
 
         ['fldLat', 'fldLng'].forEach(id => {
@@ -558,9 +548,8 @@
                 const lat = parseFloat(document.getElementById('fldLat').value);
                 const lng = parseFloat(document.getElementById('fldLng').value);
                 if (!isNaN(lat) && !isNaN(lng)) {
-                    const pos = { lat, lng };
-                    marker.setPosition(pos);
-                    map.panTo(pos);
+                    marker.setLatLng([lat, lng]).setOpacity(1);
+                    map.panTo([lat, lng]);
                     validateLocation(lat, lng);
                 }
             });
@@ -578,16 +567,10 @@
                     const res = await fetch(`/api/get-barangay-polygon.php?name=${encodeURIComponent(parentBrgy)}`);
                     const data = await res.json();
                     if (data.success) {
-                        if (window._activePolygon) window._activePolygon.setMap(null);
-                        window._activePolygon = new google.maps.Polygon({
-                            paths: data.polygon,
-                            strokeColor: "#667eea",
-                            strokeOpacity: 0.6,
-                            strokeWeight: 1.5,
-                            fillColor: "#667eea",
-                            fillOpacity: 0.12,
-                            map: map
-                        });
+                        if (window._activePolygon) map.removeLayer(window._activePolygon);
+                        window._activePolygon = L.polygon(data.polygon, {
+                            color: '#667eea', opacity: 0.6, weight: 1.5, fillColor: '#667eea', fillOpacity: 0.12
+                        }).addTo(map);
                         currentPolygon = window._activePolygon;
                         currentPolygon._name = parentBrgy;
                         currentPolygon._coords = data.polygon;
@@ -595,7 +578,7 @@
                 }
 
                 if (currentPolygon) {
-                    const isInside = google.maps.geometry.poly.containsLocation(new google.maps.LatLng(lat, lng), currentPolygon);
+                    const isInside = pointInRing({ lat: Number(lat), lng: Number(lng) }, currentPolygon._coords);
                     if (isInside) {
                         statusEl.innerHTML = '<i class="fas fa-check-circle status-valid me-1"></i> Location confirmed inside ' + parentBrgy;
                     } else {
@@ -610,20 +593,29 @@
         }
 
         if (!skipReverseGeocode) {
-            geocoder.geocode({ location: pos }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    const addr = results[0];
-                    statusEl.innerHTML += `<div class="mt-1 opacity-75 small"><i class="fas fa-map-marker-alt me-1"></i> ${addr.formatted_address}</div>`;
-                }
-            });
+            try {
+                const address = await mapServices.reverseGeocode(pos.lat, pos.lng);
+                if (address.formatted_address) statusEl.innerHTML += `<div class="mt-1 opacity-75 small"><i class="fas fa-map-marker-alt me-1"></i> ${address.formatted_address}</div>`;
+            } catch (error) {
+                console.warn('Reverse geocoding unavailable:', error);
+            }
         }
+    }
+
+    function pointInRing(point, ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const a = ring[i], b = ring[j];
+            if (((a.lat > point.lat) !== (b.lat > point.lat)) &&
+                (point.lng < (b.lng - a.lng) * (point.lat - a.lat) / ((b.lat - a.lat) || Number.EPSILON) + a.lng)) inside = !inside;
+        }
+        return inside;
     }
 
     function setAutoCoords(lat, lng) {
         document.getElementById('fldLat').value = lat.toFixed(6);
         document.getElementById('fldLng').value = lng.toFixed(6);
-        marker.setPosition({ lat, lng });
-        marker.setVisible(true);
+        marker.setLatLng([lat, lng]).setOpacity(1);
         validateLocation(lat, lng);
     }
 
@@ -641,7 +633,7 @@
             document.getElementById('nameLabel').innerText = 'Barangay Name';
             document.getElementById('fldName').placeholder = 'e.g. Lizada';
             if (window._activePolygon) {
-                window._activePolygon.setMap(null);
+                map.removeLayer(window._activePolygon);
                 currentPolygon = null;
             }
         }
@@ -667,8 +659,7 @@
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     setAutoCoords(pos.coords.latitude, pos.coords.longitude);
-                    map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                    map.setZoom(16);
+                    map.setView([pos.coords.latitude, pos.coords.longitude], 16);
                     document.getElementById('detectLocBtn').innerHTML = '<i class="fas fa-crosshairs me-2 text-primary"></i>Use My Current Location';
                 },
                 () => {
@@ -708,15 +699,13 @@
         document.getElementById('typeToggle').style.opacity = '0.6';
 
         setTimeout(() => {
-            google.maps.event.trigger(map, 'resize');
+            map.invalidateSize();
             if (lat && lng) {
-                const pos = { lat: parseFloat(lat), lng: parseFloat(lng) };
-                map.setCenter(pos);
-                map.setZoom(16);
-                marker.setPosition(pos);
-                marker.setVisible(true);
+                const pos = [parseFloat(lat), parseFloat(lng)];
+                map.setView(pos, 16);
+                marker.setLatLng(pos).setOpacity(1);
             } else {
-                marker.setVisible(false);
+                marker.setOpacity(0);
             }
         }, 100);
     }
@@ -739,19 +728,18 @@
         document.getElementById('map').style.display = 'block';
         document.getElementById('typeToggle').style.pointerEvents = 'auto';
         document.getElementById('typeToggle').style.opacity = '1';
-        marker.setVisible(false);
+        marker.setOpacity(0);
 
         setTimeout(() => {
-            google.maps.event.trigger(map, 'resize');
-            map.setCenter({ lat: 7.028, lng: 125.448 });
-            map.setZoom(13);
+            map.invalidateSize();
+            map.setView([7.028, 125.448], 13);
         }, 100);
     };
 
     document.getElementById('cancelBtn').onclick = () => {
         document.getElementById('editOverlay').style.display = 'none';
         if (window._activePolygon) {
-            window._activePolygon.setMap(null);
+            map.removeLayer(window._activePolygon);
             currentPolygon = null;
         }
     };
@@ -807,4 +795,4 @@
 
     fetchAlerts();
 </script>
-<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=geometry&callback=initMap"></script>
+<script>initMap();</script>

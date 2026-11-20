@@ -166,9 +166,6 @@
     }
 </style>
 
-<!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDC7jJfgpwDI4SU8CmxD3OUsgIJ_OXpnl8&libraries=places"></script>
-
 <div class="main-container mb-5">
     <?php if (isset($_SESSION['flash_message'])): ?>
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
@@ -533,9 +530,9 @@
         
         // Move map marker
         if (mapInstance && markerInstance) {
-            const loc = new google.maps.LatLng(lat, lng);
-            mapInstance.setCenter(loc);
-            markerInstance.setPosition(loc);
+            const loc = [parseFloat(lat), parseFloat(lng)];
+            mapInstance.setView(loc, mapInstance.getZoom());
+            markerInstance.setLatLng(loc);
         } else {
             // Re-init with this loc instead of default Toril
             window.tempEditLocation = { lat: lat, lng: lng };
@@ -657,79 +654,64 @@
         }
     }
 
-    // Initialize Google Map only when modal is visible
+    // Initialize Leaflet only when the modal is visible
     let mapInstance = null;
     let markerInstance = null;
-    let geocoder = null;
 
-    function initGoogleMap() {
+    function initLeafletMap() {
         const defaultLocation = window.tempEditLocation ? window.tempEditLocation : { lat: 7.0280, lng: 125.4480 }; // Toril default
         const mapContainer = document.getElementById("map");
 
         if (!mapInstance && mapContainer) {
-            mapInstance = new google.maps.Map(mapContainer, {
-                center: defaultLocation,
-                zoom: 14,
-                mapTypeId: 'roadmap',
-                streetViewControl: false,
-                mapTypeControl: true,
-                fullscreenControl: false
-            });
-
-            markerInstance = new google.maps.Marker({
-                position: defaultLocation,
-                map: mapInstance,
-                draggable: true,
-                animation: google.maps.Animation.DROP,
-            });
-
-            geocoder = new google.maps.Geocoder();
+            mapInstance = L.map(mapContainer).setView([defaultLocation.lat, defaultLocation.lng], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+            markerInstance = L.marker([defaultLocation.lat, defaultLocation.lng], { draggable: true }).addTo(mapInstance);
 
             // Click on map to move marker
-            google.maps.event.addListener(mapInstance, 'click', function(event) {
-                markerInstance.setPosition(event.latLng);
-                updateMarkerPosition(event.latLng);
+            mapInstance.on('click', function(event) {
+                markerInstance.setLatLng(event.latlng);
+                updateMarkerPosition(event.latlng);
             });
             
             // Drag marker to move
-            google.maps.event.addListener(markerInstance, "dragend", () => {
-                updateMarkerPosition(markerInstance.getPosition());
+            markerInstance.on('dragend', () => {
+                updateMarkerPosition(markerInstance.getLatLng());
             });
 
             // Try to geolocate if possible
             if (window.tempEditLocation) {
-                updateMarkerPosition(new google.maps.LatLng(window.tempEditLocation.lat, window.tempEditLocation.lng));
+                updateMarkerPosition(L.latLng(window.tempEditLocation.lat, window.tempEditLocation.lng));
                 window.tempEditLocation = null;
             } else if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
-                        mapInstance.setCenter(userLocation);
-                        markerInstance.setPosition(userLocation);
-                        updateMarkerPosition(new google.maps.LatLng(userLocation.lat, userLocation.lng));
+                        mapInstance.setView([userLocation.lat, userLocation.lng], 14);
+                        markerInstance.setLatLng([userLocation.lat, userLocation.lng]);
+                        updateMarkerPosition(L.latLng(userLocation.lat, userLocation.lng));
                     },
                     (error) => console.log("Geolocation ignored or error:", error)
                 );
             } else {
-                updateMarkerPosition(new google.maps.LatLng(defaultLocation.lat, defaultLocation.lng));
+                updateMarkerPosition(L.latLng(defaultLocation.lat, defaultLocation.lng));
             }
         }
+        if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
     }
 
-    function updateMarkerPosition(latLng) {
-        document.getElementById("latitude").value = latLng.lat().toFixed(6);
-        document.getElementById("longitude").value = latLng.lng().toFixed(6);
+    async function updateMarkerPosition(latLng) {
+        document.getElementById("latitude").value = latLng.lat.toFixed(6);
+        document.getElementById("longitude").value = latLng.lng.toFixed(6);
 
         // Reverse Geocode to identify Barangay and Exact Address
-        if (geocoder) {
-            geocoder.geocode({ location: latLng }, (results, status) => {
-                if (status === "OK") {
-                    if (results[0]) {
-                        parseAddressToDropdowns(results[0].address_components);
-                        document.getElementById("sitioModal").value = results[0].formatted_address;
-                    }
-                }
-            });
+        try {
+            const result = await mapServices.reverseGeocode(latLng.lat, latLng.lng);
+            parseAddressToDropdowns(result.address_components);
+            document.getElementById("sitioModal").value = result.formatted_address;
+        } catch (error) {
+            console.warn('Reverse geocoding unavailable:', error);
         }
     }
 
@@ -778,7 +760,7 @@
         const modalEl = document.getElementById('uploadPhotoModal');
         if (modalEl) {
             modalEl.addEventListener('shown.bs.modal', function() {
-                initGoogleMap();
+                initLeafletMap();
             });
         }
     });
