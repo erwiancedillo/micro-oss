@@ -308,7 +308,7 @@
                     </div>
                 </div>
             </div>
-            <a href="/index.php?route=flood-monitoring" class="btn btn-sm rounded-pill px-3 py-2 text-white border-0 shadow-sm" style="background: var(--brand-gradient); font-weight: 600;">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=flood-monitoring" class="btn btn-sm rounded-pill px-3 py-2 text-white border-0 shadow-sm" style="background: var(--brand-gradient); font-weight: 600;">
                 <i class="fas fa-water me-1"></i> Open Flood Monitoring Map
             </a>
         </div>
@@ -322,7 +322,7 @@
             <label class="form-label fw-bold text-dark mb-2">
                 <i class="fas fa-location-dot me-2 text-primary"></i> Select Barangay to Inspect
             </label>
-            <form method="GET" action="/index.php" id="alertForm">
+            <form method="GET" action="<?= APP_BASE_PATH ?>/index.php" id="alertForm">
                 <input type="hidden" name="route" value="alerts">
                 <select name="barangay" class="form-select styled-barangay-select" onchange="this.form.submit()" required>
                     <option value="">-- Choose Barangay (e.g. Lizada, Dalio) --</option>

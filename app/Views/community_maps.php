@@ -367,7 +367,7 @@
         <div class="selector-label"><i class="fas fa-layer-group me-1"></i>Viewing</div>
         <div class="selector-title">Barangay <?= htmlspecialchars($barangay ?? 'Lizada') ?></div>
     </div>
-    <form method="GET" action="/index.php" class="d-flex align-items-center gap-2">
+    <form method="GET" action="<?= APP_BASE_PATH ?>/index.php" class="d-flex align-items-center gap-2">
         <input type="hidden" name="route" value="community-map">
         <label for="barangay" class="selector-label mb-0 d-none d-sm-block">Switch Barangay:</label>
         <select name="barangay" id="barangay" class="map-select" onchange="this.form.submit()">

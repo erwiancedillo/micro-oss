@@ -180,7 +180,7 @@ $googleURL = $googleURL ?? '/auth/google';
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                         <?php endif; ?>
 
-                        <!-- Email Address or Username -->
+                        <!-- Username -->
                         <div class="form-field-group">
                             <div class="input-container">
                                 <!-- User Icon -->
@@ -190,10 +190,11 @@ $googleURL = $googleURL ?? '/auth/google';
                                 </svg>
                                 <input
                                     type="text"
-                                    name="email"
-                                    id="email"
-                                    placeholder="Email Address or Username"
+                                    name="username"
+                                    id="username"
+                                    placeholder="Username"
                                     autocomplete="username"
+                                    autocapitalize="none"
                                     required>
                             </div>
                         </div>

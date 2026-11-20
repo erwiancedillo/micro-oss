@@ -10,7 +10,7 @@ class EvacuationController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /index.php?route=login');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
             exit();
         }
         $userName = $_SESSION['user_name'] ?? 'Guest';

@@ -130,7 +130,7 @@
                                     </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
-                            <!--      <a href="/index.php?route=citizen-science" class="btn btn-sm btn-outline-primary mt-2 w-100 rounded-pill">View All Reports in Live Ma p</a>-->
+                            <!--      <a href="<?= APP_BASE_PATH ?>/index.php?route=citizen-science" class="btn btn-sm btn-outline-primary mt-2 w-100 rounded-pill">View All Reports in Live Ma p</a>-->
                         </div>
                     </div>
                 </div>

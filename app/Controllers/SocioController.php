@@ -20,7 +20,7 @@ class SocioController
         }
 
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /index.php?route=login');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
             exit();
         }
 
@@ -58,7 +58,7 @@ class SocioController
 
             $this->agePopulationModel->create($data);
             $_SESSION['success'] = 'Age bracket added successfully.';
-            header('Location: /index.php?route=socio');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=socio');
             exit();
         }
     }
@@ -88,7 +88,7 @@ class SocioController
                 $_SESSION['error'] = 'Failed to update age bracket.';
             }
 
-            header('Location: /index.php?route=socio');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=socio');
             exit();
         }
     }

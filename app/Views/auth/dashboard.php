@@ -355,9 +355,9 @@
 
         <!-- 1. Community Map -->
         <div class="col">
-            <a href="/index.php?route=community-map" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=community-map" class="feature-card">
                 <div class="card-icon-container bg-icon-purple">
-                    <img src="/assets/icons/map.png" alt="Community Map">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/map.png" alt="Community Map">
                 </div>
                 <h3 class="card-title-text">Community Map</h3>
                 <span class="card-subtitle-tag">Interactive GIS</span>
@@ -366,9 +366,9 @@
 
         <!-- 2. Alert Signals -->
         <div class="col">
-            <a href="/index.php?route=alerts" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=alerts" class="feature-card">
                 <div class="card-icon-container bg-icon-amber">
-                    <img src="/assets/icons/alert.png" alt="Alert Signals">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/alert.png" alt="Alert Signals">
                 </div>
                 <h3 class="card-title-text">Alert Signals</h3>
                 <span class="card-subtitle-tag">Early Warnings</span>
@@ -377,9 +377,9 @@
 
         <!-- 3. Hazard Map -->
         <div class="col">
-            <a href="/index.php?route=hazard" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=hazard" class="feature-card">
                 <div class="card-icon-container bg-icon-rose">
-                    <img src="/assets/icons/hazardmap.png" alt="Hazard Map">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/hazardmap.png" alt="Hazard Map">
                 </div>
                 <h3 class="card-title-text">Hazard Map</h3>
                 <span class="card-subtitle-tag">Vulnerability</span>
@@ -388,9 +388,9 @@
 
         <!-- 4. Flood Monitoring -->
         <div class="col">
-            <a href="/index.php?route=flood-monitoring" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=flood-monitoring" class="feature-card">
                 <div class="card-icon-container bg-icon-purple">
-                    <img src="/assets/icons/ews.png" alt="Flood Monitoring">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/ews.png" alt="Flood Monitoring">
                 </div>
                 <h3 class="card-title-text">Flood Monitoring</h3>
                 <span class="card-subtitle-tag">Water Sensors</span>
@@ -399,9 +399,9 @@
 
         <!-- 5. Evacuation Map -->
         <div class="col">
-            <a href="/index.php?route=evacuation" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=evacuation" class="feature-card">
                 <div class="card-icon-container bg-icon-emerald">
-                    <img src="/assets/icons/evacuation-map.png" alt="Evacuation Map">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/evacuation-map.png" alt="Evacuation Map">
                 </div>
                 <h3 class="card-title-text">Evacuation Map</h3>
                 <span class="card-subtitle-tag">Shelters & Routes</span>
@@ -410,7 +410,7 @@
 
         <!-- 6. Plastic Waste -->
         <div class="col">
-            <a href="/index.php?route=plastic-waste" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=plastic-waste" class="feature-card">
                 <div class="card-icon-container bg-icon-cyan">
                     <i class="fas fa-recycle"></i>
                 </div>
@@ -421,9 +421,9 @@
 
         <!-- 7. Indigenous Knowledge System -->
         <div class="col">
-            <a href="/index.php?route=iks" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=iks" class="feature-card">
                 <div class="card-icon-container bg-icon-amber">
-                    <img src="/assets/icons/iks.png" alt="IKS System">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/iks.png" alt="IKS System">
                 </div>
                 <h3 class="card-title-text">IKS System</h3>
                 <span class="card-subtitle-tag">Local Wisdom</span>
@@ -432,9 +432,9 @@
 
         <!-- 8. Publications -->
         <div class="col">
-            <a href="/index.php?route=publications" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=publications" class="feature-card">
                 <div class="card-icon-container bg-icon-slate">
-                    <img src="/assets/icons/policy.png" alt="Publications">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/policy.png" alt="Publications">
                 </div>
                 <h3 class="card-title-text">Publications</h3>
                 <span class="card-subtitle-tag">Policies & Plans</span>
@@ -443,9 +443,9 @@
 
         <!-- 9. Socio-Demographic Data -->
         <div class="col">
-            <a href="/index.php?route=socio" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=socio" class="feature-card">
                 <div class="card-icon-container bg-icon-violet">
-                    <img src="/assets/icons/socio-data.png" alt="Socio-Demographic Data">
+                    <img src="<?= APP_BASE_PATH ?>/assets/icons/socio-data.png" alt="Socio-Demographic Data">
                 </div>
                 <h3 class="card-title-text">Demographics</h3>
                 <span class="card-subtitle-tag">Purok Census</span>
@@ -454,7 +454,7 @@
 
         <!-- 10. Citizen Science -->
         <div class="col">
-            <a href="/index.php?route=gallery" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=gallery" class="feature-card">
                 <div class="card-icon-container bg-icon-pink">
                     <i class="fas fa-camera-retro"></i>
                 </div>
@@ -465,7 +465,7 @@
 
         <!-- 11. User Profile -->
         <div class="col">
-            <a href="/index.php?route=user-profile" class="feature-card">
+            <a href="<?= APP_BASE_PATH ?>/index.php?route=user-profile" class="feature-card">
                 <div class="card-icon-container bg-icon-purple">
                     <i class="fas fa-circle-user"></i>
                 </div>
@@ -477,7 +477,7 @@
         <!-- 12. Admin Console (If Admin/Master) -->
         <?php if (in_array($_SESSION['role'] ?? '', ['admin', 'master'])): ?>
             <div class="col">
-                <a href="/index.php?route=admin-dashboard" class="feature-card admin-special-card">
+                <a href="<?= APP_BASE_PATH ?>/index.php?route=admin-dashboard" class="feature-card admin-special-card">
                     <div class="card-icon-container bg-icon-master">
                         <i class="fas fa-user-shield"></i>
                     </div>
@@ -501,11 +501,11 @@
 
         <div class="d-flex align-items-center gap-3 flex-wrap">
             <div class="partner-logo-pill">
-                <img src="/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada">
+                <img src="<?= APP_BASE_PATH ?>/assets/uploads/Lizadalogo.jpg" alt="Barangay Lizada">
                 <span class="partner-logo-name">Barangay Lizada</span>
             </div>
             <div class="partner-logo-pill">
-                <img src="/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio">
+                <img src="<?= APP_BASE_PATH ?>/assets/uploads/barangaydalio.jpg" alt="Barangay Dalio">
                 <span class="partner-logo-name">Barangay Dalio</span>
             </div>
         </div>

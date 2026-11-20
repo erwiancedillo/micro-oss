@@ -43,6 +43,17 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       name="username"
+                                       value="<?= htmlspecialchars($user['username'] ?? '') ?>"
+                                       pattern="[A-Za-z0-9_.-]{3,50}"
+                                       placeholder="Enter username"
+                                       <?= isset($user) ? '' : 'required' ?>>
+                            </div>
+                            <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" 
                                        class="form-control" 
@@ -52,6 +63,9 @@
                                        required
                                        placeholder="user@example.com">
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="barangay" class="form-label">Barangay</label>
                                 <select class="form-select" id="barangay" name="barangay" required>
@@ -63,9 +77,6 @@
                                     <?php endif; ?>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="role" class="form-label">Role</label>
                                 <select class="form-select" id="role" name="role" required>
@@ -73,6 +84,9 @@
                                     <option value="admin" <?= (isset($user) && in_array($user['role'], ['admin', 'admin_lizada', 'admin_dalio', 'master'])) ? 'selected' : '' ?>>Administrator</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-select" id="status" name="status" required>

@@ -146,7 +146,7 @@
             <div class="glass-panel">
                 <div class="panel-title d-flex justify-content-between align-items-center">
                     <span><i class="fas fa-exclamation-triangle"></i> Active Alerts</span>
-                    <a href="/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
+                    <a href="<?= APP_BASE_PATH ?>/index.php?route=alerts" class="btn btn-sm btn-outline-primary rounded-pill" style="font-size: 0.65rem; padding: 0.2rem 0.6rem;">
                         View All <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
@@ -173,7 +173,7 @@
                             };
                     ?>
                         <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color: rgba(0,0,0,0.05) !important; font-size: 0.8rem;">
-                            <a href="/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
+                            <a href="<?= APP_BASE_PATH ?>/index.php?route=alerts&barangay=<?= urlencode($a['name']) ?>" class="text-decoration-none text-dark fw-medium">
                                 <?= htmlspecialchars($a['name']) ?>
                             </a>
                             <span class="badge <?= $badgeClass ?> rounded-pill" style="font-size: 0.6rem;">
@@ -442,7 +442,7 @@
                             ${alert.color.toUpperCase()} ALERT
                         </div>
                         <p style="font-size: 0.8rem; color: #555; margin: 6px 0 8px;">${advisory}</p>
-                        <a href="/index.php?route=alerts&barangay=${encodeURIComponent(alert.name)}" 
+                        <a href="<?= APP_BASE_PATH ?>/index.php?route=alerts&barangay=${encodeURIComponent(alert.name)}"
                            style="font-size: 0.75rem; color: #667eea; text-decoration: none; font-weight: 600;">
                             View Full Alert Details â†’
                         </a>

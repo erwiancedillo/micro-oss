@@ -8,7 +8,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/index.php?route=api-update-material" method="POST">
+            <form action="<?= APP_BASE_PATH ?>/index.php?route=api-update-material" method="POST">
                 <div class="modal-body p-4">
                     <input type="hidden" name="material_name" id="edit_material_name">
                     <div class="mb-3">
@@ -39,7 +39,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/index.php?route=api-update-ownership" method="POST">
+            <form action="<?= APP_BASE_PATH ?>/index.php?route=api-update-ownership" method="POST">
                 <div class="modal-body p-4">
                     <input type="hidden" name="ownership_type" id="edit_ownership_type">
                     <div class="mb-3">

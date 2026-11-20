@@ -30,9 +30,9 @@ class AuthController
 
     public function login()
     {
-        $email = $_POST['email'] ?? '';
+        $username = trim($_POST['username'] ?? $_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $user = $this->userModel->findByEmail($email);
+        $user = $this->userModel->findByUsername($username);
         if ($user && password_verify($password, $user['password'])) {
             if ($user['status'] !== 'active') {
                 $this->loginForm("Your account is pending approval by the Master Administrator.");
@@ -40,6 +40,7 @@ class AuthController
             }
 
             session_start();
+            session_regenerate_id(true);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['first_name'];
             
@@ -83,7 +84,7 @@ class AuthController
 
             $_SESSION['admin_barangay'] = $barangay;
             $_SESSION['show_welcome_card'] = true; // Set flag for dashboard welcome message
-            header('Location: /index.php?route=dashboard');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=dashboard');
             exit();
         }
         $this->loginForm("Invalid credentials or account not activated.");
@@ -101,16 +102,25 @@ class AuthController
     public function register()
     {
         $fullName = trim($_POST['name'] ?? '');
+        $username = strtolower(trim($_POST['username'] ?? ''));
         $barangay = trim($_POST['barangay'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        if (empty($fullName) || empty($barangay) || empty($email) || empty($password)) {
+        if (empty($fullName) || empty($username) || empty($barangay) || empty($email) || empty($password)) {
             return $this->registerForm("All fields are required.");
+        }
+
+        if (!preg_match('/^[a-z0-9][a-z0-9_.-]{2,49}$/', $username)) {
+            return $this->registerForm("Username must be 3-50 characters and use only letters, numbers, dots, underscores, or hyphens.");
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return $this->registerForm("Invalid email format.");
+        }
+
+        if ($this->userModel->usernameExists($username)) {
+            return $this->registerForm("Username already registered.");
         }
 
         if ($this->userModel->findByEmail($email)) {
@@ -128,6 +138,7 @@ class AuthController
         $data = [
             'first_name' => $firstName,
             'last_name' => $lastName,
+            'username' => $username,
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'token' => '',
@@ -146,7 +157,7 @@ class AuthController
     {
         session_start();
         session_destroy();
-        header('Location: /index.php?route=login');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
         exit();
     }
 
@@ -154,7 +165,7 @@ class AuthController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /index.php?route=login');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
             exit();
         }
         $title = 'Dashboard';
@@ -171,7 +182,7 @@ class AuthController
     {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header('Location: /index.php?route=login');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
             exit();
         }
         
@@ -226,7 +237,7 @@ class AuthController
                     }
                     
                     $_SESSION['flash_message'] = 'Profile updated successfully.';
-                    header('Location: /index.php?route=user-profile');
+                    header('Location: ' . APP_BASE_PATH . '/index.php?route=user-profile');
                     exit();
                 } else {
                     $error = 'Failed to update profile. Please try again.';

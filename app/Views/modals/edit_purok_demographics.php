@@ -8,7 +8,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editPurokForm" action="/index.php?route=api-update-purok-data" method="POST">
+            <form id="editPurokForm" action="<?= APP_BASE_PATH ?>/index.php?route=api-update-purok-data" method="POST">
                 <div class="modal-body p-4">
                     <input type="hidden" name="purok_name" id="edit_purok_name">
 

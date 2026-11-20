@@ -38,7 +38,7 @@ class AdminController
         }
         $role = $_SESSION['role'] ?? '';
         if (!isset($_SESSION['user_id']) || !in_array($role, ['admin', 'master'])) {
-            header('Location: /index.php?route=login');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=login');
             exit();
         }
     }
@@ -78,7 +78,7 @@ class AdminController
             $data['icon_url'] = $icon_url;
             $this->iksModel->createItem($data);
             $_SESSION['flash_message'] = 'IKS item created successfully.';
-            header('Location: /index.php?route=admin-iks');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-iks');
             exit();
         }
     }
@@ -106,7 +106,7 @@ class AdminController
             $data['icon_url'] = $icon_url;
             $this->iksModel->updateItem($id, $data);
             $_SESSION['flash_message'] = 'IKS item updated successfully.';
-            header('Location: /index.php?route=admin-iks');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-iks');
             exit();
         }
     }
@@ -119,7 +119,7 @@ class AdminController
             $this->iksModel->deleteItem($id);
             $_SESSION['flash_message'] = 'IKS item deleted successfully.';
         }
-        header('Location: /index.php?route=admin-iks');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-iks');
         exit();
     }
 
@@ -147,7 +147,7 @@ class AdminController
             ];
             $this->floodZoneModel->createZone($data);
             $_SESSION['flash_message'] = 'Flood zone created successfully.';
-            header('Location: /index.php?route=admin-flood-zones');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-flood-zones');
             exit();
         }
     }
@@ -164,7 +164,7 @@ class AdminController
             ];
             $this->floodZoneModel->updateZone($id, $data);
             $_SESSION['flash_message'] = 'Flood zone updated successfully.';
-            header('Location: /index.php?route=admin-flood-zones');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-flood-zones');
             exit();
         }
     }
@@ -177,7 +177,7 @@ class AdminController
             $this->floodZoneModel->deleteZone($id);
             $_SESSION['flash_message'] = 'Flood zone deleted successfully.';
         }
-        header('Location: /index.php?route=admin-flood-zones');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-flood-zones');
         exit();
     }
 
@@ -303,7 +303,7 @@ class AdminController
                 ]);
 
                 $_SESSION['flash_message'] = 'Hazard map created successfully.';
-                header('Location: /index.php?route=admin-hazard-maps');
+                header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-hazard-maps');
                 exit();
             }
         }
@@ -322,7 +322,7 @@ class AdminController
         $this->checkAdmin();
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header('Location: /index.php?route=admin-hazard-maps');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-hazard-maps');
             exit();
         }
 
@@ -359,7 +359,7 @@ class AdminController
                 ]);
 
                 $_SESSION['flash_message'] = 'Hazard map updated successfully.';
-                header('Location: /index.php?route=admin-hazard-maps');
+                header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-hazard-maps');
                 exit();
             }
         }
@@ -383,7 +383,7 @@ class AdminController
             $this->hazardModel->deleteHazardMap($id);
             $_SESSION['flash_message'] = 'Hazard map deleted successfully.';
         }
-        header('Location: /index.php?route=admin-hazard-maps');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-hazard-maps');
         exit();
     }
 
@@ -431,6 +431,7 @@ class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstName = trim($_POST['first_name']);
             $lastName = trim($_POST['last_name']);
+            $username = strtolower(trim($_POST['username'] ?? ''));
             $email = trim($_POST['email']);
             $role = $_POST['role'];
             $status = $_POST['status'];
@@ -441,6 +442,10 @@ class AdminController
             // Validation
             if (empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($barangay)) {
                 $error = 'All fields are required.';
+            } elseif ($username !== '' && !preg_match('/^[a-z0-9][a-z0-9_.-]{2,49}$/', $username)) {
+                $error = 'Username must be 3-50 characters and use only letters, numbers, dots, underscores, or hyphens.';
+            } elseif ($username !== '' && $this->userModel->usernameExists($username)) {
+                $error = 'Username already exists.';
             } elseif ($password !== $confirmPassword) {
                 $error = 'Passwords do not match.';
             } elseif (strlen($password) < 6) {
@@ -461,12 +466,13 @@ class AdminController
                     'password' => $hashedPassword,
                     'token' => $token,
                     'status' => $status,
-                    'barangay' => $barangay
+                    'barangay' => $barangay,
+                    'username' => $username
                 ];
                 
                 if ($this->userModel->create($userData)) {
                     $_SESSION['flash_message'] = 'User created successfully.';
-                    header('Location: /index.php?route=admin-users');
+                    header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
                     exit();
                 } else {
                     $error = 'Failed to create user. Please try again.';
@@ -491,20 +497,25 @@ class AdminController
         $error = '';
         
         if (!$id) {
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
         
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
-        
+        if (($user['role'] ?? '') === 'master' && ($id == $_SESSION['user_id'])) {
+            // Keep the master role protected; password and profile details may still be changed securely.
+            $role = 'master';
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstName = trim($_POST['first_name']);
             $lastName = trim($_POST['last_name']);
+            $username = strtolower(trim($_POST['username'] ?? ''));
             $email = trim($_POST['email']);
             $role = $_POST['role'];
             $status = $_POST['status'];
@@ -515,19 +526,24 @@ class AdminController
             // Validation
             if (empty($firstName) || empty($lastName) || empty($email) || empty($barangay)) {
                 $error = 'First name, last name, email, and barangay are required.';
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $error = 'Please enter a valid email address.';
-            } elseif ($this->userModel->emailExists($email, $id)) {
-                $error = 'Email address already exists.';
+            } elseif ($username !== '' && !preg_match('/^[a-z0-9][a-z0-9_.-]{2,49}$/', $username)) {
+                $error = 'Username must be 3-50 characters and use only letters, numbers, dots, underscores, or hyphens.';
+            } elseif ($username !== '' && $this->userModel->usernameExists($username, $id)) {
+                $error = 'Username already exists.';
             } elseif (!empty($password) && $password !== $confirmPassword) {
                 $error = 'Passwords do not match.';
             } elseif (!empty($password) && strlen($password) < 6) {
                 $error = 'Password must be at least 6 characters long.';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
+            } elseif ($this->userModel->emailExists($email, $id)) {
+                $error = 'Email address already exists.';
             } else {
                 // Update user
                 $userData = [
                     'first_name' => $firstName,
                     'last_name' => $lastName,
+                    'username' => $username,
                     'email' => $email,
                     'role' => $role,
                     'status' => $status,
@@ -542,7 +558,7 @@ class AdminController
                     }
                     
                     $_SESSION['flash_message'] = 'User updated successfully.';
-                    header('Location: /index.php?route=admin-users');
+                    header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
                     exit();
                 } else {
                     $error = 'Failed to update user. Please try again.';
@@ -567,20 +583,20 @@ class AdminController
         // Only the master account can approve users
         if (($_SESSION['role'] ?? '') !== 'master') {
             $_SESSION['flash_message'] = 'Unauthorized: Only the master account can approve users.';
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
 
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
 
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
 
@@ -600,7 +616,7 @@ class AdminController
             $_SESSION['flash_message'] = 'Failed to approve user. Please try again.';
         }
 
-        header('Location: /index.php?route=admin-users');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
         exit();
     }
 
@@ -610,21 +626,21 @@ class AdminController
         $id = $_GET['id'] ?? null;
         
         if (!$id) {
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
         
         // Prevent self-deletion
         if ($id == $_SESSION['user_id']) {
             $_SESSION['flash_message'] = 'You cannot delete your own account.';
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
         
         $user = $this->userModel->getUserById($id);
         if (!$user) {
             $_SESSION['flash_message'] = 'User not found.';
-            header('Location: /index.php?route=admin-users');
+            header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
             exit();
         }
         
@@ -634,7 +650,7 @@ class AdminController
             $_SESSION['flash_message'] = 'Failed to delete user. Please try again.';
         }
         
-        header('Location: /index.php?route=admin-users');
+        header('Location: ' . APP_BASE_PATH . '/index.php?route=admin-users');
         exit();
     }
 }

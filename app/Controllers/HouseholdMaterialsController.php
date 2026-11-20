@@ -45,7 +45,7 @@ class HouseholdMaterialsController
 
         if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
             $_SESSION['error_message'] = "Unauthorized: Admin access required.";
-            header("Location: /index.php?route=household-materials");
+            header("Location: " . APP_BASE_PATH . "/index.php?route=household-materials");
             exit();
         }
 
@@ -60,7 +60,7 @@ class HouseholdMaterialsController
             }
         }
 
-        header("Location: /index.php?route=household-materials");
+        header("Location: " . APP_BASE_PATH . "/index.php?route=household-materials");
         exit();
     }
 
@@ -72,7 +72,7 @@ class HouseholdMaterialsController
 
         if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
             $_SESSION['error_message'] = "Unauthorized: Admin access required.";
-            header("Location: /index.php?route=household-materials");
+            header("Location: " . APP_BASE_PATH . "/index.php?route=household-materials");
             exit();
         }
 
@@ -87,7 +87,7 @@ class HouseholdMaterialsController
             }
         }
 
-        header("Location: /index.php?route=household-materials");
+        header("Location: " . APP_BASE_PATH . "/index.php?route=household-materials");
         exit();
     }
 }

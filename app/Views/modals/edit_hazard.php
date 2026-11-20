@@ -8,7 +8,7 @@
                  </h5>
                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
              </div>
-             <form id="editForm" method="POST" action="/index.php?route=api-update-hazard">
+             <form id="editForm" method="POST" action="<?= APP_BASE_PATH ?>/index.php?route=api-update-hazard">
                  <div class="modal-body">
                      <input type="hidden" id="editId" name="id">
                      <div class="row">

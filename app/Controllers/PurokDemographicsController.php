@@ -75,7 +75,7 @@ class PurokDemographicsController
 
         if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'master'])) {
             $_SESSION['error_message'] = "Unauthorized: Admin access required.";
-            header("Location: /index.php?route=purok-demographics");
+            header("Location: " . APP_BASE_PATH . "/index.php?route=purok-demographics");
             exit();
         }
 
@@ -108,7 +108,7 @@ class PurokDemographicsController
             }
         }
 
-        header("Location: /index.php?route=purok-demographics");
+        header("Location: " . APP_BASE_PATH . "/index.php?route=purok-demographics");
         exit();
     }
 }

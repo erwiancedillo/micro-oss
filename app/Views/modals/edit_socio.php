@@ -7,7 +7,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editSocioForm" method="POST" action="/index.php?route=api-update-socio-data">
+            <form id="editSocioForm" method="POST" action="<?= APP_BASE_PATH ?>/index.php?route=api-update-socio-data">
                 <div class="modal-body">
                     <input type="hidden" id="edit_original_age_bracket" name="original_age_bracket">
 

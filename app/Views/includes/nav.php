@@ -4,11 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $is_admin = isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'master']);
 $current_route = $_GET['route'] ?? 'dashboard';
+$appIndex = APP_BASE_PATH . '/index.php';
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none; z-index: 1045 !important;">
     <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="/index.php?route=dashboard">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<?= $appIndex ?>?route=dashboard">
             <i class="fas fa-shield-alt me-2"></i>
             <span>Micro OSS</span>
         </a>
@@ -18,22 +19,22 @@ $current_route = $_GET['route'] ?? 'dashboard';
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_route === 'dashboard' ? 'active fw-bold' : '' ?>" href="/index.php?route=dashboard">
+                    <a class="nav-link <?= $current_route === 'dashboard' ? 'active fw-bold' : '' ?>" href="<?= $appIndex ?>?route=dashboard">
                         <i class="fas fa-th-large me-1"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_route === 'community-map' ? 'active fw-bold' : '' ?>" href="/index.php?route=community-map">
+                    <a class="nav-link <?= $current_route === 'community-map' ? 'active fw-bold' : '' ?>" href="<?= $appIndex ?>?route=community-map">
                         <i class="fas fa-map me-1"></i> Community Map
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_route === 'alerts' ? 'active fw-bold' : '' ?>" href="/index.php?route=alerts">
+                    <a class="nav-link <?= $current_route === 'alerts' ? 'active fw-bold' : '' ?>" href="<?= $appIndex ?>?route=alerts">
                         <i class="fas fa-bell me-1"></i> Alerts
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $current_route === 'hazard' ? 'active fw-bold' : '' ?>" href="/index.php?route=hazard">
+                    <a class="nav-link <?= $current_route === 'hazard' ? 'active fw-bold' : '' ?>" href="<?= $appIndex ?>?route=hazard">
                         <i class="fas fa-exclamation-triangle me-1"></i> Hazard Map
                     </a>
                 </li>
@@ -42,11 +43,11 @@ $current_route = $_GET['route'] ?? 'dashboard';
                         <i class="fas fa-chart-pie me-1"></i> Reports
                     </a>
                     <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="analyticsDropdown">
-                        <li><a class="dropdown-item <?= $current_route === 'socio' ? 'active shadow-sm' : '' ?>" href="/index.php?route=socio"><i class="fas fa-users me-2 text-dark"></i>Socio-Demographic</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'vulnerability' ? 'active shadow-sm' : '' ?>" href="/index.php?route=vulnerability"><i class="fas fa-shield-alt me-2 text-danger"></i>Hazard Vulnerability</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'purok-demographics' ? 'active shadow-sm' : '' ?>" href="/index.php?route=purok-demographics"><i class="fas fa-map-marked-alt me-2 text-success"></i>Purok Demographics</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'household-materials' ? 'active shadow-sm' : '' ?>" href="/index.php?route=household-materials"><i class="fas fa-home me-2 text-warning"></i>Household Materials Analysis</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'purok-evacuation' ? 'active shadow-sm' : '' ?>" href="/index.php?route=purok-evacuation"><i class="fas fa-route me-2 text-info"></i>Purok Evacuation Population</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'socio' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=socio"><i class="fas fa-users me-2 text-dark"></i>Socio-Demographic</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'vulnerability' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=vulnerability"><i class="fas fa-shield-alt me-2 text-danger"></i>Hazard Vulnerability</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'purok-demographics' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=purok-demographics"><i class="fas fa-map-marked-alt me-2 text-success"></i>Purok Demographics</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'household-materials' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=household-materials"><i class="fas fa-home me-2 text-warning"></i>Household Materials Analysis</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'purok-evacuation' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=purok-evacuation"><i class="fas fa-route me-2 text-info"></i>Purok Evacuation Population</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -54,19 +55,19 @@ $current_route = $_GET['route'] ?? 'dashboard';
                         <i class="fas fa-ellipsis-h me-1"></i> More
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="moreDropdown">
-                        <li><a class="dropdown-item <?= $current_route === 'flood-monitoring' ? 'active shadow-sm' : '' ?>" href="/index.php?route=flood-monitoring"><i class="fas fa-water me-2 text-primary"></i>Flood Monitoring</a></li>
-                        <li><a class="dropdown-item" href="/index.php?route=evacuation"><i class="fas fa-running me-2 text-primary"></i>Evacuation</a></li>
-                        <li><a class="dropdown-item <?= $current_route === 'iks' ? 'active shadow-sm' : '' ?>" href="/index.php?route=iks"><i class="fas fa-feather-alt me-2 text-success"></i>Indigenous Knowledge</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'flood-monitoring' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=flood-monitoring"><i class="fas fa-water me-2 text-primary"></i>Flood Monitoring</a></li>
+                        <li><a class="dropdown-item" href="<?= $appIndex ?>?route=evacuation"><i class="fas fa-running me-2 text-primary"></i>Evacuation</a></li>
+                        <li><a class="dropdown-item <?= $current_route === 'iks' ? 'active shadow-sm' : '' ?>" href="<?= $appIndex ?>?route=iks"><i class="fas fa-feather-alt me-2 text-success"></i>Indigenous Knowledge</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="/index.php?route=publications"><i class="fas fa-file-alt me-2 text-primary"></i>Publications</a></li>
+                        <li><a class="dropdown-item" href="<?= $appIndex ?>?route=publications"><i class="fas fa-file-alt me-2 text-primary"></i>Publications</a></li>
                     </ul>
                 </li>
 
                 <?php if ($is_admin): ?>
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="/index.php?route=admin-dashboard">
+                        <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="<?= $appIndex ?>?route=admin-dashboard">
                             <i class="fas fa-user-shield me-1"></i> Admin
                         </a>
                     </li>
@@ -96,7 +97,7 @@ $current_route = $_GET['route'] ?? 'dashboard';
                     <button type="button" class="btn btn-light py-2 px-4 rounded-pill fw-semibold border w-100" data-bs-dismiss="modal">
                         Cancel
                     </button>
-                    <a href="/index.php?route=logout" class="btn btn-danger py-2 px-4 rounded-pill fw-semibold w-100 btn-logout-confirm shadow-sm d-flex align-items-center justify-content-center">
+                    <a href="<?= $appIndex ?>?route=logout" class="btn btn-danger py-2 px-4 rounded-pill fw-semibold w-100 btn-logout-confirm shadow-sm d-flex align-items-center justify-content-center">
                         Log Out
                     </a>
                 </div>

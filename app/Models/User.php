@@ -32,15 +32,69 @@ class User
         return false;
     }
 
+    public function findByUsername(string $username)
+    {
+        $username = strtolower(trim($username));
+        $table = Database::getTableName('users');
+        $stmt = $this->db->prepare("SELECT * FROM `$table` WHERE LOWER(username) = ? LIMIT 1");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
+        if ($user) return $user;
+
+        foreach (['users', 'users_lizada', 'users_dalio'] as $t) {
+            if ($t === $table) continue;
+            try {
+                $stmt = $this->db->prepare("SELECT * FROM `$t` WHERE LOWER(username) = ? LIMIT 1");
+                $stmt->execute([$username]);
+                $u = $stmt->fetch();
+                if ($u) return $u;
+            } catch (\Exception $e) {}
+        }
+        return false;
+    }
+
+    public function usernameExists(string $username, $excludeId = null)
+    {
+        $username = strtolower(trim($username));
+        $tables = ['users', 'users_lizada', 'users_dalio'];
+        foreach ($tables as $table) {
+            try {
+                $sql = "SELECT id FROM `$table` WHERE LOWER(username) = ?";
+                $params = [$username];
+                if ($excludeId) {
+                    $sql .= ' AND id != ?';
+                    $params[] = $excludeId;
+                }
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute($params);
+                if ($stmt->fetch()) return true;
+            } catch (\Exception $e) {}
+        }
+        return false;
+    }
+
     public function create(array $data)
     {
         $table = Database::getTableName('users');
+        $username = strtolower(trim($data['username'] ?? ''));
+        if ($username === '') {
+            $username = strtolower(preg_replace('/[^a-z0-9_.-]/', '', explode('@', $data['email'])[0]));
+        }
+        if ($username === '') {
+            $username = 'user' . time();
+        }
+        $baseUsername = $username;
+        $suffix = 1;
+        while ($this->usernameExists($username)) {
+            $username = $baseUsername . $suffix++;
+        }
         $stmt = $this->db->prepare(
-            "INSERT INTO `$table` (first_name, last_name, email, password, token, status, barangay, created_at) VALUES (?,?,?,?,?,?,?, NOW())"
+            "INSERT INTO `$table` (first_name, last_name, username, email, password, token, status, barangay, created_at) VALUES (?,?,?,?,?,?,?,?, NOW())"
         );
         return $stmt->execute([
             $data['first_name'],
             $data['last_name'],
+            $username,
             $data['email'],
             $data['password'],
             $data['token'],
@@ -60,11 +114,11 @@ class User
     {
         if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
             $stmt = $this->db->prepare("
-                SELECT id, first_name, last_name, email, role, status, barangay, created_at, 'Lizada' as source_table FROM users_lizada
+                SELECT id, first_name, last_name, username, email, role, status, barangay, created_at, 'Lizada' as source_table FROM users_lizada
                 UNION ALL
-                SELECT id, first_name, last_name, email, role, status, barangay, created_at, 'Dalio' as source_table FROM users_dalio
+                SELECT id, first_name, last_name, username, email, role, status, barangay, created_at, 'Dalio' as source_table FROM users_dalio
                 UNION ALL
-                SELECT id, first_name, last_name, email, role, status, barangay, created_at, 'Base' as source_table FROM users 
+                SELECT id, first_name, last_name, username, email, role, status, barangay, created_at, 'Base' as source_table FROM users
                 WHERE role = 'master' OR status = 'inactive'
                 ORDER BY created_at DESC
             ");
@@ -72,7 +126,7 @@ class User
             return $stmt->fetchAll();
         } else {
             $table = Database::getTableName('users');
-            $stmt = $this->db->prepare("SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM `$table` ORDER BY created_at DESC");
+            $stmt = $this->db->prepare("SELECT id, first_name, last_name, username, email, role, status, barangay, created_at FROM `$table` ORDER BY created_at DESC");
             $stmt->execute();
             return $stmt->fetchAll();
         }
@@ -82,24 +136,24 @@ class User
     {
         if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
             // Check Lizada first
-            $stmt = $this->db->prepare("SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM users_lizada WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT id, first_name, last_name, username, email, role, status, barangay, created_at FROM users_lizada WHERE id = ?");
             $stmt->execute([$id]);
             $user = $stmt->fetch();
             if ($user) return $user;
             
             // Check Dalio
-            $stmt = $this->db->prepare("SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM users_dalio WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT id, first_name, last_name, username, email, role, status, barangay, created_at FROM users_dalio WHERE id = ?");
             $stmt->execute([$id]);
             $user = $stmt->fetch();
             if ($user) return $user;
 
             // Check Base users table
-            $stmt = $this->db->prepare("SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM users WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT id, first_name, last_name, username, email, role, status, barangay, created_at FROM users WHERE id = ?");
             $stmt->execute([$id]);
             return $stmt->fetch();
         } else {
             $table = Database::getTableName('users');
-            $stmt = $this->db->prepare("SELECT id, first_name, last_name, email, role, status, barangay, created_at FROM `$table` WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT id, first_name, last_name, username, email, role, status, barangay, created_at FROM `$table` WHERE id = ?");
             $stmt->execute([$id]);
             return $stmt->fetch();
         }
@@ -139,11 +193,12 @@ class User
 
             // 1. Update the record in the target table (either users_lizada, users_dalio, or base users)
             $stmt = $this->db->prepare(
-                "UPDATE `$targetTable` SET first_name = ?, last_name = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
+                "UPDATE `$targetTable` SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
             );
             $stmt->execute([
                 $data['first_name'],
                 $data['last_name'],
+                $username,
                 $data['email'],
                 $role,
                 $data['status'],
@@ -154,11 +209,12 @@ class User
             // 2. Also keep the base users table updated so the main login can always authenticates them
             if ($targetTable !== 'users') {
                 $stmt = $this->db->prepare(
-                    "UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
+                    "UPDATE users SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
                 );
                 $stmt->execute([
                     $data['first_name'],
                     $data['last_name'],
+                    strtolower(trim($data['username'] ?? '')),
                     $data['email'],
                     $role,
                     $data['status'],
@@ -206,11 +262,12 @@ class User
             return true;
         } else {
             $stmt = $this->db->prepare(
-                "UPDATE `$table` SET first_name = ?, last_name = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
+                "UPDATE `$table` SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
             );
             $res = $stmt->execute([
                 $data['first_name'],
                 $data['last_name'],
+                strtolower(trim($data['username'] ?? '')),
                 $data['email'],
                 $role,
                 $data['status'],
@@ -220,11 +277,12 @@ class User
             
             // Also update the base users table so authentication remains in sync
             $stmt = $this->db->prepare(
-                "UPDATE users SET first_name = ?, last_name = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
+                "UPDATE users SET first_name = ?, last_name = ?, username = ?, email = ?, role = ?, status = ?, barangay = ? WHERE id = ?"
             );
             $stmt->execute([
                 $data['first_name'],
                 $data['last_name'],
+                strtolower(trim($data['username'] ?? '')),
                 $data['email'],
                 $role,
                 $data['status'],
