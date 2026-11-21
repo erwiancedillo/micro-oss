@@ -75,7 +75,6 @@ class User
 
     public function create(array $data)
     {
-        $table = Database::getTableName('users');
         $username = strtolower(trim($data['username'] ?? ''));
         if ($username === '') {
             $username = strtolower(preg_replace('/[^a-z0-9_.-]/', '', explode('@', $data['email'])[0]));
@@ -88,19 +87,61 @@ class User
         while ($this->usernameExists($username)) {
             $username = $baseUsername . $suffix++;
         }
+
+        $role = $data['role'] ?? 'user';
+        $status = $data['status'] ?? 'active';
+        $barangay = $data['barangay'] ?? null;
+
+        // 1. Insert into base users table
         $stmt = $this->db->prepare(
-            "INSERT INTO `$table` (first_name, last_name, username, email, password, token, status, barangay, created_at) VALUES (?,?,?,?,?,?,?,?, NOW())"
+            "INSERT INTO `users` (first_name, last_name, username, email, password, token, status, role, barangay, created_at) VALUES (?,?,?,?,?,?,?,?,?, NOW())"
         );
-        return $stmt->execute([
+        $res = $stmt->execute([
             $data['first_name'],
             $data['last_name'],
             $username,
             $data['email'],
             $data['password'],
-            $data['token'],
-            $data['status'],
-            $data['barangay'] ?? null
+            $data['token'] ?? '',
+            $status,
+            $role,
+            $barangay
         ]);
+
+        if (!$res) {
+            return false;
+        }
+
+        $userId = (int)$this->db->lastInsertId();
+
+        // 2. Synchronize to barangay table (users_lizada or users_dalio)
+        if (!empty($barangay)) {
+            $bLower = strtolower($barangay);
+            if (in_array($bLower, ['lizada', 'dalio'])) {
+                $targetTable = "users_" . $bLower;
+                $stmtCheck = $this->db->prepare("SELECT id FROM `$targetTable` WHERE id = ?");
+                $stmtCheck->execute([$userId]);
+                if (!$stmtCheck->fetch()) {
+                    $stmtBranch = $this->db->prepare(
+                        "INSERT INTO `$targetTable` (id, first_name, last_name, username, email, password, token, status, role, barangay, created_at) VALUES (?,?,?,?,?,?,?,?,?,?, NOW())"
+                    );
+                    $stmtBranch->execute([
+                        $userId,
+                        $data['first_name'],
+                        $data['last_name'],
+                        $username,
+                        $data['email'],
+                        $data['password'],
+                        $data['token'] ?? '',
+                        $status,
+                        $role,
+                        $barangay
+                    ]);
+                }
+            }
+        }
+
+        return true;
     }
 
     public function activate(string $email)

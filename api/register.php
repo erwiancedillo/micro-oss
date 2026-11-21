@@ -19,9 +19,10 @@ $first_name = trim($_POST['first_name'] ?? '');
 $last_name  = trim($_POST['last_name'] ?? '');
 $email      = trim($_POST['email'] ?? '');
 $password_raw = $_POST['password'] ?? '';
+$barangay   = trim($_POST['barangay'] ?? '');
 
-if (!$first_name || !$last_name || !$email || !$password_raw) {
-    die("All fields are required.");
+if (!$first_name || !$last_name || !$email || !$password_raw || !$barangay) {
+    die("All fields including barangay are required.");
 }
 
 $password = password_hash($password_raw, PASSWORD_DEFAULT);
@@ -39,14 +40,14 @@ if (mysqli_num_rows($result) > 0) {
 // Generate activation token
 $token = bin2hex(random_bytes(32));
 
-// Insert user
+// Insert user directly as active
 $role = 'user'; // default role for new registrations
 $stmt = mysqli_prepare($conn, 
-"INSERT INTO users (first_name, last_name, email, password, token, status, role) 
-VALUES (?, ?, ?, ?, ?, 'inactive', ?)");
+"INSERT INTO users (first_name, last_name, email, password, token, status, role, barangay) 
+VALUES (?, ?, ?, ?, ?, 'active', ?, ?)");
 
-mysqli_stmt_bind_param($stmt, "ssssss", 
-    $first_name, $last_name, $email, $password, $token, $role);
+mysqli_stmt_bind_param($stmt, "sssssss", 
+    $first_name, $last_name, $email, $password, $token, $role, $barangay);
 
 if (!mysqli_stmt_execute($stmt)) {
     die("Registration Failed: " . mysqli_error($conn));

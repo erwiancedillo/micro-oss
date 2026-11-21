@@ -3,7 +3,7 @@
 $error = $error ?? '';
 $success = $success ?? '';
 $csrfToken = $csrfToken ?? '';
-$barangayList = $barangayList ?? ['Lizada', 'Dalio'];
+$barangayList = (!empty($barangayList)) ? $barangayList : ['Lizada', 'Dalio'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -214,10 +214,10 @@ $barangayList = $barangayList ?? ['Lizada', 'Dalio'];
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                     <circle cx="12" cy="10" r="3"></circle>
                                 </svg>
-                                <select name="barangay" id="barangay" required>
-                                    <option value="" disabled selected hidden>Select your Barangay</option>
+                                <select name="barangay" id="barangay" required aria-required="true">
+                                    <option value="" disabled selected hidden>Select your Barangay (Required) *</option>
                                     <?php foreach ($barangayList as $b): ?>
-                                        <option value="<?= htmlspecialchars($b) ?>"><?= htmlspecialchars($b) ?></option>
+                                        <option value="<?= htmlspecialchars($b) ?>" <?= (isset($_POST['barangay']) && $_POST['barangay'] === $b) ? 'selected' : '' ?>><?= htmlspecialchars($b) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>

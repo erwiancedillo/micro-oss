@@ -94,6 +94,9 @@ class AuthController
     {
         $alertModel = new \App\Models\BarangayAlert();
         $barangayList = $alertModel->getBarangayNames();
+        if (empty($barangayList)) {
+            $barangayList = ['Lizada', 'Dalio'];
+        }
         
         $title = 'Register';
         include __DIR__ . '/../Views/auth/register.php';
@@ -108,7 +111,12 @@ class AuthController
         $password = $_POST['password'] ?? '';
 
         if (empty($fullName) || empty($username) || empty($barangay) || empty($email) || empty($password)) {
-            return $this->registerForm("All fields are required.");
+            return $this->registerForm("All fields are required, including Barangay.");
+        }
+
+        $validBarangays = ['lizada', 'dalio'];
+        if (!in_array(strtolower($barangay), $validBarangays)) {
+            return $this->registerForm("Please select a valid Barangay (Lizada or Dalio).");
         }
 
         if (!preg_match('/^[a-z0-9][a-z0-9_.-]{2,49}$/', $username)) {
@@ -142,12 +150,13 @@ class AuthController
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'token' => '',
-            'status' => 'inactive', // Set to inactive for Master Administrator approval
-            'barangay' => $barangay
+            'status' => 'active', // Direct active account - no admin approval needed
+            'role' => 'user',
+            'barangay' => ucfirst(strtolower($barangay))
         ];
 
         if ($this->userModel->create($data)) {
-            return $this->registerForm(null, "Registration successful! Your account is pending approval by the Master Administrator.");
+            return $this->registerForm(null, "Registration successful! You can now log in.");
         } else {
             return $this->registerForm("Registration failed. Please try again.");
         }
