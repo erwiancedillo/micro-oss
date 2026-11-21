@@ -417,6 +417,11 @@ class AdminController
         $users = $this->userModel->getAllUsers();
         $userStats = $this->userModel->getUserStats();
         
+        $perPage = 10;
+        $totalUsers = count($users);
+        $totalPages = max(1, (int)ceil($totalUsers / $perPage));
+        $currentPage = max(1, min((int)($_GET['page'] ?? 1), $totalPages));
+        
         ob_start();
         include __DIR__ . '/../Views/admin/users.php';
         $content = ob_get_clean();

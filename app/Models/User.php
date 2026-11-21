@@ -160,7 +160,7 @@ class User
                 SELECT id, first_name, last_name, username, email, role, status, barangay, created_at, 'Dalio' as source_table FROM users_dalio
                 UNION ALL
                 SELECT id, first_name, last_name, username, email, role, status, barangay, created_at, 'Base' as source_table FROM users
-                WHERE role = 'master' OR status = 'inactive'
+                WHERE id NOT IN (SELECT id FROM users_lizada UNION SELECT id FROM users_dalio)
                 ORDER BY created_at DESC
             ");
             $stmt->execute();
@@ -414,59 +414,39 @@ class User
 
     public function getUserStats()
     {
-        if (isset($_SESSION['admin_barangay']) && $_SESSION['admin_barangay'] === 'master') {
-            $stats = ['total' => 0, 'active' => 0, 'inactive' => 0, 'admin' => 0, 'user' => 0];
-            
-            $tables = ['users_lizada', 'users_dalio', 'users'];
-            foreach ($tables as $t) {
-                $whereClause = ($t === 'users') ? "WHERE role = 'master' OR status = 'inactive'" : "";
-                
-                $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM `$t` $whereClause");
-                $stmt->execute();
-                $stats['total'] += $stmt->fetch()['total'];
-                
-                $stmt = $this->db->prepare("SELECT COUNT(*) as active FROM `$t` " . ($t === 'users' ? "WHERE (role = 'master' OR status = 'inactive') AND status = 'active'" : "WHERE status = 'active'"));
-                $stmt->execute();
-                $stats['active'] += $stmt->fetch()['active'];
-                
-                $stmt = $this->db->prepare("SELECT COUNT(*) as inactive FROM `$t` " . ($t === 'users' ? "WHERE (role = 'master' OR status = 'inactive') AND status = 'inactive'" : "WHERE status = 'inactive'"));
-                $stmt->execute();
-                $stats['inactive'] += $stmt->fetch()['inactive'];
-                
-                $stmt = $this->db->prepare("SELECT COUNT(*) as admin FROM `$t` " . ($t === 'users' ? "WHERE (role = 'master' OR status = 'inactive') AND (role = 'admin' OR role LIKE 'admin_%' OR role = 'master')" : "WHERE role = 'admin' OR role LIKE 'admin_%'"));
-                $stmt->execute();
-                $stats['admin'] += $stmt->fetch()['admin'];
-                
-                $stmt = $this->db->prepare("SELECT COUNT(*) as user FROM `$t` " . ($t === 'users' ? "WHERE (role = 'master' OR status = 'inactive') AND role = 'user'" : "WHERE role = 'user'"));
-                $stmt->execute();
-                $stats['user'] += $stmt->fetch()['user'];
+        $all = $this->getAllUsers();
+        $stats = [
+            'total' => count($all),
+            'active' => 0,
+            'inactive' => 0,
+            'admin' => 0,
+            'user' => 0,
+            'lizada' => 0,
+            'dalio' => 0
+        ];
+
+        foreach ($all as $u) {
+            if (($u['status'] ?? '') === 'active') {
+                $stats['active']++;
+            } else {
+                $stats['inactive']++;
             }
-            return $stats;
-        } else {
-            $table = Database::getTableName('users');
-            $stats = [];
-            
-            $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM `$table`");
-            $stmt->execute();
-            $stats['total'] = $stmt->fetch()['total'];
-            
-            $stmt = $this->db->prepare("SELECT COUNT(*) as active FROM `$table` WHERE status = \"active\"");
-            $stmt->execute();
-            $stats['active'] = $stmt->fetch()['active'];
-            
-            $stmt = $this->db->prepare("SELECT COUNT(*) as inactive FROM `$table` WHERE status = \"inactive\"");
-            $stmt->execute();
-            $stats['inactive'] = $stmt->fetch()['inactive'];
-            
-            $stmt = $this->db->prepare("SELECT COUNT(*) as admin FROM `$table` WHERE role = \"admin\" OR role LIKE \"admin_%\"");
-            $stmt->execute();
-            $stats['admin'] = $stmt->fetch()['admin'];
-            
-            $stmt = $this->db->prepare("SELECT COUNT(*) as user FROM `$table` WHERE role = \"user\"");
-            $stmt->execute();
-            $stats['user'] = $stmt->fetch()['user'];
-            
-            return $stats;
+
+            $r = strtolower($u['role'] ?? '');
+            if (in_array($r, ['admin', 'master']) || strpos($r, 'admin_') === 0) {
+                $stats['admin']++;
+            } else {
+                $stats['user']++;
+            }
+
+            $b = strtolower($u['barangay'] ?? '');
+            if ($b === 'lizada') {
+                $stats['lizada']++;
+            } elseif ($b === 'dalio') {
+                $stats['dalio']++;
+            }
         }
+
+        return $stats;
     }
 }
